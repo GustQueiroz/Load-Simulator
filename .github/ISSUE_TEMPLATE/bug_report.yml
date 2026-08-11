@@ -1,0 +1,45 @@
+name: Bug report
+description: Something behaves differently than documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. If the issue is about *simulation numbers*,
+        please read `docs/simulation-model.md` first — several behaviours that
+        look like bugs are documented, deliberate simplifications.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: |
+        Steps, or a `.din` file (Export → attach it here). A diagram beats a
+        description every time.
+      placeholder: |
+        1. Load the "Load Balancer Basics" preset
+        2. Set Client 1 to 500 req/s
+        3. Start the simulation
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and OS
+      placeholder: Chrome 141 on macOS 15
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: Anything in the browser console, if relevant.
+      render: text

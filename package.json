@@ -1,0 +1,51 @@
+{
+  "name": "system-design-load-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Draw a system architecture, push load through it and watch bottlenecks, queues, failures and cost react in real time. Client-side, no backend.",
+  "license": "MIT",
+  "keywords": [
+    "system-design",
+    "architecture",
+    "simulation",
+    "load-testing-visualization",
+    "teaching",
+    "react-flow",
+    "diagram"
+  ],
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev -p 3008",
+    "build": "next build",
+    "preview": "npx --yes serve out -l 3008",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run typecheck && npm run lint && npm test && npm run build"
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.11.2",
+    "lucide-react": "^1.31.0",
+    "nanoid": "^6.0.1",
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/ui": "^4.1.10",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
+  }
+}

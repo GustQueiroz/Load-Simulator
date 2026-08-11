@@ -1,0 +1,30 @@
+name: Feature request
+description: A component, a metric or a behaviour worth simulating
+labels: [enhancement]
+body:
+  - type: textarea
+    id: lesson
+    attributes:
+      label: What should this make visible?
+      description: |
+        This tool exists to make a System Design trade-off obvious in seconds.
+        Describe the lesson first — "more consumers don't help without more
+        partitions", "retries make an outage worse" — and the feature second.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: How you'd model it
+      description: |
+        Optional. Which component, which knobs, and what the numbers should do.
+        Keep in mind the engine models *rates*, never individual requests.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This stays client-side (no backend, no real traffic, no cloud APIs)
+          required: true

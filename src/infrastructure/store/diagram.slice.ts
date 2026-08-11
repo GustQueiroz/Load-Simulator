@@ -1,0 +1,153 @@
+import type { StateCreator } from 'zustand';
+
+import {
+  DEFAULT_VIEWPORT,
+  nextLabelFor,
+  toSimulationEdges,
+  toSimulationNodes,
+  type DiagramNode,
+} from '@/domain/diagram/diagram';
+import type { AnyNodeConfig, SimulatorNodeData } from '@/domain/nodes/config';
+import { createDefaultConfig } from '@/domain/nodes/defaults';
+import { validateConnection } from '@/domain/simulation/connection-rules';
+import { createEdgeId, createNodeId } from '@/lib/ids';
+
+import type { DiagramSlice, SimulatorState } from './types';
+
+const NODE_WIDTH = 280;
+const DUPLICATE_OFFSET = 48;
+
+export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSlice> = (
+  set,
+  get,
+) => ({
+  name: 'Nova arquitetura',
+  createdAt: new Date().toISOString(),
+  nodes: [],
+  edges: [],
+  viewport: DEFAULT_VIEWPORT,
+  isDirty: false,
+  fitViewToken: 0,
+
+  setNodes: (nodes, markDirty = true) =>
+    set(markDirty ? { nodes, isDirty: true } : { nodes }),
+  setEdges: (edges, markDirty = true) =>
+    set(markDirty ? { edges, isDirty: true } : { edges }),
+  requestFitView: () => set((state) => ({ fitViewToken: state.fitViewToken + 1 })),
+
+  addNode: (kind, position, labelPrefix) => {
+    const id = createNodeId(kind);
+    const label = nextLabelFor(get().nodes, kind, labelPrefix);
+    const node: DiagramNode = {
+      id,
+      type: kind,
+      position: { x: position.x - NODE_WIDTH / 2, y: position.y },
+      data: { kind, config: createDefaultConfig(kind, label) } as SimulatorNodeData,
+    };
+
+    set((state) => ({ nodes: [...state.nodes, node], isDirty: true }));
+    return id;
+  },
+
+  updateNodeConfig: (id, patch) => {
+    set((state) => ({
+      nodes: state.nodes.map((node) => {
+        if (node.id !== id) return node;
+        // The patch always belongs to this node's kind (callers are typed by
+        // kind); the union just cannot be correlated at this level.
+        const config = { ...node.data.config, ...patch } as AnyNodeConfig;
+        return { ...node, data: { ...node.data, config } as SimulatorNodeData };
+      }),
+      isDirty: true,
+    }));
+  },
+
+  duplicateNode: (id, labelPrefix) => {
+    const source = get().nodes.find((node) => node.id === id);
+    if (!source) return;
+
+    const kind = source.data.kind;
+    const copy: DiagramNode = {
+      id: createNodeId(kind),
+      type: kind,
+      position: {
+        x: source.position.x + DUPLICATE_OFFSET,
+        y: source.position.y + DUPLICATE_OFFSET,
+      },
+      data: {
+        kind,
+        config: {
+          ...structuredClone(source.data.config),
+          label: nextLabelFor(get().nodes, kind, labelPrefix),
+        },
+      } as SimulatorNodeData,
+      selected: false,
+    };
+
+    set((state) => ({ nodes: [...state.nodes, copy], isDirty: true }));
+  },
+
+  removeNodes: (ids) => {
+    const removed = new Set(ids);
+    set((state) => ({
+      nodes: state.nodes.filter((node) => !removed.has(node.id)),
+      // Edges of a deleted node go with it — a dangling edge would keep
+      // showing up in the graph cache.
+      edges: state.edges.filter(
+        (edge) => !removed.has(edge.source) && !removed.has(edge.target),
+      ),
+      isDirty: true,
+    }));
+  },
+
+  connect: (candidate) => {
+    const { nodes, edges } = get();
+    const validation = validateConnection({
+      candidate,
+      nodesById: new Map(toSimulationNodes(nodes).map((node) => [node.id, node])),
+      edges: toSimulationEdges(edges),
+    });
+    if (!validation.valid) return validation;
+
+    set((state) => ({
+      edges: [
+        ...state.edges,
+        {
+          id: createEdgeId(candidate.source, candidate.target),
+          source: candidate.source,
+          target: candidate.target,
+          sourceHandle: candidate.sourceHandle ?? null,
+          targetHandle: candidate.targetHandle ?? null,
+          data: { enabled: true },
+        },
+      ],
+      isDirty: true,
+    }));
+
+    return validation;
+  },
+
+  setViewport: (viewport) => set({ viewport }),
+
+  loadSnapshot: (snapshot, name, createdAt) =>
+    set({
+      nodes: snapshot.nodes,
+      edges: snapshot.edges,
+      viewport: snapshot.viewport ?? DEFAULT_VIEWPORT,
+      name,
+      createdAt: createdAt ?? new Date().toISOString(),
+      isDirty: false,
+    }),
+
+  clearDiagram: () =>
+    set({
+      nodes: [],
+      edges: [],
+      name: 'Nova arquitetura',
+      createdAt: new Date().toISOString(),
+      isDirty: false,
+    }),
+
+  setName: (name) => set({ name, isDirty: true }),
+  markSaved: () => set({ isDirty: false }),
+});
