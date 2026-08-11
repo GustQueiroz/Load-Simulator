@@ -10,7 +10,6 @@ import type { SimulatorState } from './types';
 export interface HistorySlice {
   past: DiagramCheckpoint[];
   future: DiagramCheckpoint[];
-  /** Snapshot current nodes/edges before a mutating edit. */
   pushHistory: () => void;
   undo: () => boolean;
   redo: () => boolean;
@@ -83,7 +82,6 @@ function checkpointsEqual(a: DiagramCheckpoint, b: DiagramCheckpoint): boolean {
         JSON.stringify(a.edges) === JSON.stringify(b.edges);
 }
 
-/** Coalesce rapid slider edits into a single history entry. */
 let configHistoryReady = true;
 let configHistoryTimer: ReturnType<typeof setTimeout> | null = null;
 

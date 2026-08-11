@@ -31,6 +31,10 @@ browser, a DOM or a React tree.
 | `i18n` | `domain`, `application` | simulation arithmetic |
 | `features` | everything | simulation arithmetic |
 
+Layer fences are enforced by ESLint (`no-restricted-imports`) and
+`dependency-cruiser` (`npm run architecture`). Importing React into
+`application/` fails CI — it is not a code-review courtesy.
+
 User-facing sentences live only in `src/i18n`. Lower layers return **codes**
 (`'cycle'`, `'newer-version'`) and structured data, never translated text —
 which is also why `explainNode`, a copy generator, sits in `features` rather

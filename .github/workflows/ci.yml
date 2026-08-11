@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   verify:
-    name: Typecheck, lint, test, build
+    name: Typecheck, lint, architecture, test, build, perf
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,13 +27,25 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Lint
+      - name: Lint (includes layer import fences)
         run: npm run lint
 
+      - name: Architecture (dependency-cruiser)
+        run: npm run architecture
+
       # The simulation engine is pure TypeScript, so the whole suite runs
-      # without a browser.
+      # without a browser — including tick/commit latency budgets.
       - name: Test
         run: npm test
 
       - name: Build
         run: npm run build
+
+      - name: Bundle weight budget
+        run: npm run perf:weight
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: UI latency / FPS / heap budget
+        run: npm run perf:ui

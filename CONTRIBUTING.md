@@ -10,7 +10,8 @@ serves that goal.
 ```bash
 npm install
 npm run dev      # http://localhost:3008
-npm run verify   # typecheck + lint + tests + build
+npm run verify   # typecheck + lint + architecture + tests + build
+npm run perf     # tick/commit budgets + bundle weight + browser FPS (needs build)
 ```
 
 No backend, no database, no accounts. Everything runs in the browser.
@@ -29,6 +30,12 @@ No backend, no database, no accounts. Everything runs in the browser.
 If a change requires breaking one of these, open an issue first — it probably
 has a design answer that does not.
 
+These rules are **mechanized**, not honor-system only:
+
+- ESLint `no-restricted-imports` fences each layer (`npm run lint`)
+- `dependency-cruiser` validates the same graph (`npm run architecture`)
+- CI fails if either screams
+
 ## Where things go
 
 | Layer | Path | May depend on |
@@ -40,6 +47,17 @@ has a design answer that does not.
 
 React Flow is only allowed in `src/features`. User-facing copy is only allowed
 in `src/i18n` — the lower layers return **codes**, not sentences.
+
+## Performance budgets
+
+Pedagogy dies if the canvas stutters in front of a class. Budgets live in
+`tests/perf/budgets.ts` and are checked in CI:
+
+| Check | Command | What it guards |
+| --- | --- | --- |
+| Tick / commit latency | `npm test` (`tests/perf`) | engine + store stay ≪ 100ms tick |
+| Static JS weight | `npm run perf:weight` (after build) | shipped JS stays under 8 MiB |
+| UI FPS / lag / heap | `npm run perf:ui` (after build) | running sim stays ≥ 45 FPS |
 
 ## Adding a component type
 
@@ -70,6 +88,7 @@ either file, so add both.
 
 ## Pull requests
 
-Run `npm run verify` before pushing. Small and focused beats large and
-complete — a PR that adds one component with its test and its docs entry is
-easier to merge than one that adds five.
+Run `npm run verify` before pushing. CI also runs architecture fences and,
+after the build, bundle-weight + browser FPS budgets (`npm run perf`).
+Small and focused beats large and complete — a PR that adds one component
+with its test and its docs entry is easier to merge than one that adds five.

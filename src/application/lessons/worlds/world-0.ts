@@ -1,7 +1,6 @@
 import type { LessonDefinition } from '../types';
 import { col, lessonEdge, lessonNode, ROWS } from '../build-helpers';
 
-/** Mundo 0 — Controles: play/pause e um slider. */
 export const WORLD_0_LESSONS: readonly LessonDefinition[] = [
   {
     id: '0.1',

@@ -84,7 +84,6 @@ function isSameNodeRef(
   return Boolean(expected && actual && expected === actual);
 }
 
-/** Evaluate a condition ignoring sustained timing (inner truth only). */
 export function isConditionMet(condition: WinCondition, observation: LessonObservation): boolean {
   switch (condition.type) {
     case 'always':
@@ -182,10 +181,6 @@ function sustainedSecondsRequired(condition: WinCondition): number | null {
   return null;
 }
 
-/**
- * Full evaluation including sustained windows. Updates hold tracker.
- * For `and` containing a sustained clause, every sibling must also hold.
- */
 export function evaluateWin(
   condition: WinCondition,
   observation: LessonObservation,

@@ -1,7 +1,6 @@
 import type { LessonDefinition } from '../types';
 import { col, lessonEdge, lessonNode, ROWS } from '../build-helpers';
 
-/** Mundo 1 — Capacidade: um conceito por fase. */
 export const WORLD_1_LESSONS: readonly LessonDefinition[] = [
   {
     id: '1.1',

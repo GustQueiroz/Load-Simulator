@@ -9,7 +9,6 @@ function lockAllows(lock: FieldLock | undefined, field: string): boolean {
   return lock.includes(field);
 }
 
-/** Whether a config field is frozen for the active lesson. */
 export function isLessonFieldLocked(
   lesson: LessonDefinition | undefined,
   nodeId: string,

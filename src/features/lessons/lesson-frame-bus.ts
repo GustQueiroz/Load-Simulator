@@ -1,4 +1,3 @@
-/** Feature bus: simulation engine notifies after each committed frame. */
 type LessonFrameListener = () => void;
 
 let listener: LessonFrameListener | null = null;

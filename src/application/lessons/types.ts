@@ -32,7 +32,6 @@ export type SimulationRunStatus = 'stopped' | 'running' | 'paused';
 
 export type CompareOp = 'gt' | 'gte' | 'lt' | 'lte' | 'eq';
 
-/** Declarative win / balloon-advance conditions. Evaluated headless. */
 export type WinCondition =
   | { type: 'always' }
   | { type: 'and'; conditions: readonly WinCondition[] }
@@ -71,24 +70,18 @@ export interface BalloonStep {
   advanceWhen?: WinCondition;
 }
 
-/** guided = balões; mission = briefing de plantão, sem dicas. */
 export type LessonMode = 'guided' | 'mission';
 
 export type FieldLock = readonly string[] | '*';
 
 export interface LessonLocks {
-  /** Trava RPS / modo de tráfego / automator nas fontes de carga. */
   trafficSources?: boolean;
-  /** Trava por id de nó. */
   nodes?: Readonly<Record<string, FieldLock>>;
-  /** Trava por kind (ex.: database capacity). */
   kinds?: Readonly<Partial<Record<NodeKind, FieldLock>>>;
 }
 
 export interface LessonStars {
-  /** Extra conditions for ★★ (win already implies ★). */
   two?: WinCondition;
-  /** Extra conditions for ★★★. */
   three?: WinCondition;
 }
 
@@ -103,7 +96,6 @@ export interface LessonDefinition {
   balloons: readonly BalloonStep[];
   locks?: LessonLocks;
   stars?: LessonStars;
-  /** Soft budget shown in the brief (USD / month). */
   budgetMonthlyUsd?: number;
   focusNodeId?: string;
   autoStart?: boolean;
@@ -138,7 +130,6 @@ export interface LessonProgressEntry {
 
 export type LessonProgressMap = Partial<Record<LessonId, LessonProgressEntry>>;
 
-/** Fields that define how much traffic enters the system. */
 export const TRAFFIC_SOURCE_FIELD_KEYS = [
   'rps',
   'trafficMode',

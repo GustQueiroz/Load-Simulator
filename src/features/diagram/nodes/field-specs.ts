@@ -51,7 +51,6 @@ export type FieldSpecOf<K extends NodeKind> =
   | SelectSpec<K>
   | ToggleSpec<K>;
 
-/** Union of every kind-specific spec — safe for the shared ConfigFields renderer. */
 export type FieldSpec = { [K in NodeKind]: FieldSpecOf<K> }[NodeKind];
 
 const rps = (value: number) => `${formatCompact(value)} req/s`;

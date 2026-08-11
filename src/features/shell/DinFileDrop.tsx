@@ -13,7 +13,6 @@ function dataTransferHasFiles(transfer: DataTransfer | null): boolean {
   return Array.from(transfer.types).includes('Files');
 }
 
-/** Full-window drop target for `.din` / JSON project files. */
 export function useDinFileDrop(): { active: boolean } {
   const t = useT();
   const { importDinFile } = useProjectFiles();

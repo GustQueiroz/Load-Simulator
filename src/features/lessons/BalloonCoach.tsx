@@ -30,7 +30,6 @@ export function BalloonCoach() {
   const exitLesson = useLessonSessionStore((state) => state.exitLesson);
   const completedOpen = useLessonSessionStore((state) => state.completedOpen);
   const presenting = useSimulatorStore((state) => state.presentationMode);
-  // Re-render on ticks so the sustained progress bar moves.
   const elapsedSeconds = useSimulatorStore((state) => state.elapsedSeconds);
   const tick = useSimulatorStore((state) => state.tick);
   const nodeMetrics = useSimulatorStore((state) => state.nodeMetrics);

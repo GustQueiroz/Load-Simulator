@@ -42,7 +42,6 @@ export function I18nProvider({
   initialLocale,
 }: {
   children: ReactNode;
-  /** Skip browser detection — useful in tests. */
   initialLocale?: Locale;
 }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale ?? DEFAULT_LOCALE);

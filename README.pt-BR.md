@@ -38,9 +38,10 @@ Sem backend, sem banco, sem login — é um site estático. O projeto fica salvo
 | --- | --- |
 | `npm run dev` | servidor de desenvolvimento |
 | `npm test` | testes do motor e da serialização (headless, ~1s) |
-| `npm run verify` | typecheck + lint + testes + build |
+| `npm run verify` | typecheck + lint + architecture + testes + build |
 | `npm run build` | export estático em `out/` |
 | `npm run preview` | serve o build local |
+| `npm run perf` | latência do tick, peso do JS e FPS no browser |
 
 ## Componentes
 

@@ -3,7 +3,6 @@ import { useT } from '@/i18n/I18nProvider';
 import { presetNameKey, presetVocabulary } from '@/i18n/keys';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 
-/** Shared preset loader used by Toolbar, EmptyCanvas and onboarding CTAs. */
 export function useLoadPreset() {
   const t = useT();
 

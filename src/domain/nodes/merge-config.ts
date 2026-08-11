@@ -1,6 +1,5 @@
 import type { AnyNodeConfig, SimulatorNodeData } from './config';
 
-/** Apply a partial config patch while preserving the discriminated `kind`/`config` pair. */
 export function mergeSimulatorNodeConfig(
   data: SimulatorNodeData,
   patch: Partial<AnyNodeConfig>,
@@ -25,7 +24,6 @@ export function mergeSimulatorNodeConfig(
   }
 }
 
-/** Single cast site for dynamic UI field keys → typed config patch. */
 export function toConfigPatch(
   key: string,
   value: string | number | boolean,

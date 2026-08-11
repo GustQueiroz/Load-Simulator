@@ -3,7 +3,6 @@
 import { useT } from '@/i18n/I18nProvider';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 
-/** Polite live region: text only changes on meaningful status transitions. */
 export function SimulationAnnouncer() {
   const t = useT();
   const status = useSimulatorStore((state) => state.status);

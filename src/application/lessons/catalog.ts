@@ -35,7 +35,6 @@ export function lessonsInWorld(worldId: string): readonly LessonDefinition[] {
   return LESSONS.filter((lesson) => lesson.worldId === worldId);
 }
 
-/** Linear unlock: first lesson free; each next needs the previous completed. */
 export function isLessonUnlocked(id: LessonId, progress: LessonProgressMap): boolean {
   const index = LESSON_IDS.indexOf(id);
   if (index <= 0) return true;
@@ -53,7 +52,6 @@ export function worldById(id: string): WorldDefinition | undefined {
   return WORLDS.find((world) => world.id === id);
 }
 
-/** Grade stars at the moment of victory (win already satisfied). */
 export function gradeLessonStars(
   lesson: LessonDefinition,
   observation: LessonObservation,

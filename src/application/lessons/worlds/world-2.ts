@@ -16,7 +16,6 @@ const healthy = (seconds: number, condition: LessonDefinition['win']): LessonDef
   ],
 });
 
-/** Lovelace — missões: estrutura pronta, tráfego travado, sem balões. */
 export const WORLD_2_LESSONS: readonly LessonDefinition[] = [
   {
     id: '2.1',
@@ -27,7 +26,6 @@ export const WORLD_2_LESSONS: readonly LessonDefinition[] = [
     autoStart: true,
     locks: TRAFFIC_LOCK,
     budgetMonthlyUsd: 220,
-    // Cache exists but servers talk straight to the DB — classic miswire.
     build: (v) => ({
       nodes: [
         lessonNode('client-1', 'client', col(1), ROWS[0], `${v.client} 1`, { rps: 900 }),

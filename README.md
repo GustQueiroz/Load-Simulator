@@ -38,9 +38,10 @@ in `localStorage` and can be exported as a `.din` file (versioned JSON).
 | --- | --- |
 | `npm run dev` | development server |
 | `npm test` | engine and serialization tests (headless, ~1s) |
-| `npm run verify` | typecheck + lint + test + build |
+| `npm run verify` | typecheck + lint + architecture + test + build |
 | `npm run build` | static export into `out/` |
 | `npm run preview` | serve the built export locally |
+| `npm run perf` | tick latency, JS weight and browser FPS |
 
 ## Components
 

@@ -21,10 +21,15 @@
     "build": "next build",
     "preview": "npx --yes serve out -l 3008",
     "lint": "eslint",
+    "architecture": "depcruise src --config .dependency-cruiser.cjs --validate",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:perf": "vitest run tests/perf",
+    "perf:weight": "node scripts/perf-weight.mjs",
+    "perf:ui": "node scripts/perf-ui.mjs",
+    "perf": "npm run test:perf && npm run perf:weight && npm run perf:ui",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run typecheck && npm run lint && npm test && npm run build"
+    "verify": "npm run typecheck && npm run lint && npm run architecture && npm test && npm run build"
   },
   "dependencies": {
     "@xyflow/react": "^12.11.2",
@@ -45,9 +50,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/ui": "^4.1.10",
+    "dependency-cruiser": "^18.2.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "jsdom": "^29.1.1",
+    "playwright": "^1.62.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"

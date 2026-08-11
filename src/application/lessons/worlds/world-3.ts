@@ -3,7 +3,6 @@ import { col, lessonEdge, lessonNode, ROWS } from '../build-helpers';
 
 const TRAFFIC_LOCK = { trafficSources: true } as const;
 
-/** Dijkstra — chefes: briefing duro, orçamento, sem gabarito. */
 export const WORLD_3_LESSONS: readonly LessonDefinition[] = [
   {
     id: '3.1',
