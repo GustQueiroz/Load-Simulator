@@ -6,7 +6,7 @@ import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import type { NodeKind } from '@/domain/simulation/node-kind';
 import { useT } from '@/i18n/I18nProvider';
-import { kindKey } from '@/i18n/keys';
+import { kindKey, statusKey } from '@/i18n/keys';
 import { useNodeMetrics, useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { cn } from '@/lib/cn';
 
@@ -49,6 +49,12 @@ export const NodeShell = memo(function NodeShell({
 
   return (
     <div
+      role="group"
+      aria-label={t('a11y.node.group', {
+        label,
+        kind: t(kindKey(kind)),
+        status: t(statusKey(enabled ? status : 'idle')),
+      })}
       className={cn(
         'w-[264px] overflow-hidden rounded-xl border bg-node shadow-lg shadow-black/40 transition-shadow',
         selected ? 'border-sky-400/70 ring-1 ring-sky-400/40' : 'border-line',
@@ -58,7 +64,12 @@ export const NodeShell = memo(function NodeShell({
       style={{ borderTopColor: theme.accent, borderTopWidth: 3 }}
     >
       {hasInput ? (
-        <Handle type="target" position={Position.Top} isConnectable={!presenting} />
+        <Handle
+          type="target"
+          position={Position.Top}
+          isConnectable={!presenting}
+          aria-label={t('a11y.node.handleIn', { label })}
+        />
       ) : null}
 
       <header className="flex items-center gap-2 px-3 pt-2.5 pb-2">
@@ -81,8 +92,9 @@ export const NodeShell = memo(function NodeShell({
 
           <button
             type="button"
-            className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-ink"
+            className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
             title={t('node.rename')}
+            aria-label={`${label}. ${t('node.rename')}`}
             onDoubleClick={() => setRenaming(true)}
           >
             {label}
@@ -122,7 +134,12 @@ export const NodeShell = memo(function NodeShell({
       {children}
 
       {hasOutput ? (
-        <Handle type="source" position={Position.Bottom} isConnectable={!presenting} />
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          isConnectable={!presenting}
+          aria-label={t('a11y.node.handleOut', { label })}
+        />
       ) : null}
     </div>
   );

@@ -40,6 +40,8 @@ export interface DiagramSlice {
   clearDiagram: () => void;
   setName: (name: string) => void;
   markSaved: () => void;
+  selectNode: (id: string | null) => void;
+  selectEdge: (id: string | null) => void;
 }
 
 export interface SimulationSlice {

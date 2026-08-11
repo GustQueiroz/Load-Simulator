@@ -113,6 +113,22 @@ body {
   animation: critical-glow 2.4s ease-in-out infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .traffic-edge--running,
+  .node-critical {
+    animation: none !important;
+  }
+
+  .traffic-edge--running {
+    stroke-dasharray: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #7dd3fc;
+  outline-offset: 2px;
+}
+
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;

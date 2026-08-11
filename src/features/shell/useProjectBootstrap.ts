@@ -7,6 +7,7 @@ import {
   clearShareFromLocation,
   readShareFromLocation,
 } from '@/application/serialization/share-url';
+import { useOnboardingStore } from '@/features/onboarding/onboarding-store';
 import { useI18n } from '@/i18n/I18nProvider';
 import { presetNameKey, presetVocabulary } from '@/i18n/keys';
 import { loadLastProject, saveLastProject } from '@/infrastructure/persistence/local-storage';
@@ -33,7 +34,11 @@ export function useProjectBootstrap(): void {
 
     void (async () => {
       const state = useSimulatorStore.getState();
+      const onboarding = useOnboardingStore.getState();
+      onboarding.hydrate();
+
       const shared = await readShareFromLocation();
+      let clearedShare = false;
 
       if (shared.kind === 'diagram') {
         if (!shared.result.ok) {
@@ -50,12 +55,10 @@ export function useProjectBootstrap(): void {
           state.setTickMs(diagram.settings.tickMs);
           state.requestFitView();
           clearShareFromLocation();
+          clearedShare = true;
           notify(translate('toast.sharedOpened', { name: diagram.name }), 'success');
-          return;
         }
-      }
-
-      if (shared.kind === 'preset') {
+      } else if (shared.kind === 'preset') {
         const preset = presetById(shared.presetId);
         if (preset) {
           state.reset();
@@ -65,32 +68,41 @@ export function useProjectBootstrap(): void {
           );
           state.requestFitView();
           clearShareFromLocation();
+          clearedShare = true;
           notify(
             translate('toast.presetOpened', { name: translate(presetNameKey(preset.id)) }),
             'success',
           );
-          return;
+        }
+      } else {
+        const last = loadLastProject();
+        if (last && last.nodes.length > 0) {
+          state.loadSnapshot(
+            { nodes: last.nodes, edges: last.edges, viewport: last.viewport },
+            last.name,
+            last.createdAt,
+          );
+          state.setCloud(last.settings.cloud);
+          state.setTickMs(last.settings.tickMs);
+        } else {
+          const preset = PRESETS[0];
+          state.loadSnapshot(
+            preset.build(presetVocabulary(translate)),
+            translate(presetNameKey(preset.id)),
+          );
+        }
+        state.requestFitView();
+      }
+
+      if (shared.tour) {
+        onboarding.openTour();
+        if (!clearedShare) clearShareFromLocation();
+        else {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('tour');
+          window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
         }
       }
-
-      const last = loadLastProject();
-      if (last && last.nodes.length > 0) {
-        state.loadSnapshot(
-          { nodes: last.nodes, edges: last.edges, viewport: last.viewport },
-          last.name,
-          last.createdAt,
-        );
-        state.setCloud(last.settings.cloud);
-        state.setTickMs(last.settings.tickMs);
-      } else {
-        const preset = PRESETS[0];
-        state.loadSnapshot(
-          preset.build(presetVocabulary(translate)),
-          translate(presetNameKey(preset.id)),
-        );
-      }
-
-      state.requestFitView();
     })();
   }, [resolved]);
 

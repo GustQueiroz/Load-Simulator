@@ -5,8 +5,11 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { CostPanel } from '@/features/cost/CostPanel';
 import { DetailsPanel } from '@/features/diagram/DetailsPanel';
 import { DiagramCanvas } from '@/features/diagram/DiagramCanvas';
+import { FirstRunTour } from '@/features/onboarding/FirstRunTour';
+import { LessonChecklist } from '@/features/onboarding/LessonChecklist';
 import { PresentationBar } from '@/features/presentation/PresentationBar';
 import { EventLog } from '@/features/simulation/EventLog';
+import { SimulationAnnouncer } from '@/features/simulation/SimulationAnnouncer';
 import { SystemSummary } from '@/features/simulation/SystemSummary';
 import { useSimulationEngine } from '@/features/simulation/useSimulationEngine';
 import { I18nProvider, useT, type MessageKey } from '@/i18n/I18nProvider';
@@ -26,7 +29,6 @@ export function SimulatorPage() {
 }
 
 function SimulatorShell() {
-
   useSimulationEngine();
   useProjectBootstrap();
   useKeyboardShortcuts();
@@ -41,6 +43,7 @@ function SimulatorShell() {
         <div className="flex min-h-0 flex-1">
           <main className="relative min-w-0 flex-1">
             <DiagramCanvas />
+            <LessonChecklist />
           </main>
 
           <aside className="flex w-[308px] shrink-0 flex-col gap-3 overflow-y-auto border-l border-line bg-canvas p-3">
@@ -53,6 +56,8 @@ function SimulatorShell() {
         </div>
       </div>
 
+      <FirstRunTour />
+      <SimulationAnnouncer />
       <Toasts />
     </ReactFlowProvider>
   );

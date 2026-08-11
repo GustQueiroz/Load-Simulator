@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   decodeSharePayload,
   encodeSharePayload,
+  readShareFromLocation,
 } from '@/application/serialization/share-url';
 import { exportDin, serializeDin } from '@/application/serialization/export-din';
 import { importDin } from '@/application/serialization/import-din';
@@ -43,5 +44,17 @@ describe('share URL payload', () => {
     if (!result.ok) return;
     expect(result.diagram.name).toBe('Shared demo');
     expect(result.diagram.nodes).toHaveLength(2);
+  });
+
+  it('reads preset and tour flags from the query string', async () => {
+    const withTour = await readShareFromLocation('?preset=button-click-demo&tour=1', '');
+    expect(withTour).toEqual({
+      kind: 'preset',
+      presetId: 'button-click-demo',
+      tour: true,
+    });
+
+    const plain = await readShareFromLocation('?preset=single-server', '');
+    expect(plain).toEqual({ kind: 'preset', presetId: 'single-server', tour: false });
   });
 });

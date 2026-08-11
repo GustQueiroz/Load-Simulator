@@ -1,9 +1,11 @@
 'use client';
 
 import {
+  BookOpen,
   Download,
   FilePlus2,
   Link2,
+  ListChecks,
   Maximize2,
   MonitorPlay,
   MoreHorizontal,
@@ -14,12 +16,13 @@ import {
   Upload,
 } from 'lucide-react';
 
-import { PRESETS } from '@/application/presets/presets';
 import { buildShareUrl } from '@/application/serialization/share-url';
 import { Button } from '@/components/ui/Button';
 import { Menu } from '@/components/ui/Menu';
+import { LessonPicker } from '@/features/onboarding/LessonPicker';
+import { useOnboardingStore } from '@/features/onboarding/onboarding-store';
 import { useT } from '@/i18n/I18nProvider';
-import { presetNameKey, presetVocabulary, statusKey, statusLegendKey } from '@/i18n/keys';
+import { statusKey, statusLegendKey } from '@/i18n/keys';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { notify } from '@/infrastructure/store/toast-store';
 import { formatClock } from '@/lib/format';
@@ -37,10 +40,11 @@ export function Toolbar() {
   const toggleRunning = useSimulatorStore((state) => state.toggleRunning);
   const reset = useSimulatorStore((state) => state.reset);
   const setName = useSimulatorStore((state) => state.setName);
-  const loadSnapshot = useSimulatorStore((state) => state.loadSnapshot);
   const clearDiagram = useSimulatorStore((state) => state.clearDiagram);
   const requestFitView = useSimulatorStore((state) => state.requestFitView);
   const togglePresentationMode = useSimulatorStore((state) => state.togglePresentationMode);
+  const openTour = useOnboardingStore((state) => state.openTour);
+  const showChecklist = useOnboardingStore((state) => state.showChecklist);
 
   const { exportProject, importProject } = useProjectFiles();
   const isRunning = status === 'running';
@@ -82,28 +86,7 @@ export function Toolbar() {
 
       <div className="h-6 w-px shrink-0 bg-line" />
 
-      <label className="sr-only" htmlFor="preset-select">
-        {t('toolbar.presetsLabel')}
-      </label>
-      <select
-        id="preset-select"
-        value=""
-        className="h-8 max-w-40 shrink truncate rounded-lg border border-line bg-raised px-2 text-xs text-ink transition-colors hover:border-sky-500/40 focus-visible:border-sky-400 focus-visible:outline-none"
-        onChange={(event) => {
-          const preset = PRESETS.find((item) => item.id === event.target.value);
-          if (!preset) return;
-          useSimulatorStore.getState().reset();
-          loadSnapshot(preset.build(presetVocabulary(t)), t(presetNameKey(preset.id)));
-          requestFitView();
-        }}
-      >
-        <option value="">{t('toolbar.presets')}</option>
-        {PRESETS.map((preset) => (
-          <option key={preset.id} value={preset.id}>
-            {t(presetNameKey(preset.id))}
-          </option>
-        ))}
-      </select>
+      <LessonPicker />
 
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
         <input
@@ -205,6 +188,20 @@ export function Toolbar() {
                 }
               })();
             },
+          },
+          {
+            id: 'tour',
+            label: t('toolbar.tour'),
+            hint: t('toolbar.tourTitle'),
+            icon: <BookOpen />,
+            onSelect: openTour,
+          },
+          {
+            id: 'checklist',
+            label: t('toolbar.checklist'),
+            hint: t('toolbar.checklistTitle'),
+            icon: <ListChecks />,
+            onSelect: showChecklist,
           },
         ]}
         footer={

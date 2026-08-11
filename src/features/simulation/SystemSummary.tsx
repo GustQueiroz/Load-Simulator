@@ -34,6 +34,11 @@ export function SystemSummary() {
 
       {hasFrame ? (
         <div className="space-y-1.5 px-3 py-2.5">
+          <div className="sr-only" aria-live="polite" aria-atomic="true">
+            {bottleneckLabel
+              ? t('a11y.sim.bottleneck', { node: bottleneckLabel })
+              : t(statusKey(system.worstStatus))}
+          </div>
           <Row label={t('system.input')} value={formatRps(system.generatedRps)} />
           <Row label={t('system.success')} value={formatRps(system.completedRps)} tone="#22c55e" />
           <Row
@@ -64,7 +69,7 @@ export function SystemSummary() {
             <button
               type="button"
               onClick={() => setFocusedNode(system.bottleneckNodeId ?? null)}
-              className="mt-1 flex w-full items-baseline justify-between gap-2 rounded-md bg-rose-500/10 px-2 py-1.5 text-left transition-colors hover:bg-rose-500/20"
+              className="mt-1 flex w-full items-baseline justify-between gap-2 rounded-md bg-rose-500/10 px-2 py-1.5 text-left transition-colors hover:bg-rose-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
             >
               <span className="text-[11px] text-rose-200/80">{t('system.bottleneck')}</span>
               <span className="truncate text-[11px] font-semibold text-rose-200">

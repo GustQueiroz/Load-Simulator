@@ -6,6 +6,7 @@ import type { DiagramEdge, DiagramNode, DiagramViewport } from '@/domain/diagram
 
 const SHARE_PARAM = 'd';
 const PRESET_PARAM = 'preset';
+const TOUR_PARAM = 'tour';
 
 export interface SharePayloadInput {
   name: string;
@@ -33,37 +34,44 @@ export async function buildShareUrl(
   return url.toString();
 }
 
-export function buildPresetUrl(presetId: PresetId, base = window.location.href): string {
-  const url = new URL(base);
+export function buildPresetUrl(
+  presetId: PresetId,
+  options: { tour?: boolean; base?: string } = {},
+): string {
+  const url = new URL(options.base ?? window.location.href);
   url.hash = '';
   url.searchParams.set(PRESET_PARAM, presetId);
+  if (options.tour) url.searchParams.set(TOUR_PARAM, '1');
+  else url.searchParams.delete(TOUR_PARAM);
   return url.toString();
 }
 
 export type ShareBootstrap =
-  | { kind: 'diagram'; result: ImportResult }
-  | { kind: 'preset'; presetId: PresetId }
-  | { kind: 'none' };
+  | { kind: 'diagram'; result: ImportResult; tour: boolean }
+  | { kind: 'preset'; presetId: PresetId; tour: boolean }
+  | { kind: 'none'; tour: boolean };
 
 export async function readShareFromLocation(
   search = window.location.search,
   hash = window.location.hash,
 ): Promise<ShareBootstrap> {
   const params = new URLSearchParams(search);
+  const tour = params.get(TOUR_PARAM) === '1';
+
   const preset = params.get(PRESET_PARAM);
   if (preset && isPresetId(preset)) {
-    return { kind: 'preset', presetId: preset };
+    return { kind: 'preset', presetId: preset, tour };
   }
 
   const hashParams = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
   const encoded = hashParams.get(SHARE_PARAM) ?? params.get(SHARE_PARAM);
-  if (!encoded) return { kind: 'none' };
+  if (!encoded) return { kind: 'none', tour };
 
   try {
     const json = await decodeSharePayload(encoded);
-    return { kind: 'diagram', result: importDin(json) };
+    return { kind: 'diagram', result: importDin(json), tour };
   } catch {
-    return { kind: 'diagram', result: { ok: false, error: { code: 'invalid' } } };
+    return { kind: 'diagram', result: { ok: false, error: { code: 'invalid' } }, tour };
   }
 }
 
@@ -71,6 +79,7 @@ export function clearShareFromLocation(): void {
   const url = new URL(window.location.href);
   url.searchParams.delete(SHARE_PARAM);
   url.searchParams.delete(PRESET_PARAM);
+  url.searchParams.delete(TOUR_PARAM);
   url.hash = '';
   window.history.replaceState(null, '', `${url.pathname}${url.search}`);
 }

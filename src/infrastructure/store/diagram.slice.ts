@@ -148,4 +148,16 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
 
   setName: (name) => set({ name, isDirty: true }),
   markSaved: () => set({ isDirty: false }),
+
+  selectNode: (id) =>
+    set((state) => ({
+      nodes: state.nodes.map((node) => ({ ...node, selected: id !== null && node.id === id })),
+      edges: state.edges.map((edge) => ({ ...edge, selected: false })),
+    })),
+
+  selectEdge: (id) =>
+    set((state) => ({
+      nodes: state.nodes.map((node) => ({ ...node, selected: false })),
+      edges: state.edges.map((edge) => ({ ...edge, selected: id !== null && edge.id === id })),
+    })),
 });
