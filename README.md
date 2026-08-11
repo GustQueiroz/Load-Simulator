@@ -2,15 +2,10 @@
 
 **Draw an architecture. Push load through it. Watch the bottleneck appear.**
 
-[Português](README.pt-BR.md)
+[![CI](https://github.com/GustQueiroz/Load-Simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/GustQueiroz/Load-Simulator/actions/workflows/ci.yml)
+[Live demo](https://loadsimulator.vercel.app/) · [Português](README.pt-BR.md)
 
-<!--
-  Before publishing, fill in the three things that need a real repository URL:
-  1. the CI badge:      ![CI](https://github.com/<org>/<repo>/actions/workflows/ci.yml/badge.svg)
-  2. the live demo link (GitHub Pages is already wired in .github/workflows/deploy.yml)
-  3. docs/media/hero.png — a screenshot of a running simulation, and ideally a
-     short GIF of a slider being dragged while the diagram reacts.
--->
+![Preview of the System Design Load Simulator](public/preview.png)
 
 A component-level simulator for teaching and presenting System Design. You
 compose a diagram, press play, and every component reacts in real time —

@@ -2,7 +2,10 @@
 
 **Desenhe uma arquitetura. Passe carga por ela. Veja o gargalo aparecer.**
 
-[English](README.md)
+[![CI](https://github.com/GustQueiroz/Load-Simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/GustQueiroz/Load-Simulator/actions/workflows/ci.yml)
+[Demo ao vivo](https://loadsimulator.vercel.app/) · [English](README.md)
+
+![Preview do System Design Load Simulator](public/preview.png)
 
 Simulador de System Design em nível de componente, feito para ensinar e
 apresentar. Você monta o diagrama, aperta play e cada componente reage em tempo
