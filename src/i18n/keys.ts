@@ -4,13 +4,6 @@ import type { LoadStatus } from '@/domain/simulation/status';
 
 import type { Translate } from './I18nProvider';
 
-/**
- * Typed bridges between domain enums and message keys.
- *
- * Template literal types keep these honest: if a kind, status or preset is
- * added without its message, the build fails at the call site instead of
- * rendering a raw key to the audience.
- */
 export const kindKey = (kind: NodeKind) => `kind.${kind}` as const;
 export const kindBlurbKey = (kind: NodeKind) => `kind.${kind}.blurb` as const;
 export const statusKey = (status: LoadStatus) => `status.${status}` as const;
@@ -19,10 +12,10 @@ export const statusLegendKey = (status: 'normal' | 'warning' | 'critical') =>
 export const presetNameKey = (id: PresetId) => `preset.${id}.name` as const;
 export const presetDescriptionKey = (id: PresetId) => `preset.${id}.description` as const;
 
-/** Localized node names a preset uses to label the components it creates. */
 export function presetVocabulary(t: Translate): PresetVocabulary {
   return {
     client: t('kind.client'),
+    button: t('kind.button'),
     loadBalancer: t('kind.loadBalancer'),
     apiGateway: t('kind.apiGateway'),
     server: t('kind.server'),

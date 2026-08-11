@@ -3,12 +3,6 @@ import type { ImportFailure } from './import-error';
 
 export type DinMigration = (document: Record<string, unknown>) => Record<string, unknown>;
 
-/**
- * `MIGRATIONS[n]` upgrades a version-`n` document to version `n + 1`.
- *
- * Empty today, wired up from day one: a diagram saved for a presentation must
- * keep opening after the format evolves.
- */
 export const MIGRATIONS: Record<number, DinMigration> = {};
 
 export type MigrationResult =

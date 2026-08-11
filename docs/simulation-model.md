@@ -197,3 +197,15 @@ Not bugs. Choices, each one keeping the model explainable:
   percentile it cannot compute.
 - **No real pricing.** Cost is an order-of-magnitude teaching model with
   illustrative numbers, presented as an estimate everywhere it appears.
+
+## 8. Load profiles and the Button
+
+Clients may generate a **constant** rate, a **ramp** (linear from
+`rampStartRps` to `rps` over `rampDurationSeconds`, then hold), or a **spike**
+(jump to `spikePeakRps` for `spikeWidthSeconds` starting at `spikeAtSeconds`).
+
+The **Button** is still fluid: a click deposits `requestsPerClick` into a
+pending count; each tick emits `min(pending, rateLimit·dt)` as
+`emitted / dtSeconds`. On a 100 ms tick, one request looks like 10 req/s for
+that frame — the integral over time is still one request. Cooldown rejects
+extra clicks; the automator deposits continuously at `automatorRps`.

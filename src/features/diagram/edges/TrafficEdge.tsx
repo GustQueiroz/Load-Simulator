@@ -17,12 +17,6 @@ import { STATUS_COLOR } from '../nodes/node-theme';
 
 const IDLE_STROKE = '#334867';
 
-/**
- * A link, drawn as traffic.
- *
- * Thickness follows a log scale — with a linear one, a 10.000 req/s edge would
- * swallow the diagram while a 50 req/s edge disappeared.
- */
 export const TrafficEdge = memo(function TrafficEdge({
   id,
   sourceX,

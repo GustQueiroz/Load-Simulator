@@ -1,17 +1,12 @@
 import { clamp01 } from '@/lib/math';
 
 import { BROADCAST, type SimulatorFor } from '../types';
+import { effectiveClientRps } from '../models/load-profile';
 
-/**
- * Traffic source. A client has no inbound edges, so its input is ignored:
- * it simply injects the configured rate into the graph every tick.
- *
- * Its own failure rate models requests that never left the client (DNS,
- * connection refused, client-side validation).
- */
 export const clientSimulator: SimulatorFor<'client'> = {
-  simulate(config) {
-    const generatedRps = Math.max(0, config.rps);
+  simulate(config, _runtime, _input, context) {
+    const elapsedSeconds = context.nowMs / 1000;
+    const generatedRps = effectiveClientRps(config, elapsedSeconds);
     const failureRate = clamp01(config.baseFailureRate);
     const failedRps = generatedRps * failureRate;
     const sentRps = generatedRps - failedRps;
@@ -24,7 +19,7 @@ export const clientSimulator: SimulatorFor<'client'> = {
         outgoingRps: sentRps,
         failedRps,
         droppedRps: 0,
-        // A source is never "loaded": it defines the load.
+
         utilization: 0,
         status: sentRps > 0 ? 'normal' : 'idle',
         localLatencyMs,

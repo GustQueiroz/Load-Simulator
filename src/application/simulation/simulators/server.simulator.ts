@@ -5,15 +5,6 @@ import { capLatency, serviceLatencyMs } from '../models/latency';
 import { stepWorkQueue } from '../models/work-queue';
 import { BROADCAST, type SimulatorFor } from '../types';
 
-/**
- * Synchronous application server: a bounded waiting line in front of a fixed
- * amount of service capacity, replicated over `instances`.
- *
- * There is no backpressure signal towards upstream in V1 — an overloaded
- * server queues, times out or sheds, but it never asks the client to slow
- * down. That simplification is intentional and is what makes the "retry
- * storm" and "queue absorbs the burst" demos readable.
- */
 export const serverSimulator: SimulatorFor<'server'> = {
   simulate(config, runtime, input, context) {
     const instances = Math.max(1, Math.floor(config.instances));
@@ -31,8 +22,7 @@ export const serverSimulator: SimulatorFor<'server'> = {
     const failureRate = effectiveFailureRate(config.baseFailureRate, queue.utilization);
     const erroredRps = queue.processedRps * failureRate;
     const outgoingRps = queue.processedRps - erroredRps;
-    // Timeouts and queue sheds are capacity failures — they happen with
-    // baseFailureRate at 0 when demand exceeds what the server can hold.
+
     const capacityRejectedRps = queue.timedOutRps + queue.droppedRps;
 
     const localLatencyMs =

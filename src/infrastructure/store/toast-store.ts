@@ -20,10 +20,6 @@ interface ToastState {
 
 const AUTO_DISMISS_MS = 5_000;
 
-/**
- * Separate, tiny store: feedback must never be an `alert()` during a
- * presentation, and it has nothing to do with the diagram's state.
- */
 export const useToastStore = create<ToastState>()((set, get) => ({
   toasts: [],
 

@@ -1,9 +1,9 @@
 import type { PresetId, PresetVocabulary } from '@/application/presets/presets';
 import { ptBR } from '@/i18n/messages/pt-BR';
 
-/** The vocabulary presets need, taken straight from the catalogue (no React). */
 export const TEST_VOCABULARY: PresetVocabulary = {
   client: ptBR['kind.client'],
+  button: ptBR['kind.button'],
   loadBalancer: ptBR['kind.loadBalancer'],
   apiGateway: ptBR['kind.apiGateway'],
   server: ptBR['kind.server'],

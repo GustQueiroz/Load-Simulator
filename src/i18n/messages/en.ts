@@ -1,10 +1,8 @@
 import type { Messages } from './pt-BR';
 
-/** Typed against `pt-BR`, so a missing or misspelled key breaks the build. */
 export const en: Messages = {
   'app.name': 'Load Simulator',
 
-  // --- Toolbar -----------------------------------------------------------
   'toolbar.start': 'Start',
   'toolbar.stop': 'Stop',
   'toolbar.startTitle': 'Start simulation (Space)',
@@ -29,6 +27,8 @@ export const en: Messages = {
   'toolbar.importTitle': 'Import .din (Ctrl/Cmd + O)',
   'toolbar.export': 'Export .din',
   'toolbar.exportTitle': 'Export .din (Ctrl/Cmd + S)',
+  'toolbar.share': 'Copy link',
+  'toolbar.shareTitle': 'Copy a shareable URL for this diagram',
   'toolbar.present': 'Present',
   'toolbar.presentTitle': 'Presentation mode (P)',
   'toolbar.exit': 'Exit',
@@ -37,7 +37,6 @@ export const en: Messages = {
   'toolbar.moreTitle': 'File, language and legend',
   'toolbar.legend': 'Load legend',
 
-  // --- Status ------------------------------------------------------------
   'status.idle': 'Idle',
   'status.normal': 'Normal',
   'status.warning': 'Warning',
@@ -46,8 +45,8 @@ export const en: Messages = {
   'legend.warning': 'between 60% and 80% utilization',
   'legend.critical': 'above 80% utilization',
 
-  // --- Component kinds ---------------------------------------------------
   'kind.client': 'Client',
+  'kind.button': 'Button',
   'kind.loadBalancer': 'Load Balancer',
   'kind.apiGateway': 'API Gateway',
   'kind.server': 'Server',
@@ -55,6 +54,7 @@ export const en: Messages = {
   'kind.messageQueue': 'Queue',
   'kind.database': 'Database',
   'kind.client.blurb': 'Generates traffic. The origin of the load.',
+  'kind.button.blurb': 'Fires one or more requests on click — with automator, rate limit and cooldown.',
   'kind.loadBalancer.blurb': 'Spreads load across healthy targets.',
   'kind.apiGateway.blurb': 'Single entry point with rate limiting and auth.',
   'kind.server.blurb': 'Synchronous application with a queue and a timeout.',
@@ -62,11 +62,9 @@ export const en: Messages = {
   'kind.messageQueue.blurb': 'Decouples producer from consumer with a backlog.',
   'kind.database.blurb': 'Stateful dependency with a connection pool.',
 
-  // --- Palette -----------------------------------------------------------
   'palette.title': 'Components',
   'palette.hint': 'Click to drop one in the centre, or drag it exactly where you want it.',
 
-  // --- Node card ---------------------------------------------------------
   'node.rename': 'Double-click to rename',
   'node.enable': 'Enable component',
   'node.disable': 'Disable component',
@@ -79,7 +77,6 @@ export const en: Messages = {
   'node.cacheNoTarget': 'No target: misses have nowhere to go.',
   'node.draining': 'Draining: ~{seconds} to empty',
 
-  // --- Metric labels -----------------------------------------------------
   'metric.requests': 'Requests/s',
   'metric.incoming': 'Incoming/s',
   'metric.processed': 'Processed/s',
@@ -100,8 +97,9 @@ export const en: Messages = {
   'metric.backlog': 'Backlog',
   'metric.connections': 'Connections',
   'metric.failureRate': 'Failure rate',
+  'metric.pending': 'Pending',
+  'metric.cooldown': 'Cooldown',
 
-  // --- System summary ----------------------------------------------------
   'system.title': 'System',
   'system.input': 'Incoming',
   'system.success': 'Succeeded',
@@ -112,7 +110,23 @@ export const en: Messages = {
   'system.bottleneck': 'Probable bottleneck',
   'system.idle': 'Start the simulation to see throughput, failures and the probable bottleneck.',
 
-  // --- Cost --------------------------------------------------------------
+  'events.title': 'What happened',
+  'events.empty': 'Run the simulation — status changes, queues and spikes show up here.',
+  'events.clear': 'Clear',
+  'events.unknownNode': 'Component',
+  'event.status.warning': '{node} entered warning ({utilization}).',
+  'event.status.critical': '{node} went critical ({utilization}).',
+  'event.status.recovered': '{node} recovered.',
+  'event.queue.building': '{node} started building a queue ({backlog}).',
+  'event.queue.draining': '{node} drained its queue.',
+  'event.shedding.start': '{node} started shedding load ({dropped}).',
+  'event.shedding.stop': '{node} stopped shedding.',
+  'event.pool.hot': '{node} connection pool at {percent}.',
+  'event.button.fired': '{node} fired a pulse ({rps}).',
+  'event.client.rampDone': '{node} finished its ramp at {rps}.',
+  'event.client.spikeStart': '{node} entered a spike ({rps}).',
+  'event.client.spikeEnd': '{node} left the spike (back to {rps}).',
+
   'cost.title': 'Estimated monthly cost',
   'cost.cloud': 'Cloud provider',
   'cost.total': 'Total',
@@ -125,7 +139,6 @@ export const en: Messages = {
   'cost.disclaimer':
     'Teaching estimate. Not an official price and not a billing guarantee.',
 
-  // --- Details panel -----------------------------------------------------
   'details.title': 'Details',
   'details.empty':
     'Select a component to tune every property and see why it is in this state.',
@@ -134,7 +147,6 @@ export const en: Messages = {
   'details.activeHint':
     'A disabled component processes nothing and is excluded from load balancing.',
 
-  // --- Explanations ------------------------------------------------------
   'explain.disabled': 'Component disabled: it processes nothing and drops whatever reaches it.',
   'explain.noTraffic': 'No traffic arriving right now.',
   'explain.load': 'Receiving {incoming} against a capacity of {capacity} — {utilization} utilization.',
@@ -156,8 +168,17 @@ export const en: Messages = {
   'explain.dropping': 'Dropping {dropped} that does not fit the current capacity.',
   'explain.healthy': 'Running comfortably within the configured capacity.',
 
-  // --- Configuration fields ----------------------------------------------
   'field.throughput': 'Throughput',
+  'field.trafficMode': 'Load profile',
+  'field.rampStart': 'Ramp start',
+  'field.rampDuration': 'Ramp duration',
+  'field.spikePeak': 'Spike peak',
+  'field.spikeAt': 'Spike at',
+  'field.spikeWidth': 'Spike width',
+  'field.requestsPerClick': 'Req. per click',
+  'field.automator': 'Automator',
+  'field.cooldown': 'Cooldown',
+  'field.maxPending': 'Max pending',
   'field.throughputMax': 'Max throughput',
   'field.throughputPerInstance': 'Throughput / inst.',
   'field.instances': 'Instances',
@@ -183,6 +204,17 @@ export const en: Messages = {
   'field.valueClick': '{label}: {value}. Click to type a value.',
 
   'hint.clientRps': 'Requests per second this client tries to generate.',
+  'hint.trafficMode': 'Constant, linear ramp or timed spike — effective RPS follows the simulation clock.',
+  'hint.rampStart': 'Rate at ramp time zero. Climbs toward the target throughput.',
+  'hint.rampDuration': 'How long until the ramp reaches the target throughput.',
+  'hint.spikePeak': 'Rate during the spike. Outside it, the base throughput applies.',
+  'hint.spikeAt': 'Simulation second when the spike begins.',
+  'hint.spikeWidth': 'How long the spike stays at the peak.',
+  'hint.requestsPerClick': 'How many requests each click deposits into the button pending buffer.',
+  'hint.automator': '0 = manual clicks only. Above that, it fires on its own at that rate.',
+  'hint.buttonRateLimit': 'Emission ceiling for the button. 0 = uncapped. Excess stays pending or is shed at max pending.',
+  'hint.cooldown': 'After an accepted click, further clicks are ignored until the cooldown elapses.',
+  'hint.maxPending': 'Ceiling of the button internal buffer. Past it, excess is shed.',
   'hint.capacity':
     'Approximate maximum this component handles before queueing or shedding load.',
   'hint.capacityPerInstance':
@@ -207,7 +239,6 @@ export const en: Messages = {
   'hint.backlog': 'Backlog ceiling, in messages. Past it, the queue starts dropping.',
   'hint.publishLatency': 'What the producer waits for to get its acknowledgement.',
 
-  // --- Presets -----------------------------------------------------------
   'preset.load-balancer-basics.name': 'Load Balancer Basics',
   'preset.load-balancer-basics.description':
     'Two clients, three comfortable servers and one small database: scaling the stateless tier does not fix the stateful one.',
@@ -223,16 +254,17 @@ export const en: Messages = {
   'preset.api-rate-limiting.name': 'Rate limiting protects',
   'preset.api-rate-limiting.description':
     '5,000 req/s hit the gateway; only 1,000 reach the service.',
+  'preset.button-click-demo.name': 'Button → server → database',
+  'preset.button-click-demo.description':
+    'Click the Button to see a pulse. Turn on the automator and the small database becomes the bottleneck.',
   'preset.term.producer': 'Producer',
   'preset.term.worker': 'Worker',
 
-  // --- Empty canvas ------------------------------------------------------
   'empty.title': 'Build your architecture',
   'empty.body':
     'Add a Client from the palette, connect the components and start the simulation to watch load propagate.',
   'empty.cta': 'Start with “{preset}”',
 
-  // --- Shortcuts ---------------------------------------------------------
   'shortcuts.title': 'Shortcuts',
   'shortcuts.startStop': 'start / stop',
   'shortcuts.reset': 'reset',
@@ -245,17 +277,20 @@ export const en: Messages = {
   'shortcuts.disclaimer':
     'Teaching simulation. Metrics and costs are configurable approximations, not a performance or billing guarantee.',
 
-  // --- Feedback ----------------------------------------------------------
   'toast.dismiss': 'Dismiss',
   'toast.exported': 'Diagram exported.',
   'toast.nothingToExport': 'Nothing to export yet.',
   'toast.imported': '“{name}” imported.',
+  'toast.linkCopied': 'Link copied to the clipboard.',
+  'toast.linkCopyFailed': 'Could not copy the link.',
+  'toast.sharedOpened': 'Opened shared diagram “{name}”.',
+  'toast.presetOpened': 'Opened scenario “{name}”.',
 
   'error.connection.unknownEndpoint': 'Invalid connection: component does not exist.',
   'error.connection.selfLoop': 'A component cannot be connected to itself.',
   'error.connection.duplicate': 'These components are already connected.',
   'error.connection.clientInbound':
-    'A Client is the origin of traffic and does not take inbound connections.',
+    'Traffic sources (Client, Button) do not accept inbound connections.',
   'error.connection.cycle':
     'That connection would create a cycle. Synchronous cycles are not supported in this version.',
 

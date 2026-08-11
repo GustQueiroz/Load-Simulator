@@ -3,7 +3,6 @@ import type { NodeConfigByKind } from '@/domain/nodes/config';
 import type { SimulationEdge, SimulationNode } from '@/domain/simulation/graph';
 import type { NodeKind } from '@/domain/simulation/node-kind';
 
-/** Builds a node with default config plus the overrides the test cares about. */
 export function makeNode<K extends NodeKind>(
   id: string,
   kind: K,
@@ -17,7 +16,6 @@ export function makeEdge(source: string, target: string): SimulationEdge {
   return { id: `${source}->${target}`, source, target, enabled: true };
 }
 
-/** `a -> b -> c` shorthand for linear pipelines. */
 export function chain(...ids: string[]): SimulationEdge[] {
   const edges: SimulationEdge[] = [];
   for (let index = 0; index < ids.length - 1; index += 1) {

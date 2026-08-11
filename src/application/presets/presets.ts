@@ -9,15 +9,15 @@ export const PRESET_IDS = [
   'cache-relieves-database',
   'queue-absorbs-burst',
   'api-rate-limiting',
+  'button-click-demo',
 ] as const;
 
 export type PresetId = (typeof PRESET_IDS)[number];
 
-/**
- * Words a preset needs to name its nodes. Node labels are *data* — persisted
- * and renameable — so the presentation layer supplies them already translated
- * and this module stays free of user-facing copy.
- */
+export function isPresetId(value: string): value is PresetId {
+  return (PRESET_IDS as readonly string[]).includes(value);
+}
+
 export type PresetTerm = NodeKind | 'producer' | 'worker';
 export type PresetVocabulary = Record<PresetTerm, string>;
 
@@ -42,10 +42,6 @@ function edge(source: string, target: string): DiagramEdge {
   return { id: `e-${source}-${target}`, source, target, data: { enabled: true } };
 }
 
-/**
- * Layout grid. Rows are generous because a card grows once the simulation is
- * running and the metrics block appears — presets must not overlap mid-demo.
- */
 const COL = 340;
 const ROWS = [0, 320, 760, 1_200, 1_640] as const;
 
@@ -145,12 +141,37 @@ const rateLimiting: ArchitecturePreset = {
   }),
 };
 
+const buttonClickDemo: ArchitecturePreset = {
+  id: 'button-click-demo',
+  build: (v) => ({
+    nodes: [
+      node('button-1', 'button', col(1), ROWS[0], `${v.button} 1`, {
+        requestsPerClick: 1,
+        automatorRps: 0,
+        rateLimitRps: 20,
+        cooldownMs: 200,
+        maxPending: 100,
+      }),
+      node('server-1', 'server', col(1), ROWS[1], `${v.server} 1`, {
+        capacityRps: 50,
+        maxQueueSize: 200,
+      }),
+      node('db-1', 'database', col(1), ROWS[2], `${v.database} 1`, {
+        capacityRps: 30,
+        maxConnections: 40,
+      }),
+    ],
+    edges: [edge('button-1', 'server-1'), edge('server-1', 'db-1')],
+  }),
+};
+
 export const PRESETS: readonly ArchitecturePreset[] = [
   loadBalancerBasics,
   singleServer,
   cacheRelievesDatabase,
   queueAbsorbsBurst,
   rateLimiting,
+  buttonClickDemo,
 ];
 
 export const DEFAULT_PRESET_ID: PresetId = loadBalancerBasics.id;

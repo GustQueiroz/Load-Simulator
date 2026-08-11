@@ -7,13 +7,6 @@ export interface DiagramPosition {
   y: number;
 }
 
-/**
- * A node as the *diagram* knows it: identity, layout and data.
- *
- * Deliberately shaped like a React Flow node (and structurally compatible with
- * one) without importing it — the editor library stays a detail of the
- * presentation layer.
- */
 export interface DiagramNode {
   id: string;
   type: NodeKind;
@@ -56,7 +49,6 @@ export interface DiagramSnapshot {
 
 export const DEFAULT_VIEWPORT: DiagramViewport = { x: 0, y: 0, zoom: 1 };
 
-/** Projection consumed by the engine: layout and selection are dropped. */
 export function toSimulationNodes(nodes: readonly DiagramNode[]): SimulationNode[] {
   return nodes.map((node) => ({ id: node.id, ...node.data }));
 }
@@ -72,17 +64,6 @@ export function toSimulationEdges(edges: readonly DiagramEdge[]): SimulationEdge
   }));
 }
 
-/**
- * Next display name for a kind: "Server 1", "Server 2", ...
- *
- * The localized prefix is passed in — a label is *data* (it is persisted and
- * the user can rename it), so the domain numbers it without knowing the
- * language it is written in.
- *
- * Numbers are never reused: deleting "Server 2" does not make the next one
- * take its place, which keeps a live demo from renaming itself under the
- * audience's eyes.
- */
 export function nextLabelFor(
   nodes: readonly DiagramNode[],
   kind: NodeKind,

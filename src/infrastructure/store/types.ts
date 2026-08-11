@@ -1,5 +1,6 @@
 import type { CloudProvider } from '@/application/cost/types';
 import type { SimulationFrame } from '@/application/simulation/engine';
+import type { SimulationEvent } from '@/application/simulation/event-log';
 import type {
   DiagramEdge,
   DiagramNode,
@@ -20,17 +21,15 @@ export interface DiagramSlice {
   nodes: DiagramNode[];
   edges: DiagramEdge[];
   viewport: DiagramViewport;
-  /** True when there are changes that have not been exported yet. */
+
   isDirty: boolean;
 
-  /** Incremented to ask the canvas to reframe the diagram. */
   fitViewToken: number;
 
-  /** `markDirty` is false for cosmetic changes such as selection. */
   setNodes: (nodes: DiagramNode[], markDirty?: boolean) => void;
   setEdges: (edges: DiagramEdge[], markDirty?: boolean) => void;
   requestFitView: () => void;
-  /** `labelPrefix` is the localized kind name — labels are data, not UI copy. */
+
   addNode: (kind: NodeKind, position: DiagramPosition, labelPrefix: string) => string;
   updateNodeConfig: (id: string, patch: Partial<AnyNodeConfig>) => void;
   duplicateNode: (id: string, labelPrefix: string) => void;
@@ -48,18 +47,20 @@ export interface SimulationSlice {
   tick: number;
   elapsedSeconds: number;
   tickMs: number;
-  /** Incremented on reset so the engine host knows to drop its runtime state. */
+
   resetToken: number;
   nodeMetrics: ReadonlyMap<string, NodeMetrics>;
   edgeMetrics: ReadonlyMap<string, EdgeMetrics>;
   system: SystemMetrics;
   cycleNodeIds: readonly string[];
+  events: readonly SimulationEvent[];
 
   start: () => void;
   pause: () => void;
   toggleRunning: () => void;
   reset: () => void;
   commitFrame: (frame: SimulationFrame) => void;
+  clearEvents: () => void;
   setTickMs: (tickMs: number) => void;
 }
 

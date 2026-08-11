@@ -12,10 +12,6 @@ import { KIND_THEME, PALETTE_ORDER } from './nodes/node-theme';
 
 export const PALETTE_DRAG_TYPE = 'application/x-simulator-node';
 
-/**
- * Two ways to add a component, because both get used in practice: clicking
- * (fast, during a live demo) and dragging (precise, while composing).
- */
 export function ComponentPalette() {
   const t = useT();
   const addNode = useSimulatorStore((state) => state.addNode);

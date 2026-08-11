@@ -10,12 +10,6 @@ import { formatPercent } from '@/lib/format';
 
 import type { FieldSpec } from './field-specs';
 
-/**
- * Renders configuration controls from their declarative specs.
- *
- * Values are read positionally from the config object: specs are keyed by
- * property name and a test asserts every key exists on the matching kind.
- */
 export const ConfigFields = memo(function ConfigFields({
   nodeId,
   config,

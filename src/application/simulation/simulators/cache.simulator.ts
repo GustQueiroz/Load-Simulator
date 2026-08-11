@@ -5,15 +5,6 @@ import { combineFailureRates, effectiveFailureRate, totalFailedRps } from '../mo
 import { capLatency, saturationMultiplier } from '../models/latency';
 import { BROADCAST, type SimulatorFor } from '../types';
 
-/**
- * Read-through cache.
- *
- * Only misses continue downstream — that single rule is the whole point of
- * the component and the reason a 90% hit rate turns 1.000 req/s into 100.
- *
- * The diagram only draws dependencies, so there is no return edge: a hit is
- * simply "resolved here" and the response path stays abstract.
- */
 export const cacheSimulator: SimulatorFor<'cache'> = {
   simulate(config, _runtime, input) {
     const capacityRps = Math.max(0, config.capacityRps);

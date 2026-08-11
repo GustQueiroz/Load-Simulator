@@ -45,7 +45,6 @@ export const MessageQueueNode = memo(function MessageQueueNode({
   );
 });
 
-/** Only shown while the queue is actually catching up. */
 const DrainEstimate = memo(function DrainEstimate({ nodeId }: { nodeId: string }) {
   const t = useT();
   const drainSeconds = useNodeMetrics(nodeId).drainSeconds;

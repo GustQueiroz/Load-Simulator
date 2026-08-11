@@ -3,11 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { chain, makeEdge, makeNode } from '../support/graph-builder';
 import { metricsOf, run } from '../support/run';
 
-/**
- * The scenarios the tool exists to demonstrate. If one of these stops holding,
- * a live presentation tells the wrong story — they matter more than any single
- * component unit test.
- */
 describe('scenario: load balancer basics', () => {
   const nodes = [
     makeNode('c1', 'client', { rps: 50 }),
@@ -147,11 +142,11 @@ describe('scenario: queue absorbs a burst', () => {
     const worker = metricsOf(frame, 'worker');
 
     expect(queue.queueDepth).toBeCloseTo(8_000, -2);
-    // The worker keeps working at its own pace instead of being crushed.
+
     expect(worker.incomingRps).toBeCloseTo(200, 5);
     expect(worker.utilization).toBeCloseTo(0.8, 5);
     expect(worker.queueDepth).toBe(0);
-    // The producer is never blocked: it only waits for the publish ack.
+
     expect(metricsOf(frame, 'producer').responseLatencyMs).toBeLessThan(50);
   });
 });

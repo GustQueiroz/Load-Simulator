@@ -11,14 +11,8 @@ import { createPresentationSlice, createSettingsSlice } from './settings.slice';
 import { createSimulationSlice } from './simulation.slice';
 import type { SimulatorState } from './types';
 
-/**
- * Single store, split into slices by concern. The canvas, the toolbar, the
- * panels and the engine host all read from here — and nothing else does the
- * arithmetic: the store holds state and receives finished frames.
- */
 export const useSimulatorStore = create<SimulatorState>()(
-  // `subscribeWithSelector` lets autosave watch the diagram only — without it,
-  // every simulation tick would look like a change worth persisting.
+
   subscribeWithSelector((...args) => ({
     ...createDiagramSlice(...args),
     ...createSimulationSlice(...args),
@@ -27,7 +21,6 @@ export const useSimulatorStore = create<SimulatorState>()(
   })),
 );
 
-/** Stable fallbacks: a selector must never allocate, or it re-renders forever. */
 const IDLE_NODE_METRICS: NodeMetrics = Object.freeze(createEmptyMetrics());
 const IDLE_EDGE_METRICS: EdgeMetrics = Object.freeze(createEmptyEdgeMetrics());
 

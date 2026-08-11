@@ -124,7 +124,7 @@ export function SliderField({
         )
       }
     >
-      {/* `nodrag` keeps React Flow from panning the node while the knob moves. */}
+
       <input
         id={id}
         type="range"

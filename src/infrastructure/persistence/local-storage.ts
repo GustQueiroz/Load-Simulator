@@ -3,16 +3,12 @@ import { importDin, type ImportedDiagram } from '@/application/serialization/imp
 
 const STORAGE_KEY = 'system-design-simulator:last-project';
 
-/**
- * Autosave uses the very same `.din` document as the export button, so a
- * restored session and an imported file can never drift apart.
- */
 export function saveLastProject(input: ExportInput): void {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem(STORAGE_KEY, serializeDin(exportDin(input)));
   } catch {
-    // Private mode or a full quota: autosave is a convenience, never a blocker.
+
   }
 }
 

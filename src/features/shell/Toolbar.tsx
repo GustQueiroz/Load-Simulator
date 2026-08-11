@@ -3,6 +3,7 @@
 import {
   Download,
   FilePlus2,
+  Link2,
   Maximize2,
   MonitorPlay,
   MoreHorizontal,
@@ -14,11 +15,13 @@ import {
 } from 'lucide-react';
 
 import { PRESETS } from '@/application/presets/presets';
+import { buildShareUrl } from '@/application/serialization/share-url';
 import { Button } from '@/components/ui/Button';
 import { Menu } from '@/components/ui/Menu';
 import { useT } from '@/i18n/I18nProvider';
 import { presetNameKey, presetVocabulary, statusKey, statusLegendKey } from '@/i18n/keys';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
+import { notify } from '@/infrastructure/store/toast-store';
 import { formatClock } from '@/lib/format';
 
 import { STATUS_COLOR } from '../diagram/nodes/node-theme';
@@ -168,6 +171,40 @@ export function Toolbar() {
             hint: t('toolbar.exportTitle'),
             icon: <Download />,
             onSelect: exportProject,
+          },
+          {
+            id: 'share',
+            label: t('toolbar.share'),
+            hint: t('toolbar.shareTitle'),
+            icon: <Link2 />,
+            onSelect: () => {
+              void (async () => {
+                const state = useSimulatorStore.getState();
+                if (state.nodes.length === 0) {
+                  notify(t('toast.nothingToExport'), 'info');
+                  return;
+                }
+                try {
+                  const url = await buildShareUrl({
+                    name: state.name,
+                    nodes: state.nodes,
+                    edges: state.edges,
+                    viewport: state.viewport,
+                    settings: {
+                      cloud: state.cloud,
+                      tickMs: state.tickMs,
+                      presentationMode: state.presentationMode,
+                    },
+                    createdAt: state.createdAt,
+                    now: new Date().toISOString(),
+                  });
+                  await navigator.clipboard.writeText(url);
+                  notify(t('toast.linkCopied'), 'success');
+                } catch {
+                  notify(t('toast.linkCopyFailed'), 'error');
+                }
+              })();
+            },
           },
         ]}
         footer={

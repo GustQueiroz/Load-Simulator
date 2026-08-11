@@ -1,15 +1,18 @@
 import type { SimulationNode } from '../simulation/graph';
 
-/**
- * The capacity a component advertises to the rest of the system, in req/s.
- *
- * Used by the load balancer (to compare targets), by the bottleneck heuristic
- * and by the cost model, so every kind must answer the question in one place.
- */
 export function capacityRpsOf(node: SimulationNode): number {
   switch (node.kind) {
     case 'client':
       return node.config.rps;
+    case 'button': {
+
+      const sustained =
+        node.config.automatorRps > 0
+          ? node.config.automatorRps
+          : Math.max(1, node.config.requestsPerClick);
+      if (node.config.rateLimitRps > 0) return Math.min(sustained, node.config.rateLimitRps);
+      return sustained;
+    }
     case 'server':
       return node.config.capacityRps * Math.max(1, node.config.instances);
     case 'messageQueue':

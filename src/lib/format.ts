@@ -1,14 +1,5 @@
 import { DEFAULT_LOCALE, type Locale } from '@/i18n/locale';
 
-/**
- * Formatting is tuned for a projector: short, rounded, unambiguous.
- * Legibility beats decimal precision here.
- *
- * The active locale is module state rather than a parameter on every call:
- * these helpers are used inside tight render paths and inside module-level
- * constants (field specs) where threading a locale through would be noise.
- * `I18nProvider` is the only writer.
- */
 let activeLocale: Locale = DEFAULT_LOCALE;
 
 export function setFormatLocale(locale: Locale): void {
@@ -64,7 +55,6 @@ export function formatSeconds(value: number): string {
   return `${num(value, value < 10 ? 1 : 0)} s`;
 }
 
-/** `ratio` is 0..1 (or beyond — utilization above 100% is meaningful). */
 export function formatPercent(ratio: number, decimals = 0): string {
   if (!Number.isFinite(ratio)) return '0%';
   return `${num(ratio * 100, decimals)}%`;

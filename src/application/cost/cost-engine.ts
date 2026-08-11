@@ -1,25 +1,13 @@
 import { capacityRpsOf } from '@/domain/nodes/capacity';
 import type { SimulationNode } from '@/domain/simulation/graph';
 import type { NodeMetrics } from '@/domain/simulation/metrics';
-import { NODE_KINDS, type NodeKind } from '@/domain/simulation/node-kind';
+import { isTrafficSource, NODE_KINDS, type NodeKind } from '@/domain/simulation/node-kind';
 
 import { SECONDS_PER_MONTH, type CostEstimate, type CostLine, type CostProfile } from './types';
 
 const KB_PER_GB = 1024 * 1024;
 
-/**
- * Rough monthly cost of the drawn architecture.
- *
- * Two ingredients: what is *provisioned* (capacity and instances, charged
- * whether or not anyone uses it) and what is *consumed* (requests and egress,
- * taken from the current simulation). Always presented as an estimate.
- */
 export interface CostUsage {
-  /**
-   * Traffic that actually left the system, in req/s. Requests that failed or
-   * were shed never produced a full response, so billing them as egress would
-   * make a collapsing architecture look expensive for the wrong reason.
-   */
   egressRps?: number;
 }
 
@@ -50,8 +38,7 @@ export function estimateMonthlyCost(
 
     totals.set(node.kind, (totals.get(node.kind) ?? 0) + cost);
 
-    // Clients are the exit door of the system.
-    if (node.kind === 'client') fallbackEgressRps += nodeMetrics?.processedRps ?? 0;
+    if (isTrafficSource(node.kind)) fallbackEgressRps += nodeMetrics?.processedRps ?? 0;
   }
 
   const egressRps = usage.egressRps ?? fallbackEgressRps;

@@ -18,19 +18,12 @@ export interface NodeShellProps {
   label: string;
   enabled: boolean;
   selected?: boolean;
-  /** Sources (clients) have no inbound handle. */
+
   hasInput?: boolean;
   hasOutput?: boolean;
   children: ReactNode;
 }
 
-/**
- * Chrome shared by every component card: identity, status ring, rename,
- * handles and the node actions.
- *
- * It subscribes only to the node's *status* so a tick repaints the ring
- * without re-rendering the configuration controls it wraps.
- */
 export const NodeShell = memo(function NodeShell({
   id,
   kind,
@@ -85,8 +78,7 @@ export const NodeShell = memo(function NodeShell({
             }}
           />
         ) : (
-          // No `nodrag` here on purpose: the title is most of the header, so
-          // it has to stay draggable and selectable like the rest of the card.
+
           <button
             type="button"
             className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-ink"

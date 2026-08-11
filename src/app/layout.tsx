@@ -13,7 +13,6 @@ export const metadata: Metadata = {
     'Draw an architecture, push load through it and watch bottlenecks, queues, failures and cost react in real time.',
 };
 
-// `lang` is corrected on the client by I18nProvider before the first paint.
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>

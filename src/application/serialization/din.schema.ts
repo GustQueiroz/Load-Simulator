@@ -1,12 +1,7 @@
 import { z } from 'zod';
 
-import { LOAD_BALANCING_ALGORITHMS } from '@/domain/nodes/config';
+import { CLIENT_TRAFFIC_MODES, LOAD_BALANCING_ALGORITHMS } from '@/domain/nodes/config';
 
-/**
- * `.din` — Distributed Infrastructure Network. Plain versioned JSON: it is
- * parsed, never evaluated, and a file is only ever applied to the app after
- * the *whole* document validates.
- */
 export const DIN_SCHEMA_ID = 'system-design-simulator';
 export const DIN_CURRENT_VERSION = 1;
 
@@ -16,6 +11,7 @@ const latencyMs = finite.min(0).max(600_000);
 const capacityRps = finite.min(1).max(10_000_000);
 const rateRps = finite.min(0).max(10_000_000);
 const count = finite.min(0).max(1_000_000_000);
+const durationSeconds = finite.min(0).max(86_400);
 
 const baseConfig = z.object({
   label: z.string().min(1).max(80),
@@ -26,7 +22,26 @@ const baseConfig = z.object({
 
 const clientNode = z.object({
   kind: z.literal('client'),
-  config: baseConfig.extend({ rps: rateRps }),
+  config: baseConfig.extend({
+    rps: rateRps,
+    trafficMode: z.enum(CLIENT_TRAFFIC_MODES).default('constant'),
+    rampStartRps: rateRps.default(0),
+    rampDurationSeconds: durationSeconds.default(10),
+    spikePeakRps: rateRps.default(500),
+    spikeAtSeconds: durationSeconds.default(5),
+    spikeWidthSeconds: durationSeconds.default(2),
+  }),
+});
+
+const buttonNode = z.object({
+  kind: z.literal('button'),
+  config: baseConfig.extend({
+    requestsPerClick: finite.min(1).max(1_000_000),
+    automatorRps: rateRps,
+    rateLimitRps: rateRps,
+    cooldownMs: latencyMs,
+    maxPending: count.min(1),
+  }),
 });
 
 const loadBalancerNode = z.object({
@@ -87,12 +102,9 @@ const databaseNode = z.object({
   }),
 });
 
-/**
- * Only configuration is persisted. Metrics and runtime (backlogs, timers) are
- * execution state — a `.din` describes a scenario, not a moment inside a run.
- */
 export const dinNodeDataSchema = z.discriminatedUnion('kind', [
   clientNode,
+  buttonNode,
   loadBalancerNode,
   apiGatewayNode,
   serverNode,

@@ -1,14 +1,14 @@
-import { LOAD_BALANCING_ALGORITHMS } from '@/domain/nodes/config';
+import { CLIENT_TRAFFIC_MODES, LOAD_BALANCING_ALGORITHMS } from '@/domain/nodes/config';
 import type { NodeKind } from '@/domain/simulation/node-kind';
 import type { MessageKey } from '@/i18n/messages/pt-BR';
 import { formatCompact, formatLatency } from '@/lib/format';
 
 interface BaseFieldSpec {
-  /** Property of the node configuration this control edits. */
+
   key: string;
   labelKey: MessageKey;
   hintKey?: MessageKey;
-  /** Primary controls live on the card; the rest only in the details panel. */
+
   primary?: boolean;
 }
 
@@ -38,6 +38,12 @@ export type FieldSpec = SliderSpec | PercentSpec | SelectSpec | ToggleSpec;
 const rps = (value: number) => `${formatCompact(value)} req/s`;
 const ms = (value: number) => formatLatency(value);
 
+export const TRAFFIC_MODE_LABELS: Record<string, string> = {
+  constant: 'Constant',
+  ramp: 'Ramp',
+  spike: 'Spike',
+};
+
 export const ALGORITHM_LABELS: Record<string, string> = {
   roundRobin: 'Round Robin',
   weightedRoundRobin: 'Weighted Round Robin',
@@ -52,12 +58,19 @@ const FAILURE: PercentSpec = {
   hintKey: 'hint.failure',
 };
 
-/**
- * One declaration per knob, used by the node card *and* by the details panel.
- * Adding a configuration option is a single line here.
- */
 export const FIELD_SPECS: Record<NodeKind, readonly FieldSpec[]> = {
   client: [
+    {
+      type: 'select',
+      key: 'trafficMode',
+      labelKey: 'field.trafficMode',
+      hintKey: 'hint.trafficMode',
+      options: CLIENT_TRAFFIC_MODES.map((value) => ({
+        value,
+        label: TRAFFIC_MODE_LABELS[value],
+      })),
+      primary: true,
+    },
     {
       type: 'slider',
       key: 'rps',
@@ -68,6 +81,56 @@ export const FIELD_SPECS: Record<NodeKind, readonly FieldSpec[]> = {
       step: 10,
       format: rps,
       primary: true,
+    },
+    {
+      type: 'slider',
+      key: 'rampStartRps',
+      labelKey: 'field.rampStart',
+      hintKey: 'hint.rampStart',
+      min: 0,
+      max: 10_000,
+      step: 10,
+      format: rps,
+    },
+    {
+      type: 'slider',
+      key: 'rampDurationSeconds',
+      labelKey: 'field.rampDuration',
+      hintKey: 'hint.rampDuration',
+      min: 1,
+      max: 120,
+      step: 1,
+      format: (value) => `${value}s`,
+    },
+    {
+      type: 'slider',
+      key: 'spikePeakRps',
+      labelKey: 'field.spikePeak',
+      hintKey: 'hint.spikePeak',
+      min: 0,
+      max: 50_000,
+      step: 10,
+      format: rps,
+    },
+    {
+      type: 'slider',
+      key: 'spikeAtSeconds',
+      labelKey: 'field.spikeAt',
+      hintKey: 'hint.spikeAt',
+      min: 0,
+      max: 120,
+      step: 1,
+      format: (value) => `${value}s`,
+    },
+    {
+      type: 'slider',
+      key: 'spikeWidthSeconds',
+      labelKey: 'field.spikeWidth',
+      hintKey: 'hint.spikeWidth',
+      min: 0.5,
+      max: 60,
+      step: 0.5,
+      format: (value) => `${value}s`,
     },
     { ...FAILURE, primary: true },
     {
@@ -80,6 +143,64 @@ export const FIELD_SPECS: Record<NodeKind, readonly FieldSpec[]> = {
       step: 1,
       format: ms,
     },
+  ],
+
+  button: [
+    {
+      type: 'slider',
+      key: 'requestsPerClick',
+      labelKey: 'field.requestsPerClick',
+      hintKey: 'hint.requestsPerClick',
+      min: 1,
+      max: 100,
+      step: 1,
+      format: formatCompact,
+      primary: true,
+    },
+    {
+      type: 'slider',
+      key: 'automatorRps',
+      labelKey: 'field.automator',
+      hintKey: 'hint.automator',
+      min: 0,
+      max: 100,
+      step: 1,
+      format: rps,
+      primary: true,
+    },
+    {
+      type: 'slider',
+      key: 'rateLimitRps',
+      labelKey: 'field.rateLimit',
+      hintKey: 'hint.buttonRateLimit',
+      min: 0,
+      max: 1_000,
+      step: 1,
+      format: rps,
+      primary: true,
+    },
+    {
+      type: 'slider',
+      key: 'cooldownMs',
+      labelKey: 'field.cooldown',
+      hintKey: 'hint.cooldown',
+      min: 0,
+      max: 10_000,
+      step: 50,
+      format: ms,
+      primary: true,
+    },
+    {
+      type: 'slider',
+      key: 'maxPending',
+      labelKey: 'field.maxPending',
+      hintKey: 'hint.maxPending',
+      min: 1,
+      max: 10_000,
+      step: 1,
+      format: formatCompact,
+    },
+    FAILURE,
   ],
 
   loadBalancer: [

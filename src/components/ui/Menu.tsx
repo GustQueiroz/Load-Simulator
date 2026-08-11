@@ -26,14 +26,13 @@ export interface MenuProps {
   title?: string;
   icon?: ReactNode;
   items: readonly MenuItem[];
-  /** Optional block rendered below the items (legend, language, …). */
+
   footer?: ReactNode;
   align?: 'left' | 'right';
   variant?: 'subtle' | 'ghost';
   size?: 'sm' | 'md';
 }
 
-/** Lightweight dropdown — no portal, closes on outside click / Escape. */
 export function Menu({
   label,
   title,

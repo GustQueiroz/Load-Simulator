@@ -19,19 +19,13 @@ export interface ComponentNodeProps {
   rows: MetricRowsBuilder;
   hasInput?: boolean;
   hasOutput?: boolean;
-  /** Sources define the load instead of carrying it, so they show no bar. */
+
   showLoad?: boolean;
   loadLabelKey?: 'node.load' | 'node.pressure';
-  /** Kind-specific extras (warnings, ETAs) rendered above the load bar. */
+
   children?: ReactNode;
 }
 
-/**
- * The shared layout of every component card:
- * identity → live metrics → configuration → load.
- *
- * Each kind only supplies what is actually different about it.
- */
 export function ComponentNode({
   id,
   kind,

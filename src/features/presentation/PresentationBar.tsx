@@ -9,7 +9,6 @@ import { presetNameKey, presetVocabulary } from '@/i18n/keys';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { formatClock } from '@/lib/format';
 
-/** Minimal controls for presenting: play, reset, reframe, switch scenario, exit. */
 export function PresentationBar() {
   const t = useT();
   const status = useSimulatorStore((state) => state.status);

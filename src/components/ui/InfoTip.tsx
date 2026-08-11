@@ -2,10 +2,6 @@
 
 import { Info } from 'lucide-react';
 
-/**
- * Teaching tooltip. Keyboard reachable, because half of the value of this app
- * is the explanation attached to each knob.
- */
 export function InfoTip({ text }: { text: string }) {
   return (
     <span className="group/tip relative inline-flex">

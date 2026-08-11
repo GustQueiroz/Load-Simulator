@@ -1,10 +1,6 @@
 @import 'tailwindcss';
 @import '@xyflow/react/dist/style.css';
 
-/*
- * Dark only, on purpose: the tool is built to be projected in a meeting room,
- * where a light canvas washes out every status colour.
- */
 @theme {
   --color-canvas: #08111f;
   --color-panel: #111c2e;
@@ -32,8 +28,6 @@ body {
   overflow: hidden;
   font-feature-settings: 'tnum' 1;
 }
-
-/* --- React Flow surface ------------------------------------------------- */
 
 .react-flow {
   --xy-background-color: var(--color-canvas);
@@ -88,14 +82,11 @@ body {
   overflow: hidden;
 }
 
-/* Presentation mode strips every affordance that only exists for editing. */
 .presenting .react-flow__handle,
 .presenting .react-flow__resize-control {
   opacity: 0;
   pointer-events: none;
 }
-
-/* --- Traffic animation --------------------------------------------------- */
 
 @keyframes traffic-dash {
   to {
@@ -121,8 +112,6 @@ body {
 .node-critical {
   animation: critical-glow 2.4s ease-in-out infinite;
 }
-
-/* --- Range inputs -------------------------------------------------------- */
 
 input[type='range'] {
   -webkit-appearance: none;
@@ -182,8 +171,6 @@ input[type='range']:focus-visible {
   outline-offset: 3px;
   border-radius: 999px;
 }
-
-/* --- Scrollbars ---------------------------------------------------------- */
 
 * {
   scrollbar-width: thin;

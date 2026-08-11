@@ -5,16 +5,6 @@ import { combineFailureRates, effectiveFailureRate, totalFailedRps } from '../mo
 import { capLatency, serviceLatencyMs } from '../models/latency';
 import { BROADCAST, type SimulatorFor } from '../types';
 
-/**
- * Single entry point: adds overhead, optionally authenticates, and protects
- * everything behind it with a rate limit.
- *
- * Note the two different utilizations. The badge shows the *pressure* the
- * gateway is under (incoming / capacity) — that is the number the audience
- * needs to see. Latency and overload errors are derived from the traffic it
- * actually accepted, because shedding a request is much cheaper than serving
- * it. That is what makes rate limiting protective instead of contagious.
- */
 export const apiGatewaySimulator: SimulatorFor<'apiGateway'> = {
   simulate(config, _runtime, input) {
     const capacityRps = Math.max(0, config.capacityRps);
@@ -40,8 +30,7 @@ export const apiGatewaySimulator: SimulatorFor<'apiGateway'> = {
         incomingRps,
         processedRps: acceptedRps,
         outgoingRps,
-        // A 429 at the edge is a failure for the client, even with injected
-        // failure rate at 0 — the gateway is protecting capacity behind it.
+
         failedRps: totalFailedRps(softFailedRps, throttledRps),
         droppedRps: throttledRps,
         throttledRps,

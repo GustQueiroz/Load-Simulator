@@ -9,7 +9,6 @@ import { formatLatency, formatRps } from '@/lib/format';
 
 import { STATUS_COLOR } from '../diagram/nodes/node-theme';
 
-/** The scoreboard: what the audience should be able to read at a glance. */
 export function SystemSummary() {
   const t = useT();
   const system = useSimulatorStore((state) => state.system);

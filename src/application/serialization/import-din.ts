@@ -19,11 +19,6 @@ export type ImportResult =
   | { ok: true; diagram: ImportedDiagram }
   | { ok: false; error: ImportFailure };
 
-/**
- * Import is transactional: the current project is only ever replaced by a
- * document that parsed, migrated and validated completely. A broken file can
- * never leave the app half-updated in front of an audience.
- */
 export function importDin(rawText: string): ImportResult {
   let parsed: unknown;
   try {
@@ -56,7 +51,7 @@ export function importDin(rawText: string): ImportResult {
       id: node.id,
       type: node.data.kind,
       position: node.position,
-      // Metrics and runtime are never imported; a fresh run starts at zero.
+
       data: node.data as SimulatorNodeData,
     });
   }

@@ -1,7 +1,5 @@
-/**
- * Load status is an *exact rule of this product*, not an approximation of the
- * real world: below 60% is normal, 60–80% is a warning, 80%+ is critical.
- */
+
+
 export type LoadStatus = 'idle' | 'normal' | 'warning' | 'critical';
 
 export const LOAD_STATUS_THRESHOLDS = {
@@ -16,7 +14,6 @@ export function statusFromUtilization(utilization: number): LoadStatus {
   return 'critical';
 }
 
-/** Ordering used to pick the "worst" status of a set (e.g. system summary). */
 const SEVERITY: Record<LoadStatus, number> = {
   idle: 0,
   normal: 1,
@@ -31,4 +28,3 @@ export function worstStatus(statuses: readonly LoadStatus[]): LoadStatus {
   );
 }
 
-// Display names live in `src/i18n`: the domain must not carry user-facing copy.

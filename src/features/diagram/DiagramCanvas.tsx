@@ -46,11 +46,8 @@ export function DiagramCanvas() {
   const { screenToFlowPosition, fitView } = useReactFlow();
   const nodesInitialized = useNodesInitialized();
 
-  // Reframing is requested through the store so toolbar, shortcuts and preset
-  // loading do not each need their own handle on the canvas instance.
   useEffect(() => {
-    // Waiting for measurement matters: framing unmeasured nodes is a no-op,
-    // which is exactly what happens right after a preset is loaded.
+
     if (fitViewToken === 0 || !nodesInitialized) return;
     void fitView({ padding: 0.18, duration: 350 });
   }, [fitViewToken, nodesInitialized, fitView]);

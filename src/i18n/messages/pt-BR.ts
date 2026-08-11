@@ -1,13 +1,8 @@
-/**
- * The canonical message catalogue. `en.ts` is typed against this object, so a
- * key added here fails the build until it is translated there too.
- *
- * Placeholders use `{name}` and are filled by the `t()` returned from `useT`.
- */
+
+
 export const ptBR = {
   'app.name': 'Load Simulator',
 
-  // --- Toolbar -----------------------------------------------------------
   'toolbar.start': 'Iniciar',
   'toolbar.stop': 'Parar',
   'toolbar.startTitle': 'Iniciar simulação (Espaço)',
@@ -32,6 +27,8 @@ export const ptBR = {
   'toolbar.importTitle': 'Importar .din (Ctrl/Cmd + O)',
   'toolbar.export': 'Exportar .din',
   'toolbar.exportTitle': 'Exportar .din (Ctrl/Cmd + S)',
+  'toolbar.share': 'Copiar link',
+  'toolbar.shareTitle': 'Copiar URL compartilhável do diagrama',
   'toolbar.present': 'Apresentar',
   'toolbar.presentTitle': 'Modo apresentação (P)',
   'toolbar.exit': 'Sair',
@@ -40,7 +37,6 @@ export const ptBR = {
   'toolbar.moreTitle': 'Arquivo, idioma e legenda',
   'toolbar.legend': 'Legenda de carga',
 
-  // --- Status ------------------------------------------------------------
   'status.idle': 'Ocioso',
   'status.normal': 'Normal',
   'status.warning': 'Alerta',
@@ -49,8 +45,8 @@ export const ptBR = {
   'legend.warning': 'entre 60% e 80% de utilização',
   'legend.critical': 'acima de 80% de utilização',
 
-  // --- Component kinds ---------------------------------------------------
   'kind.client': 'Cliente',
+  'kind.button': 'Botão',
   'kind.loadBalancer': 'Balanceador',
   'kind.apiGateway': 'API Gateway',
   'kind.server': 'Servidor',
@@ -58,6 +54,7 @@ export const ptBR = {
   'kind.messageQueue': 'Fila',
   'kind.database': 'Banco de Dados',
   'kind.client.blurb': 'Gera tráfego. É a origem da carga.',
+  'kind.button.blurb': 'Dispara uma ou mais requisições no clique — com automator, rate limit e cooldown.',
   'kind.loadBalancer.blurb': 'Distribui a carga entre destinos saudáveis.',
   'kind.apiGateway.blurb': 'Entrada única com rate limit e autenticação.',
   'kind.server.blurb': 'Aplicação síncrona com fila e timeout.',
@@ -65,11 +62,9 @@ export const ptBR = {
   'kind.messageQueue.blurb': 'Desacopla produtor e consumidor com backlog.',
   'kind.database.blurb': 'Dependência stateful com pool de conexões.',
 
-  // --- Palette -----------------------------------------------------------
   'palette.title': 'Componentes',
   'palette.hint': 'Clique para adicionar no centro ou arraste até o ponto exato.',
 
-  // --- Node card ---------------------------------------------------------
   'node.rename': 'Duplo clique para renomear',
   'node.enable': 'Ativar componente',
   'node.disable': 'Desativar componente',
@@ -82,7 +77,6 @@ export const ptBR = {
   'node.cacheNoTarget': 'Sem destino: os misses não têm para onde ir.',
   'node.draining': 'Drenando: ~{seconds} para esvaziar',
 
-  // --- Metric labels -----------------------------------------------------
   'metric.requests': 'Requisições/s',
   'metric.incoming': 'Recebidas/s',
   'metric.processed': 'Processadas/s',
@@ -103,8 +97,9 @@ export const ptBR = {
   'metric.backlog': 'Backlog',
   'metric.connections': 'Conexões',
   'metric.failureRate': 'Taxa efetiva',
+  'metric.pending': 'Pendentes',
+  'metric.cooldown': 'Cooldown',
 
-  // --- System summary ----------------------------------------------------
   'system.title': 'Sistema',
   'system.input': 'Entrada',
   'system.success': 'Sucesso',
@@ -115,7 +110,23 @@ export const ptBR = {
   'system.bottleneck': 'Gargalo provável',
   'system.idle': 'Inicie a simulação para ver throughput, falhas e o gargalo provável.',
 
-  // --- Cost --------------------------------------------------------------
+  'events.title': 'O que aconteceu',
+  'events.empty': 'Rode a simulação — mudanças de status, filas e spikes aparecem aqui.',
+  'events.clear': 'Limpar',
+  'events.unknownNode': 'Componente',
+  'event.status.warning': '{node} entrou em alerta ({utilization}).',
+  'event.status.critical': '{node} ficou crítico ({utilization}).',
+  'event.status.recovered': '{node} voltou ao normal.',
+  'event.queue.building': '{node} começou a acumular fila ({backlog}).',
+  'event.queue.draining': '{node} esvaziou a fila.',
+  'event.shedding.start': '{node} passou a descartar carga ({dropped}).',
+  'event.shedding.stop': '{node} parou de descartar.',
+  'event.pool.hot': 'Pool de {node} em {percent}.',
+  'event.button.fired': '{node} disparou um pulso ({rps}).',
+  'event.client.rampDone': '{node} terminou a rampa em {rps}.',
+  'event.client.spikeStart': '{node} entrou no spike ({rps}).',
+  'event.client.spikeEnd': '{node} saiu do spike (volta a {rps}).',
+
   'cost.title': 'Custo mensal estimado',
   'cost.cloud': 'Provedor de nuvem',
   'cost.total': 'Total',
@@ -128,7 +139,6 @@ export const ptBR = {
   'cost.disclaimer':
     'Estimativa didática. Não representa preço oficial nem garantia de billing.',
 
-  // --- Details panel -----------------------------------------------------
   'details.title': 'Detalhes',
   'details.empty':
     'Selecione um componente para ajustar todas as propriedades e ver por que ele está nesse estado.',
@@ -137,7 +147,6 @@ export const ptBR = {
   'details.activeHint':
     'Um componente desativado não processa nada e é excluído da distribuição do balanceador.',
 
-  // --- Explanations ------------------------------------------------------
   'explain.disabled': 'Componente desativado: não processa nada e descarta o que chega até ele.',
   'explain.noTraffic': 'Nenhum tráfego chegando por enquanto.',
   'explain.load':
@@ -161,8 +170,17 @@ export const ptBR = {
   'explain.dropping': 'Descartando {dropped} por não caber na capacidade atual.',
   'explain.healthy': 'Operando confortavelmente dentro da capacidade configurada.',
 
-  // --- Configuration fields ----------------------------------------------
   'field.throughput': 'Throughput',
+  'field.trafficMode': 'Perfil de carga',
+  'field.rampStart': 'Início da rampa',
+  'field.rampDuration': 'Duração da rampa',
+  'field.spikePeak': 'Pico do spike',
+  'field.spikeAt': 'Spike em',
+  'field.spikeWidth': 'Largura do spike',
+  'field.requestsPerClick': 'Req. por clique',
+  'field.automator': 'Automator',
+  'field.cooldown': 'Cooldown',
+  'field.maxPending': 'Pendentes máx.',
   'field.throughputMax': 'Throughput máximo',
   'field.throughputPerInstance': 'Throughput / inst.',
   'field.instances': 'Instâncias',
@@ -188,6 +206,17 @@ export const ptBR = {
   'field.valueClick': '{label}: {value}. Clique para digitar.',
 
   'hint.clientRps': 'Requisições por segundo que este cliente tenta gerar.',
+  'hint.trafficMode': 'Constante, rampa linear ou spike pontual — o RPS efetivo muda com o relógio da simulação.',
+  'hint.rampStart': 'Taxa no instante zero da rampa. Sobe até o throughput alvo.',
+  'hint.rampDuration': 'Quanto tempo até a rampa atingir o throughput alvo.',
+  'hint.spikePeak': 'Taxa durante o spike. Fora dele, vale o throughput base.',
+  'hint.spikeAt': 'Em que segundo da simulação o spike começa.',
+  'hint.spikeWidth': 'Quanto tempo o spike fica no pico.',
+  'hint.requestsPerClick': 'Quantas requisições cada clique coloca na fila pendente do botão.',
+  'hint.automator': '0 = só clique manual. Acima disso, dispara sozinho nesse ritmo.',
+  'hint.buttonRateLimit': 'Teto de emissão do botão. 0 = sem teto. Excesso fica pendente ou é descartado no max pending.',
+  'hint.cooldown': 'Após um clique aceito, novos cliques são ignorados até acabar o cooldown.',
+  'hint.maxPending': 'Teto da fila interna do botão. Acima disso, o excedente é descartado.',
   'hint.capacity':
     'Capacidade máxima aproximada deste componente antes de acumular fila ou descartar carga.',
   'hint.capacityPerInstance':
@@ -213,7 +242,6 @@ export const ptBR = {
   'hint.backlog': 'Teto do backlog, em mensagens. Acima disso a fila passa a descartar.',
   'hint.publishLatency': 'O que o produtor espera para receber o ack.',
 
-  // --- Presets -----------------------------------------------------------
   'preset.load-balancer-basics.name': 'Load Balancer Basics',
   'preset.load-balancer-basics.description':
     'Dois clientes, três servidores confortáveis e um banco pequeno: escalar o stateless não resolve o stateful.',
@@ -228,16 +256,17 @@ export const ptBR = {
     'O produtor dispara 1.000 msg/s, o worker segue no seu ritmo e o backlog cresce.',
   'preset.api-rate-limiting.name': 'Rate limiting protege',
   'preset.api-rate-limiting.description': '5.000 req/s batem no gateway; só 1.000 chegam ao serviço.',
+  'preset.button-click-demo.name': 'Botão → servidor → banco',
+  'preset.button-click-demo.description':
+    'Clique no Botão para ver um pulso. Ligue o automator e o banco pequeno vira o gargalo.',
   'preset.term.producer': 'Produtor',
   'preset.term.worker': 'Worker',
 
-  // --- Empty canvas ------------------------------------------------------
   'empty.title': 'Monte sua arquitetura',
   'empty.body':
-    'Adicione um Cliente pela paleta, conecte os componentes e inicie a simulação para ver a carga se propagar.',
+    'Adicione um Cliente ou um Botão pela paleta, conecte os componentes e inicie a simulação para ver a carga se propagar.',
   'empty.cta': 'Começar com “{preset}”',
 
-  // --- Shortcuts ---------------------------------------------------------
   'shortcuts.title': 'Atalhos',
   'shortcuts.startStop': 'iniciar / parar',
   'shortcuts.reset': 'reiniciar',
@@ -250,17 +279,20 @@ export const ptBR = {
   'shortcuts.disclaimer':
     'Simulação didática. Métricas e custos são aproximações configuráveis e não representam garantia de performance ou billing real.',
 
-  // --- Feedback ----------------------------------------------------------
   'toast.dismiss': 'Fechar aviso',
   'toast.exported': 'Diagrama exportado.',
   'toast.nothingToExport': 'Não há nada para exportar ainda.',
   'toast.imported': '“{name}” importado.',
+  'toast.linkCopied': 'Link copiado para a área de transferência.',
+  'toast.linkCopyFailed': 'Não foi possível copiar o link.',
+  'toast.sharedOpened': 'Diagrama compartilhado “{name}” aberto.',
+  'toast.presetOpened': 'Cenário “{name}” aberto.',
 
   'error.connection.unknownEndpoint': 'Conexão inválida: componente inexistente.',
   'error.connection.selfLoop': 'Não é possível conectar um componente a ele mesmo.',
   'error.connection.duplicate': 'Esses componentes já estão conectados.',
   'error.connection.clientInbound':
-    'Um Cliente é a origem do tráfego e não recebe conexões de entrada.',
+    'Fontes de tráfego (Cliente, Botão) não recebem conexões de entrada.',
   'error.connection.cycle':
     'Essa conexão criaria um ciclo. Ciclos síncronos não são suportados nesta versão.',
 

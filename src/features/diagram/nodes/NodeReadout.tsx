@@ -29,12 +29,6 @@ const TONE_CLASS: Record<MetricTone, string> = {
   danger: 'text-rose-400',
 };
 
-/**
- * Live numbers of a node.
- *
- * Subscribes on its own so a tick re-renders this block only — the sliders
- * above it keep their identity and never flicker while being dragged.
- */
 export const NodeReadout = memo(function NodeReadout({
   nodeId,
   rows,
@@ -67,7 +61,6 @@ export const NodeReadout = memo(function NodeReadout({
   );
 });
 
-/** Utilization bar plus the written status — never colour alone. */
 export const NodeLoadBar = memo(function NodeLoadBar({
   nodeId,
   labelKey = 'node.load',
@@ -104,8 +97,7 @@ export function UtilizationBar({
   utilization: number;
   status: LoadStatus;
 }) {
-  // The bar is clamped at 100%; the label above it still tells the truth
-  // (142% is a number the audience needs to read).
+
   const width = Math.min(100, Math.max(0, utilization * 100));
   return (
     <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#22304a]">

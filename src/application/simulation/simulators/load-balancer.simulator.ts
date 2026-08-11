@@ -6,13 +6,6 @@ import { combineFailureRates, effectiveFailureRate, totalFailedRps } from '../mo
 import { capLatency, serviceLatencyMs } from '../models/latency';
 import type { SimulationContext, SimulatorFor, TargetView } from '../types';
 
-/**
- * Distributes traffic across healthy targets.
- *
- * In the fluid model we never alternate individual requests: an algorithm is
- * just a way to produce weights, and the flow is split accordingly. Round
- * robin over 3 targets is exactly "one third each".
- */
 export const loadBalancerSimulator: SimulatorFor<'loadBalancer'> = {
   simulate(config, _runtime, input, context) {
     const capacityRps = Math.max(0, config.capacityRps);
@@ -30,7 +23,6 @@ export const loadBalancerSimulator: SimulatorFor<'loadBalancer'> = {
     const weights = distributionWeights(config, healthyTargets, context);
     const totalWeight = Object.values(weights).reduce((total, weight) => total + weight, 0);
 
-    // With nowhere to send it, everything the balancer accepted is discarded.
     const hasDestination = healthyTargets.length > 0 && totalWeight > 0;
     const outgoingRps = hasDestination ? distributableRps : 0;
     const droppedRps = overflowRps + (hasDestination ? 0 : distributableRps);
@@ -76,11 +68,8 @@ const STRATEGIES: Record<LoadBalancingAlgorithm, WeightStrategy> = {
   weightedRoundRobin: (targets, config) =>
     targets.map((target) => Math.max(0, config.weights[target.nodeId] ?? 1)),
 
-  // Uses the utilization measured on the previous tick — the balancer reacts
-  // to what it observed, exactly like a real least-connections implementation.
   leastLoad: (targets) => targets.map((target) => Math.max(0.05, 1 - target.previousUtilization)),
 
-  // Seeded per node and tick by the engine, so a demo replays identically.
   random: (targets, _config, context) => targets.map(() => 0.25 + context.random()),
 };
 

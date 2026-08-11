@@ -32,8 +32,7 @@ export const ClientNode = memo(function ClientNode({
       config={data.config}
       selected={selected}
       rows={rows}
-      // A client is where traffic starts: no inbound handle, and no
-      // utilization of its own to report.
+
       hasInput={false}
       showLoad={false}
     />

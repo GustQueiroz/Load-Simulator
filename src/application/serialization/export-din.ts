@@ -11,16 +11,9 @@ export interface ExportInput {
   viewport: DiagramViewport;
   settings: DinFile['settings'];
   createdAt?: string;
-  /** Injected so the caller owns the clock (and tests stay deterministic). */
   now: string;
 }
 
-/**
- * Serialises the *scenario*: nodes, edges, layout, settings.
- *
- * Runtime metrics and backlogs are intentionally left out — importing a file
- * must always start from a clean run.
- */
 export function exportDin(input: ExportInput): DinFile {
   return {
     schema: DIN_SCHEMA_ID,

@@ -5,10 +5,6 @@ import { createDefaultConfig, DEFAULT_CONFIGS } from '@/domain/nodes/defaults';
 import { NODE_KINDS } from '@/domain/simulation/node-kind';
 import { FIELD_SPECS, primaryFields } from '@/features/diagram/nodes/field-specs';
 
-/**
- * Controls are declared by property name, so this is the guard rail that keeps
- * a renamed configuration property from silently producing a dead slider.
- */
 describe('configuration field specs', () => {
   it.each(NODE_KINDS)('every "%s" control points at a real property', (kind) => {
     const config = DEFAULT_CONFIGS[kind] as Record<string, unknown>;

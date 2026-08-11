@@ -9,12 +9,8 @@ import { useT } from '@/i18n/I18nProvider';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { notify } from '@/infrastructure/store/toast-store';
 
-/**
- * Hosts the engine and the single scheduler.
- *
- * Mounted exactly once, at the app shell. Nodes never own timers: one clock
- * produces one frame per tick, and that frame is committed in a single write.
- */
+import { bindSimulationEngine } from './engine-host';
+
 export function useSimulationEngine(): void {
   const t = useT();
   const engineRef = useRef<SimulationEngine | null>(null);
@@ -23,6 +19,11 @@ export function useSimulationEngine(): void {
   if (engineRef.current === null) {
     engineRef.current = new SimulationEngine({ tickMs: useSimulatorStore.getState().tickMs });
   }
+
+  useEffect(() => {
+    bindSimulationEngine(engineRef.current);
+    return () => bindSimulationEngine(null);
+  }, []);
 
   const status = useSimulatorStore((state) => state.status);
   const tickMs = useSimulatorStore((state) => state.tickMs);

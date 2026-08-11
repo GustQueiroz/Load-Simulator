@@ -1,6 +1,7 @@
 import {
   Database,
   Inbox,
+  MousePointerClick,
   Network,
   Server,
   ShieldCheck,
@@ -13,13 +14,14 @@ import type { NodeKind } from '@/domain/simulation/node-kind';
 import type { LoadStatus } from '@/domain/simulation/status';
 
 export interface KindTheme {
-  /** Identity colour of the component type. Status never replaces it. */
+
   accent: string;
   icon: LucideIcon;
 }
 
 export const KIND_THEME: Record<NodeKind, KindTheme> = {
   client: { accent: '#38bdf8', icon: Users },
+  button: { accent: '#fb7185', icon: MousePointerClick },
   loadBalancer: { accent: '#34d399', icon: Network },
   apiGateway: { accent: '#818cf8', icon: ShieldCheck },
   server: { accent: '#a78bfa', icon: Server },
@@ -35,9 +37,9 @@ export const STATUS_COLOR: Record<LoadStatus, string> = {
   critical: '#ef4444',
 };
 
-/** Order used by the palette and by the legend. */
 export const PALETTE_ORDER: readonly NodeKind[] = [
   'client',
+  'button',
   'loadBalancer',
   'apiGateway',
   'cache',

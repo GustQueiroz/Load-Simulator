@@ -1,4 +1,4 @@
-/** Browser plumbing for reading and writing local files. Nothing leaves the machine. */
+
 
 export function downloadTextFile(fileName: string, content: string, mimeType = 'application/json'): void {
   const blob = new Blob([content], { type: mimeType });
@@ -30,8 +30,6 @@ export function pickTextFile(accept: string): Promise<{ name: string; content: s
         .catch(() => resolve(null));
     });
 
-    // Cancelling the dialog fires no event in most browsers; the promise simply
-    // never resolves, which is harmless here (no state was touched yet).
     input.click();
   });
 }

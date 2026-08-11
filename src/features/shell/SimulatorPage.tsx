@@ -6,6 +6,7 @@ import { CostPanel } from '@/features/cost/CostPanel';
 import { DetailsPanel } from '@/features/diagram/DetailsPanel';
 import { DiagramCanvas } from '@/features/diagram/DiagramCanvas';
 import { PresentationBar } from '@/features/presentation/PresentationBar';
+import { EventLog } from '@/features/simulation/EventLog';
 import { SystemSummary } from '@/features/simulation/SystemSummary';
 import { useSimulationEngine } from '@/features/simulation/useSimulationEngine';
 import { I18nProvider, useT, type MessageKey } from '@/i18n/I18nProvider';
@@ -25,7 +26,7 @@ export function SimulatorPage() {
 }
 
 function SimulatorShell() {
-  // One engine, one scheduler, one autosave — all owned by the shell.
+
   useSimulationEngine();
   useProjectBootstrap();
   useKeyboardShortcuts();
@@ -44,6 +45,7 @@ function SimulatorShell() {
 
           <aside className="flex w-[308px] shrink-0 flex-col gap-3 overflow-y-auto border-l border-line bg-canvas p-3">
             <SystemSummary />
+            <EventLog />
             <CostPanel />
             {!presenting ? <DetailsPanel /> : null}
             {!presenting ? <ShortcutsHint /> : null}

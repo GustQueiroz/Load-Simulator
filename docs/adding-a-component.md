@@ -124,7 +124,6 @@ export const cdnSimulator: SimulatorFor<'cdn'> = {
         localLatencyMs,
         totalLatencyMs: capLatency(input.weightedLatencyMs + localLatencyMs),
       },
-      // Only misses continue to the origin.
       outputs: [
         {
           rps: missesRps * (1 - failureRate),
@@ -148,7 +147,6 @@ like every other one.
 
 ```ts
 export const SIMULATORS: { [K in NodeKind]: SimulatorFor<K> } = {
-  // …
   cdn: cdnSimulator,
 };
 ```

@@ -7,7 +7,6 @@ export interface RunOptions {
   tickMs?: number;
 }
 
-/** Runs the engine for N ticks and returns the last frame. */
 export function run(
   nodes: readonly SimulationNode[],
   edges: readonly SimulationEdge[],

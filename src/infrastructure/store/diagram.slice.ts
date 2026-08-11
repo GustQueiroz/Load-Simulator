@@ -53,8 +53,7 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
     set((state) => ({
       nodes: state.nodes.map((node) => {
         if (node.id !== id) return node;
-        // The patch always belongs to this node's kind (callers are typed by
-        // kind); the union just cannot be correlated at this level.
+
         const config = { ...node.data.config, ...patch } as AnyNodeConfig;
         return { ...node, data: { ...node.data, config } as SimulatorNodeData };
       }),
@@ -91,8 +90,7 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
     const removed = new Set(ids);
     set((state) => ({
       nodes: state.nodes.filter((node) => !removed.has(node.id)),
-      // Edges of a deleted node go with it — a dangling edge would keep
-      // showing up in the graph cache.
+
       edges: state.edges.filter(
         (edge) => !removed.has(edge.source) && !removed.has(edge.target),
       ),

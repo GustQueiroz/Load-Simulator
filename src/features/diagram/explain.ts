@@ -4,16 +4,6 @@ import type { NodeMetrics } from '@/domain/simulation/metrics';
 import type { Translate } from '@/i18n/I18nProvider';
 import { formatCount, formatLatency, formatPercent, formatRps, formatSeconds } from '@/lib/format';
 
-/**
- * Plain-language reading of what a component is doing right now.
- *
- * Fully deterministic — the same numbers always produce the same sentences.
- * Meant to be read out loud in a meeting, so it stays short and concrete:
- * what is arriving, what fits, and what is being lost.
- *
- * This lives in the presentation layer on purpose: it generates *copy*, which
- * is exactly what `domain` and `application` are not allowed to contain.
- */
 export function explainNode(
   node: SimulationNode,
   metrics: NodeMetrics,

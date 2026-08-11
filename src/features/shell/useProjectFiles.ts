@@ -10,7 +10,6 @@ import { downloadTextFile, pickTextFile, toFileName } from '@/infrastructure/fil
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { notify } from '@/infrastructure/store/toast-store';
 
-/** Export / import of `.din` files. Everything stays on the machine. */
 export function useProjectFiles() {
   const t = useT();
 
@@ -51,7 +50,7 @@ export function useProjectFiles() {
     }
 
     const state = useSimulatorStore.getState();
-    // Only now — after the whole document validated — is the project replaced.
+
     state.reset();
     state.loadSnapshot(
       {
@@ -71,7 +70,6 @@ export function useProjectFiles() {
   return { exportProject, importProject };
 }
 
-/** Exhaustive by construction: a new failure code will not compile until phrased. */
 export function importFailureMessage(failure: ImportFailure, t: Translate): string {
   switch (failure.code) {
     case 'invalid-json':

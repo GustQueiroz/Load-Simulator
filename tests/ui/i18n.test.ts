@@ -8,11 +8,6 @@ import { ptBR, type MessageKey } from '@/i18n/messages/pt-BR';
 const CATALOGUES = { 'pt-BR': ptBR, en } as const;
 const keys = Object.keys(ptBR) as MessageKey[];
 
-/**
- * TypeScript already forces `en` to declare every key. These tests catch the
- * things it cannot see: an empty translation, or placeholders that drifted
- * apart so one language renders a literal `{seconds}` to the audience.
- */
 describe('message catalogues', () => {
   it('declare exactly the same keys', () => {
     expect(Object.keys(en).sort()).toEqual(keys.slice().sort());

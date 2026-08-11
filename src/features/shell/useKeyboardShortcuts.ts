@@ -6,12 +6,6 @@ import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 
 import { useProjectFiles } from './useProjectFiles';
 
-/**
- * Presenter shortcuts.
- *
- * Nothing fires while a field has focus — dragging a slider with the space bar
- * must never start and stop the simulation.
- */
 export function useKeyboardShortcuts(): void {
   const { exportProject, importProject } = useProjectFiles();
 

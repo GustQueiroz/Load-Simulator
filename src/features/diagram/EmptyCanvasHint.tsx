@@ -8,7 +8,6 @@ import { useT } from '@/i18n/I18nProvider';
 import { presetNameKey, presetVocabulary } from '@/i18n/keys';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 
-/** Nothing on the canvas is a state worth designing for — it is the first screen. */
 export function EmptyCanvasHint() {
   const t = useT();
   const loadSnapshot = useSimulatorStore((state) => state.loadSnapshot);
@@ -27,8 +26,7 @@ export function EmptyCanvasHint() {
         size="sm"
         className="mt-4"
         onClick={() => {
-          // Reset first: presets reuse node ids, so a stale backlog could
-          // survive into a brand new scenario.
+
           reset();
           loadSnapshot(preset.build(presetVocabulary(t)), presetName);
           requestFitView();

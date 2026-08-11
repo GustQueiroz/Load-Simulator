@@ -7,7 +7,6 @@ export function clamp01(value: number): number {
   return clamp(value, 0, 1);
 }
 
-/** Division that yields 0 instead of Infinity/NaN when the divisor is unusable. */
 export function safeDivide(numerator: number, denominator: number): number {
   if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator <= 0) return 0;
   return numerator / denominator;
@@ -19,10 +18,6 @@ export function sum(values: readonly number[]): number {
   return total;
 }
 
-/**
- * Deterministic PRNG (mulberry32). The simulator never uses `Math.random`:
- * the same diagram must produce the same demo twice in a row.
- */
 export function createSeededRandom(seed: number): () => number {
   let state = seed >>> 0;
   return () => {

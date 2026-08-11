@@ -17,7 +17,7 @@ describe('server', () => {
     expect(server.incomingRps).toBeCloseTo(80, 5);
     expect(server.processedRps).toBeCloseTo(80, 5);
     expect(server.utilization).toBeCloseTo(0.8, 5);
-    // 80% is exactly where this product declares "critical".
+
     expect(server.status).toBe('critical');
     expect(server.queueDepth).toBe(0);
   });
@@ -63,7 +63,6 @@ describe('server', () => {
     const frame = run(nodes, chain('client', 'server'), { ticks: 200 });
     const server = metricsOf(frame, 'server');
 
-    // 100 req/s served within a 2 s timeout => at most 200 useful items queued.
     expect(server.queueDepth).toBeCloseTo(200, 5);
     expect(server.timedOutRps).toBeGreaterThan(0);
   });
@@ -90,7 +89,7 @@ describe('server', () => {
     expect(server.failedRps).toBeGreaterThan(4_000);
     expect(frame.system.failedRps).toBeGreaterThan(4_000);
     expect(frame.system.completedRps).toBeLessThan(100);
-    // Almost none of the demand is answered successfully.
+
     expect(server.outgoingRps).toBeLessThan(server.processedRps);
   });
 });
@@ -223,7 +222,7 @@ describe('message queue', () => {
       makeNode('queue', 'messageQueue', { deliveryCapacityRps: 700 }),
       makeNode('worker', 'server', { capacityRps: 1_000 }),
     ];
-    // 10 seconds at 100 ms per tick.
+
     const frame = run(nodes, chain('producer', 'queue', 'worker'), { ticks: 100 });
     const queue = metricsOf(frame, 'queue');
 
@@ -241,7 +240,6 @@ describe('message queue', () => {
       makeNode('queue', 'messageQueue', { deliveryCapacityRps: 200 }),
     ];
 
-    // Warm up the backlog, then stop the producer and read the ETA.
     const engine = new SimulationEngine({ tickMs: 100 });
     for (let index = 0; index < 50; index += 1) engine.tick(burst, chain('producer', 'queue'));
     const frame = engine.tick(quiet, chain('producer', 'queue'));
@@ -311,8 +309,6 @@ describe('database', () => {
     const frame = run(nodes, chain('client', 'db'));
     const db = metricsOf(frame, 'db');
 
-    // 5 connections holding 50 ms queries => 100 req/s, far below the 1.000
-    // req/s the database claims it can do.
     expect(db.processedRps).toBeCloseTo(100, 5);
     expect(db.status).toBe('critical');
     expect(db.connectionUtilization).toBeGreaterThan(0.9);

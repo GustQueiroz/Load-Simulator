@@ -8,14 +8,6 @@ export interface RoutedFlow {
   flow: TrafficFlow;
 }
 
-/**
- * Turns one simulator output into per-edge flows.
- *
- * `broadcast` sends the whole flow to every dependency (a request that hits a
- * cache *and* a database costs both). `split` shares it, optionally weighted
- * by target — that is how load balancing and competing consumers are
- * expressed without ever touching an individual request.
- */
 export function routeOutput(
   output: FlowOutput,
   outgoingEdges: readonly SimulationEdge[],

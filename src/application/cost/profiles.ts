@@ -1,17 +1,11 @@
 import type { CloudProvider, CostProfile } from './types';
 
-/**
- * Illustrative price shapes per provider. Differences between them are
- * deliberately mild: the point is to show that the *architecture* drives the
- * bill far more than the logo does.
- */
 const genericProfile: CostProfile = {
   id: 'generic',
   label: 'Generic',
-  // No service names: the component's own label already says everything a
-  // vendor-neutral profile could.
   components: {
     client: { fixedMonthlyUsd: 0 },
+    button: { fixedMonthlyUsd: 0 },
     loadBalancer: { fixedMonthlyUsd: 18, per100RpsMonthlyUsd: 0.4 },
     apiGateway: { fixedMonthlyUsd: 12, perMillionRequestsUsd: 1.1 },
     server: { fixedMonthlyUsd: 0, perInstanceMonthlyUsd: 18, per100RpsMonthlyUsd: 9 },

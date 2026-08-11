@@ -43,7 +43,8 @@ Sem backend, sem banco, sem login — é um site estático. O projeto fica salvo
 
 | | Modela |
 | --- | --- |
-| **Cliente** | Origem do tráfego. Taxa, mais falhas que nunca saíram do cliente. |
+| **Cliente** | Origem do tráfego. Taxa constante, rampa linear ou spike pontual. |
+| **Botão** | Clique dispara N requisições; automator, rate limit e cooldown opcionais. |
 | **Balanceador** | Capacidade e distribuição entre destinos saudáveis: round robin, ponderado, least-load, aleatório. |
 | **API Gateway** | Rate limit, custo de autenticação, rejeição na borda. |
 | **Servidor** | Capacidade por instância × instâncias, fila limitada, timeout. |
@@ -51,9 +52,10 @@ Sem backend, sem banco, sem login — é um site estático. O projeto fica salvo
 | **Fila** | Ritmos de publicação e entrega, backlog em mensagens, ETA de drenagem. |
 | **Banco de Dados** | Throughput **e** o teto do pool de conexões (lei de Little). |
 
-Vêm cinco cenários prontos, incluindo o clássico
+Vêm seis cenários prontos, incluindo o clássico
 `2 clientes → balanceador → 3 servidores → 1 banco pequeno`, que deixa os
-servidores confortáveis no verde enquanto o banco fica crítico.
+servidores confortáveis no verde enquanto o banco fica crítico, e o
+`Botão → servidor → banco` para demos com clique.
 
 ## Como os números funcionam
 
@@ -127,9 +129,11 @@ O modo apresentação esconde tudo que é de edição — handles, paleta, açõ
 ## Roadmap
 
 Ainda não implementado, e organizado para caber sem reescrever o motor:
-timeline de carga (rampa/spike), event log, retry storm, autoscaling com delay
-e cooldown, circuit breaker, health checks, read replicas, sharding, partições
-de stream, CDN, URL compartilhável, export PNG e snapshots A/B.
+retry storm, autoscaling com delay e cooldown, circuit breaker, health checks,
+read replicas, sharding, partições de stream, CDN, export PNG e snapshots A/B.
+
+Recém-chegados: timeline de carga (rampa/spike), Botão clicável, event log e
+URL compartilhável (`#d=…` / `?preset=`).
 
 Contribuições são bem-vindas — comece por [CONTRIBUTING.md](CONTRIBUTING.md).
 

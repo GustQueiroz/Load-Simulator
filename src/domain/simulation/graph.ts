@@ -1,7 +1,6 @@
 import type { NodeConfigByKind } from '../nodes/config';
 import type { NodeKind } from './node-kind';
 
-/** A node as the engine sees it: identity, kind and configuration. No layout. */
 export type SimulationNode = {
   [K in NodeKind]: { id: string; kind: K; config: NodeConfigByKind[K] };
 }[NodeKind];
@@ -21,9 +20,9 @@ export interface SimulationGraph {
   readonly nodesById: ReadonlyMap<string, SimulationNode>;
   readonly outgoing: ReadonlyMap<string, readonly SimulationEdge[]>;
   readonly incoming: ReadonlyMap<string, readonly SimulationEdge[]>;
-  /** Guaranteed to contain every node exactly once (the graph is acyclic). */
+
   readonly topologicalOrder: readonly string[];
-  /** Nodes with no inbound edges — traffic starts here. */
+
   readonly sourceIds: readonly string[];
 }
 
@@ -33,13 +32,6 @@ export type GraphBuildResult =
 
 const NO_EDGES: readonly SimulationEdge[] = Object.freeze([]);
 
-/**
- * Builds the runtime view of the diagram.
- *
- * Synchronous cycles are intentionally rejected in V1: with a DAG the whole
- * frame can be computed in one deterministic pass (topological order), which
- * is what makes the simulation reproducible during a live presentation.
- */
 export function buildSimulationGraph(
   nodes: readonly SimulationNode[],
   edges: readonly SimulationEdge[],
@@ -50,8 +42,6 @@ export function buildSimulationGraph(
   const outgoing = new Map<string, SimulationEdge[]>();
   const incoming = new Map<string, SimulationEdge[]>();
 
-  // Stale edges (pointing at deleted nodes) and disabled edges are dropped
-  // here so no later stage has to remember to skip them.
   const liveEdges = edges.filter(
     (edge) => edge.enabled && nodesById.has(edge.source) && nodesById.has(edge.target),
   );
@@ -76,13 +66,6 @@ export function buildSimulationGraph(
   };
 }
 
-/**
- * Same topology, fresh node objects.
- *
- * Editing a slider replaces a node without changing the structure, so a
- * cached ordering stays valid — but the engine must always read the *current*
- * configuration, never the snapshot taken when the topology last changed.
- */
 export function rebindNodes(
   graph: SimulationGraph,
   nodes: readonly SimulationNode[],
@@ -102,10 +85,6 @@ function pushInto(map: Map<string, SimulationEdge[]>, key: string, edge: Simulat
   else map.set(key, [edge]);
 }
 
-/**
- * Kahn's algorithm. Node insertion order is preserved among ready nodes, so
- * the same diagram always yields the same order (determinism matters here).
- */
 function topologicalOrder(
   nodes: readonly SimulationNode[],
   outgoing: ReadonlyMap<string, readonly SimulationEdge[]>,
@@ -134,7 +113,6 @@ function topologicalOrder(
   return order.length === nodes.length ? order : null;
 }
 
-/** Nodes that still have unresolved dependencies after Kahn's pass. */
 function findNodesInCycles(
   nodes: readonly SimulationNode[],
   outgoing: ReadonlyMap<string, readonly SimulationEdge[]>,
@@ -168,7 +146,6 @@ function topologicalPrefix(
   return done;
 }
 
-/** True when adding `source -> target` would close a loop (target reaches source). */
 export function wouldCreateCycle(
   edges: readonly SimulationEdge[],
   source: string,

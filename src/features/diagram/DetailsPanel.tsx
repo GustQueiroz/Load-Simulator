@@ -13,10 +13,6 @@ import { ConfigFields } from './nodes/ConfigFields';
 import { FIELD_SPECS } from './nodes/field-specs';
 import { KIND_THEME } from './nodes/node-theme';
 
-/**
- * Everything about the selected component, including the knobs that would make
- * the card too tall to read from the back of a room.
- */
 export function DetailsPanel() {
   const t = useT();
   const selected = useSimulatorStore((state) => state.nodes.find((node) => node.selected));

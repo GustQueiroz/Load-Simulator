@@ -1,5 +1,5 @@
 import { capacityRpsOf } from '@/domain/nodes/capacity';
-import { createInitialRuntime, type AnyNodeRuntime } from '@/domain/nodes/runtime';
+import { createInitialRuntime, type AnyNodeRuntime, type ButtonRuntime } from '@/domain/nodes/runtime';
 import {
   buildSimulationGraph,
   outgoingEdgesOf,
@@ -18,6 +18,7 @@ import {
 import { aggregateFlows, type TrafficFlow } from '@/domain/simulation/traffic';
 import { createSeededRandom, hashString } from '@/lib/math';
 
+import { detectSimulationEvents, type SimulationEvent } from './event-log';
 import { capLatency } from './models/latency';
 import { simulateNode } from './registry';
 import { routeOutput } from './routing';
@@ -28,7 +29,6 @@ export const DEFAULT_TICK_MS = 100;
 
 export interface EngineOptions {
   tickMs?: number;
-  /** Fixed seed keeps randomised algorithms reproducible across demos. */
   seed?: number;
 }
 
@@ -38,20 +38,13 @@ export interface SimulationFrame {
   nodeMetrics: ReadonlyMap<string, NodeMetrics>;
   edgeMetrics: ReadonlyMap<string, EdgeMetrics>;
   system: SystemMetrics;
-  /** Non-empty when the diagram contains a cycle and could not be simulated. */
+  events: readonly SimulationEvent[];
   cycleNodeIds?: string[];
 }
 
-/**
- * Discrete-time fluid simulation.
- *
- * Every `tickMs` the whole graph is evaluated once, in topological order, and
- * a complete frame is produced. Nothing is written outside of the engine: the
- * caller decides what to do with the frame (commit to a store, assert in a
- * test, log it). No React, no DOM, no timers in here.
- */
 export class SimulationEngine {
   private readonly runtimes = new Map<string, AnyNodeRuntime>();
+  private readonly pendingButtonPresses = new Map<string, number>();
   private previousMetrics: ReadonlyMap<string, NodeMetrics> = new Map();
   private graphCache: { key: string; graph: SimulationGraph } | null = null;
   private tickIndex = 0;
@@ -75,14 +68,21 @@ export class SimulationEngine {
     if (tickMs > 0) this.tickMs = tickMs;
   }
 
-  /** Clears runtime state (backlogs, metrics, clock). Configuration is untouched. */
+  pressButton(nodeId: string, clicks = 1): void {
+    if (clicks <= 0) return;
+    this.pendingButtonPresses.set(
+      nodeId,
+      (this.pendingButtonPresses.get(nodeId) ?? 0) + clicks,
+    );
+  }
+
   reset(): void {
     this.runtimes.clear();
+    this.pendingButtonPresses.clear();
     this.previousMetrics = new Map();
     this.tickIndex = 0;
   }
 
-  /** Metrics of the last completed tick — used to render a stopped diagram. */
   get lastMetrics(): ReadonlyMap<string, NodeMetrics> {
     return this.previousMetrics;
   }
@@ -99,12 +99,15 @@ export class SimulationEngine {
         nodeMetrics: new Map(),
         edgeMetrics: new Map(),
         system: createEmptySystemMetrics(),
+        events: [],
         cycleNodeIds: graph.cycleNodeIds,
       };
     }
 
     this.tickIndex += 1;
+    const previousSeconds = Math.max(0, (this.tickIndex - 1) * dtSeconds);
     const nowMs = this.tickIndex * this.tickMs;
+    const elapsedSeconds = this.tickIndex * dtSeconds;
 
     const inbox = new Map<string, TrafficFlow[]>();
     const nodeMetrics = new Map<string, NodeMetrics>();
@@ -123,6 +126,7 @@ export class SimulationEngine {
 
       const context = this.createContext(graph.graph, node, dtSeconds, nowMs);
       const runtime = this.resolveRuntime(node);
+      this.drainButtonPresses(node, runtime);
       const result = simulateNode(node, runtime, input, context);
 
       nodeMetrics.set(nodeId, mergeMetrics(input.incomingRps, nowMs, result.metrics));
@@ -146,14 +150,23 @@ export class SimulationEngine {
     applyEdgeStatus(graph.graph, nodeMetrics, edgeMetrics);
 
     const system = computeSystemMetrics(graph.graph, nodeMetrics, this.previousMetrics, dtSeconds);
+    const events = detectSimulationEvents({
+      tick: this.tickIndex,
+      atSeconds: elapsedSeconds,
+      previousSeconds,
+      nodes: graph.graph.nodes,
+      previous: this.previousMetrics,
+      current: nodeMetrics,
+    });
     this.previousMetrics = nodeMetrics;
 
     return {
       tick: this.tickIndex,
-      elapsedSeconds: this.tickIndex * dtSeconds,
+      elapsedSeconds,
       nodeMetrics,
       edgeMetrics,
       system,
+      events,
     };
   }
 
@@ -163,8 +176,6 @@ export class SimulationEngine {
     dtSeconds: number,
     nowMs: number,
   ): SimulationContext {
-    // Re-seeded once per second per node: randomised balancing stays stable
-    // enough to watch, and identical between two runs of the same demo.
     const secondBucket = Math.floor(nowMs / 1000);
     const random = createSeededRandom(this.seed ^ hashString(node.id) ^ secondBucket);
 
@@ -202,10 +213,15 @@ export class SimulationEngine {
     return created;
   }
 
-  /**
-   * Topology is only recomputed when it actually changes — configuration
-   * edits (sliders) must not invalidate the cached ordering.
-   */
+  private drainButtonPresses(node: SimulationNode, runtime: AnyNodeRuntime): void {
+    if (node.kind !== 'button') return;
+    const presses = this.pendingButtonPresses.get(node.id);
+    if (!presses) return;
+    const buttonRuntime = runtime as ButtonRuntime;
+    buttonRuntime.queuedClicks += presses;
+    this.pendingButtonPresses.delete(node.id);
+  }
+
   private resolveGraph(
     nodes: readonly SimulationNode[],
     edges: readonly SimulationEdge[],
@@ -262,19 +278,11 @@ function disabledMetrics(incomingRps: number, nowMs: number): NodeMetrics {
   return {
     ...createEmptyMetrics(nowMs),
     incomingRps,
-    // A component that is down answers nothing: everything aimed at it is lost.
     failedRps: incomingRps,
     droppedRps: incomingRps,
   };
 }
 
-/**
- * Second pass, walked backwards: how long a request entering each node takes
- * to be answered, including everything it triggers downstream.
- *
- * Shares are `edgeRps / processedRps`, so traffic resolved locally (a cache
- * hit) correctly contributes zero downstream time.
- */
 function applyResponseLatency(
   graph: SimulationGraph,
   nodeMetrics: Map<string, NodeMetrics>,
@@ -309,7 +317,6 @@ function applyResponseLatency(
   }
 }
 
-/** An edge is as hot as the component it feeds. */
 function applyEdgeStatus(
   graph: SimulationGraph,
   nodeMetrics: ReadonlyMap<string, NodeMetrics>,

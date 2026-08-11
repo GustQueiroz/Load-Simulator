@@ -1,13 +1,10 @@
 import { capacityRpsOf } from '@/domain/nodes/capacity';
 import type { SimulationGraph } from '@/domain/simulation/graph';
 import type { NodeMetrics, SystemMetrics } from '@/domain/simulation/metrics';
+import { isTrafficSource } from '@/domain/simulation/node-kind';
 import { worstStatus } from '@/domain/simulation/status';
 import { clamp01, safeDivide } from '@/lib/math';
 
-/**
- * Weights of the bottleneck heuristic. Utilization dominates, but a component
- * that fails or piles up work is promoted over one that is merely busy.
- */
 const BOTTLENECK_WEIGHTS = { utilization: 0.65, failure: 0.2, queue: 0.15 } as const;
 const BOTTLENECK_MIN_UTILIZATION = 0.6;
 
@@ -31,11 +28,10 @@ export function computeSystemMetrics(
     failedRps += nodeMetrics.failedRps;
     droppedRps += nodeMetrics.droppedRps;
 
-    // Work parked in a backlog has neither completed nor failed yet.
     const backlogGrowth = nodeMetrics.queueDepth - (previous.get(node.id)?.queueDepth ?? 0);
     if (backlogGrowth > 0) bufferedRps += safeDivide(backlogGrowth, dtSeconds);
 
-    if (node.kind === 'client') {
+    if (isTrafficSource(node.kind)) {
       generatedRps += nodeMetrics.processedRps;
       clientWeight += nodeMetrics.outgoingRps;
       latencyProduct += nodeMetrics.outgoingRps * nodeMetrics.responseLatencyMs;
@@ -44,8 +40,7 @@ export function computeSystemMetrics(
 
   return {
     generatedRps,
-    // `failedRps` already includes capacity refusals (shed/throttle/timeout).
-    // Subtracting `droppedRps` again would double-count the same lost traffic.
+
     completedRps: Math.max(0, generatedRps - failedRps - bufferedRps),
     failedRps,
     droppedRps,
@@ -56,11 +51,6 @@ export function computeSystemMetrics(
   };
 }
 
-/**
- * "Probable bottleneck": the busiest component, nudged by failures and queue
- * pressure. Deliberately a heuristic — it points the audience at the right
- * box, it does not prove causality.
- */
 function findBottleneck(
   graph: SimulationGraph,
   metrics: ReadonlyMap<string, NodeMetrics>,
@@ -69,7 +59,7 @@ function findBottleneck(
   let bestScore = 0;
 
   for (const node of graph.nodes) {
-    if (node.kind === 'client') continue;
+    if (isTrafficSource(node.kind)) continue;
     const nodeMetrics = metrics.get(node.id);
     if (!nodeMetrics || nodeMetrics.incomingRps <= 0) continue;
     if (nodeMetrics.utilization < BOTTLENECK_MIN_UTILIZATION) continue;

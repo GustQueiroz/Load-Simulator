@@ -51,7 +51,8 @@ in `localStorage` and can be exported as a `.din` file (versioned JSON).
 
 | | Models |
 | --- | --- |
-| **Client** | Traffic source. Rate, plus failures that never left the client. |
+| **Client** | Traffic source. Constant rate, linear ramp, or timed spike. |
+| **Button** | Click to fire N requests; optional automator, rate limit and cooldown. |
 | **Load balancer** | Capacity and distribution across healthy targets: round robin, weighted, least-load, random. |
 | **API gateway** | Rate limiting, authentication overhead, throttling at the edge. |
 | **Server** | Capacity per instance × instances, bounded queue, timeout. |
@@ -59,9 +60,10 @@ in `localStorage` and can be exported as a `.din` file (versioned JSON).
 | **Message queue** | Ingress and delivery rates, backlog in messages, drain ETA. |
 | **Database** | Throughput *and* a connection pool ceiling (Little's law). |
 
-Five ready-made scenarios ship with it, including the classic
+Six ready-made scenarios ship with it, including the classic
 `2 clients → balancer → 3 servers → 1 small database`, which puts the servers
-comfortably in the green while the database goes critical.
+comfortably in the green while the database goes critical. There is also a
+`Button → server → database` lesson for click-driven demos.
 
 ## How the numbers work
 
@@ -137,9 +139,12 @@ actions — and leaves the diagram, the metrics and a presenter toolbar.
 ## Roadmap
 
 Not implemented yet, and organised so each fits without rewriting the engine:
-load timelines (ramp/spike), event log, retry storms, autoscaling with delay
-and cooldown, circuit breakers, health checks, read replicas, sharding, stream
-partitions, CDN, shareable URLs, PNG export and A/B snapshots.
+retry storms, autoscaling with delay and cooldown, circuit breakers, health
+checks, read replicas, sharding, stream partitions, CDN, PNG export and A/B
+snapshots.
+
+Recently landed: load timelines (ramp/spike), clickable Button source,
+event log, and shareable URLs (`#d=…` / `?preset=`).
 
 Contributions welcome — start with [CONTRIBUTING.md](CONTRIBUTING.md).
 

@@ -93,7 +93,6 @@ describe('engine lifecycle', () => {
     const slow = engine.tick([makeNode('c', 'client', { rps: 100 }), server], edges);
     expect(metricsOf(slow, 's').incomingRps).toBeCloseTo(100, 5);
 
-    // Same topology, new config object — exactly what dragging a slider does.
     const fast = engine.tick([makeNode('c', 'client', { rps: 900 }), server], edges);
     expect(metricsOf(fast, 's').incomingRps).toBeCloseTo(900, 5);
   });

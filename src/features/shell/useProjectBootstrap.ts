@@ -2,50 +2,96 @@
 
 import { useEffect, useRef } from 'react';
 
-import { PRESETS } from '@/application/presets/presets';
+import { PRESETS, presetById } from '@/application/presets/presets';
+import {
+  clearShareFromLocation,
+  readShareFromLocation,
+} from '@/application/serialization/share-url';
 import { useI18n } from '@/i18n/I18nProvider';
 import { presetNameKey, presetVocabulary } from '@/i18n/keys';
 import { loadLastProject, saveLastProject } from '@/infrastructure/persistence/local-storage';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
+import { notify } from '@/infrastructure/store/toast-store';
+
+import { importFailureMessage } from './useProjectFiles';
 
 const AUTOSAVE_DEBOUNCE_MS = 800;
 
-/**
- * Restores the last session (or opens a preset) and keeps autosaving.
- *
- * Runs after mount only: the server renders an empty canvas, so there is
- * nothing to mismatch during hydration.
- */
 export function useProjectBootstrap(): void {
   const { t, resolved } = useI18n();
   const bootstrapped = useRef(false);
+  const tRef = useRef(t);
 
   useEffect(() => {
-    // Preset node labels are persisted data, so they must be written in the
-    // visitor's language — not in the default the static HTML was built with.
+    tRef.current = t;
+  }, [t]);
+
+  useEffect(() => {
     if (!resolved || bootstrapped.current) return;
     bootstrapped.current = true;
+    const translate = tRef.current;
 
-    const state = useSimulatorStore.getState();
-    const last = loadLastProject();
+    void (async () => {
+      const state = useSimulatorStore.getState();
+      const shared = await readShareFromLocation();
 
-    if (last && last.nodes.length > 0) {
-      state.loadSnapshot(
-        { nodes: last.nodes, edges: last.edges, viewport: last.viewport },
-        last.name,
-        last.createdAt,
-      );
-      state.setCloud(last.settings.cloud);
-      state.setTickMs(last.settings.tickMs);
-    } else {
-      const preset = PRESETS[0];
-      state.loadSnapshot(preset.build(presetVocabulary(t)), t(presetNameKey(preset.id)));
-    }
+      if (shared.kind === 'diagram') {
+        if (!shared.result.ok) {
+          notify(importFailureMessage(shared.result.error, translate), 'error');
+        } else {
+          const diagram = shared.result.diagram;
+          state.reset();
+          state.loadSnapshot(
+            { nodes: diagram.nodes, edges: diagram.edges, viewport: diagram.viewport },
+            diagram.name,
+            diagram.createdAt,
+          );
+          state.setCloud(diagram.settings.cloud);
+          state.setTickMs(diagram.settings.tickMs);
+          state.requestFitView();
+          clearShareFromLocation();
+          notify(translate('toast.sharedOpened', { name: diagram.name }), 'success');
+          return;
+        }
+      }
 
-    state.requestFitView();
-    // `t` is intentionally not a dependency: a language switch must not
-    // re-seed the canvas and throw away whatever the user has built.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      if (shared.kind === 'preset') {
+        const preset = presetById(shared.presetId);
+        if (preset) {
+          state.reset();
+          state.loadSnapshot(
+            preset.build(presetVocabulary(translate)),
+            translate(presetNameKey(preset.id)),
+          );
+          state.requestFitView();
+          clearShareFromLocation();
+          notify(
+            translate('toast.presetOpened', { name: translate(presetNameKey(preset.id)) }),
+            'success',
+          );
+          return;
+        }
+      }
+
+      const last = loadLastProject();
+      if (last && last.nodes.length > 0) {
+        state.loadSnapshot(
+          { nodes: last.nodes, edges: last.edges, viewport: last.viewport },
+          last.name,
+          last.createdAt,
+        );
+        state.setCloud(last.settings.cloud);
+        state.setTickMs(last.settings.tickMs);
+      } else {
+        const preset = PRESETS[0];
+        state.loadSnapshot(
+          preset.build(presetVocabulary(translate)),
+          translate(presetNameKey(preset.id)),
+        );
+      }
+
+      state.requestFitView();
+    })();
   }, [resolved]);
 
   useEffect(() => {

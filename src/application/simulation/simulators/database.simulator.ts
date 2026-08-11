@@ -6,21 +6,11 @@ import { capLatency, serviceLatencyMs } from '../models/latency';
 import { stepWorkQueue } from '../models/work-queue';
 import { BROADCAST, type SimulatorFor } from '../types';
 
-/**
- * Stateful dependency with its own throughput ceiling *and* a connection pool.
- *
- * The pool is modelled with Little's law: a connection is held for roughly one
- * query, so `maxConnections / queryTime` is a second, independent capacity
- * ceiling. A small pool in front of slow queries becomes the bottleneck long
- * before the configured throughput does — which is exactly the lesson.
- */
 export const databaseSimulator: SimulatorFor<'database'> = {
   simulate(config, runtime, input, context) {
     const throughputCapacityRps = Math.max(0, config.capacityRps);
     const maxConnections = Math.max(1, config.maxConnections);
 
-    // Base (unsaturated) query time keeps this ceiling stable and explainable
-    // instead of chasing its own tail through the saturation curve.
     const queryTimeSeconds = Math.max(0, config.baseLatencyMs) / 1000;
     const connectionCapacityRps =
       queryTimeSeconds > 0 ? maxConnections / queryTimeSeconds : Number.POSITIVE_INFINITY;

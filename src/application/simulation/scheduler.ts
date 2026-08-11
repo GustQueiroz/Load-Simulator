@@ -1,10 +1,5 @@
-/**
- * The one and only clock of the simulation.
- *
- * Guarded on purpose: a second `setInterval` would double every rate in the
- * diagram, and nodes creating their own timers is the classic way this kind of
- * app becomes unexplainable. Components never schedule anything.
- */
+
+
 export class SimulationScheduler {
   private timer: ReturnType<typeof setInterval> | null = null;
 

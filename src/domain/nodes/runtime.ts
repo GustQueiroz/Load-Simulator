@@ -1,17 +1,12 @@
 import type { NodeKind } from '../simulation/node-kind';
 import type { NodeConfigByKind } from './config';
 
-/**
- * Runtime state is everything the engine carries *between* ticks. It is kept
- * strictly apart from configuration: a tick may never write into config, and
- * a reset may never touch it.
- */
 export interface EmptyRuntime {
   readonly _kind?: never;
 }
 
 export interface ServerRuntime {
-  /** Waiting requests, in count. */
+
   backlogCount: number;
 }
 
@@ -23,8 +18,18 @@ export interface QueueRuntime {
   backlogCount: number;
 }
 
+export interface ButtonRuntime {
+
+  pendingCount: number;
+
+  cooldownRemainingMs: number;
+
+  queuedClicks: number;
+}
+
 export interface NodeRuntimeByKind {
   client: EmptyRuntime;
+  button: ButtonRuntime;
   loadBalancer: EmptyRuntime;
   apiGateway: EmptyRuntime;
   server: ServerRuntime;
@@ -41,6 +46,7 @@ type RuntimeFactories = {
 
 const FACTORIES: RuntimeFactories = {
   client: () => ({}),
+  button: () => ({ pendingCount: 0, cooldownRemainingMs: 0, queuedClicks: 0 }),
   loadBalancer: () => ({}),
   apiGateway: () => ({}),
   cache: () => ({}),
