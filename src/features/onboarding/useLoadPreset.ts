@@ -12,6 +12,7 @@ export function useLoadPreset() {
     const state = useSimulatorStore.getState();
     state.reset();
     state.loadSnapshot(preset.build(presetVocabulary(t)), t(presetNameKey(preset.id)));
+    state.clearHistory();
     state.requestFitView();
   };
 }

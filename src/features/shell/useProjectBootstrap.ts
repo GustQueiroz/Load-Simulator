@@ -2,13 +2,15 @@
 
 import { useEffect, useRef } from 'react';
 
+import { isLessonId, lessonById } from '@/application/lessons';
 import { PRESETS, presetById } from '@/application/presets/presets';
 import {
   clearShareFromLocation,
   readShareFromLocation,
 } from '@/application/serialization/share-url';
+import { useLessonSessionStore } from '@/features/lessons/lesson-session-store';
 import { useOnboardingStore } from '@/features/onboarding/onboarding-store';
-import { useI18n } from '@/i18n/I18nProvider';
+import { useI18n, type MessageKey, type Translate } from '@/i18n/I18nProvider';
 import { presetNameKey, presetVocabulary } from '@/i18n/keys';
 import { loadLastProject, saveLastProject } from '@/infrastructure/persistence/local-storage';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
@@ -17,6 +19,27 @@ import { notify } from '@/infrastructure/store/toast-store';
 import { importFailureMessage } from './useProjectFiles';
 
 const AUTOSAVE_DEBOUNCE_MS = 800;
+
+function bootLesson(id: string, translate: Translate): boolean {
+  if (!isLessonId(id)) return false;
+  const lesson = lessonById(id);
+  if (!lesson) return false;
+
+  const state = useSimulatorStore.getState();
+  const titleKey = `lesson.${id}.title` as MessageKey;
+  state.reset();
+  state.loadSnapshot(lesson.build(presetVocabulary(translate)), translate(titleKey));
+  state.clearHistory();
+  if (lesson.focusNodeId) state.selectNode(lesson.focusNodeId);
+  state.requestFitView();
+  useLessonSessionStore.getState().beginLesson(id);
+  if (lesson.autoStart) {
+    state.start();
+    useLessonSessionStore.getState().setFlag('started');
+  }
+  notify(translate('lesson.started', { name: translate(titleKey) }), 'info');
+  return true;
+}
 
 export function useProjectBootstrap(): void {
   const { t, resolved } = useI18n();
@@ -35,12 +58,20 @@ export function useProjectBootstrap(): void {
     void (async () => {
       const state = useSimulatorStore.getState();
       const onboarding = useOnboardingStore.getState();
+      const lessons = useLessonSessionStore.getState();
       onboarding.hydrate();
+      lessons.hydrate();
+
+      const url = new URL(window.location.href);
+      const lessonParam = url.searchParams.get('lesson');
 
       const shared = await readShareFromLocation();
       let clearedShare = false;
 
-      if (shared.kind === 'diagram') {
+      if (lessonParam && bootLesson(lessonParam, translate)) {
+        url.searchParams.delete('lesson');
+        window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+      } else if (shared.kind === 'diagram') {
         if (!shared.result.ok) {
           notify(importFailureMessage(shared.result.error, translate), 'error');
         } else {
@@ -93,6 +124,8 @@ export function useProjectBootstrap(): void {
         }
         state.requestFitView();
       }
+
+      useSimulatorStore.getState().clearHistory();
 
       if (shared.tour) {
         onboarding.openTour();

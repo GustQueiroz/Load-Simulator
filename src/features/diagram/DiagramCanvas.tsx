@@ -59,6 +59,9 @@ export function DiagramCanvas() {
 
   const onDrop = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
+      // File drops are handled globally (DinFileDrop); keep palette drops here.
+      if (Array.from(event.dataTransfer.types).includes('Files')) return;
+
       event.preventDefault();
       const kind = event.dataTransfer.getData(PALETTE_DRAG_TYPE);
       if (!isNodeKind(kind)) return;
@@ -68,6 +71,7 @@ export function DiagramCanvas() {
   );
 
   const onDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
+    if (Array.from(event.dataTransfer.types).includes('Files')) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);

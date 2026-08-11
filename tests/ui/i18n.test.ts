@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { LESSON_IDS, WORLDS } from '@/application/lessons';
 import { PRESETS } from '@/application/presets/presets';
 import { NODE_KINDS } from '@/domain/simulation/node-kind';
 import { en } from '@/i18n/messages/en';
@@ -39,6 +40,32 @@ describe('catalogue coverage', () => {
     for (const catalogue of Object.values(CATALOGUES)) {
       expect(catalogue[`preset.${id}.name`]).toBeTruthy();
       expect(catalogue[`preset.${id}.description`]).toBeTruthy();
+    }
+  });
+});
+
+describe('lesson catalogue coverage', () => {
+  it.each([...LESSON_IDS])('names lesson %s', (id) => {
+    for (const catalogue of Object.values(CATALOGUES)) {
+      expect(catalogue[`lesson.${id}.title` as MessageKey]).toBeTruthy();
+      expect(catalogue[`lesson.${id}.goal` as MessageKey]).toBeTruthy();
+    }
+  });
+
+  it.each(
+    [...LESSON_IDS].filter((id) => id.startsWith('2.') || id.startsWith('3.')),
+  )('briefs mission lesson %s', (id) => {
+    for (const catalogue of Object.values(CATALOGUES)) {
+      expect(catalogue[`lesson.${id}.brief.situation` as MessageKey]).toBeTruthy();
+      expect(catalogue[`lesson.${id}.brief.objective` as MessageKey]).toBeTruthy();
+      expect(catalogue[`lesson.${id}.brief.constraints` as MessageKey]).toBeTruthy();
+    }
+  });
+
+  it.each([...WORLDS.map((world) => world.id)])('names world %s', (id) => {
+    for (const catalogue of Object.values(CATALOGUES)) {
+      expect(catalogue[`world.${id}.name` as MessageKey]).toBeTruthy();
+      expect(catalogue[`world.${id}.blurb` as MessageKey]).toBeTruthy();
     }
   });
 });

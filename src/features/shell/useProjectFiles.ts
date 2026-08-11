@@ -42,32 +42,58 @@ export function useProjectFiles() {
   const importProject = useCallback(async () => {
     const picked = await pickTextFile('.din,application/json');
     if (!picked) return;
-
-    const result = importDin(picked.content);
-    if (!result.ok) {
-      notify(importFailureMessage(result.error, t), 'error');
-      return;
-    }
-
-    const state = useSimulatorStore.getState();
-
-    state.reset();
-    state.loadSnapshot(
-      {
-        nodes: result.diagram.nodes,
-        edges: result.diagram.edges,
-        viewport: result.diagram.viewport,
-      },
-      result.diagram.name,
-      result.diagram.createdAt,
-    );
-    state.setCloud(result.diagram.settings.cloud);
-    state.setTickMs(result.diagram.settings.tickMs);
-    state.requestFitView();
-    notify(t('toast.imported', { name: result.diagram.name }), 'success');
+    applyDinContent(picked.content, t);
   }, [t]);
 
-  return { exportProject, importProject };
+  const importDinFile = useCallback(
+    async (file: File) => {
+      if (!isDinLikeFile(file)) {
+        notify(t('toast.dropUnsupported'), 'error');
+        return false;
+      }
+      try {
+        const content = await file.text();
+        return applyDinContent(content, t);
+      } catch {
+        notify(t('error.import.invalid'), 'error');
+        return false;
+      }
+    },
+    [t],
+  );
+
+  return { exportProject, importProject, importDinFile };
+}
+
+export function applyDinContent(content: string, t: Translate): boolean {
+  const result = importDin(content);
+  if (!result.ok) {
+    notify(importFailureMessage(result.error, t), 'error');
+    return false;
+  }
+
+  const state = useSimulatorStore.getState();
+  state.pushHistory();
+  state.reset();
+  state.loadSnapshot(
+    {
+      nodes: result.diagram.nodes,
+      edges: result.diagram.edges,
+      viewport: result.diagram.viewport,
+    },
+    result.diagram.name,
+    result.diagram.createdAt,
+  );
+  state.setCloud(result.diagram.settings.cloud);
+  state.setTickMs(result.diagram.settings.tickMs);
+  state.requestFitView();
+  notify(t('toast.imported', { name: result.diagram.name }), 'success');
+  return true;
+}
+
+export function isDinLikeFile(file: File): boolean {
+  const name = file.name.toLowerCase();
+  return name.endsWith('.din') || name.endsWith('.json') || file.type.includes('json');
 }
 
 export function importFailureMessage(failure: ImportFailure, t: Translate): string {

@@ -13,6 +13,11 @@ import type { ConnectionCandidate, ConnectionValidation } from '@/domain/simulat
 import type { EdgeMetrics, NodeMetrics, SystemMetrics } from '@/domain/simulation/metrics';
 import type { NodeKind } from '@/domain/simulation/node-kind';
 
+import type { HistorySlice } from './history.slice';
+
+export type { DiagramCheckpoint } from './history';
+export type { HistorySlice } from './history.slice';
+
 export type SimulationStatus = 'stopped' | 'running' | 'paused';
 
 export interface DiagramSlice {
@@ -83,4 +88,8 @@ export interface PresentationSlice {
   setFocusedNode: (id: string | null) => void;
 }
 
-export type SimulatorState = DiagramSlice & SimulationSlice & SettingsSlice & PresentationSlice;
+export type SimulatorState = DiagramSlice &
+  SimulationSlice &
+  SettingsSlice &
+  PresentationSlice &
+  HistorySlice;

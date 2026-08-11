@@ -5,6 +5,13 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { CostPanel } from '@/features/cost/CostPanel';
 import { DetailsPanel } from '@/features/diagram/DetailsPanel';
 import { DiagramCanvas } from '@/features/diagram/DiagramCanvas';
+import { BalloonCoach } from '@/features/lessons/BalloonCoach';
+import { LessonComplete } from '@/features/lessons/LessonComplete';
+import { LessonHud } from '@/features/lessons/LessonHud';
+import { useLessonSessionStore } from '@/features/lessons/lesson-session-store';
+import { useLessonRunner } from '@/features/lessons/useLessonRunner';
+import { MissionBrief } from '@/features/lessons/MissionBrief';
+import { WorldMap } from '@/features/lessons/WorldMap';
 import { FirstRunTour } from '@/features/onboarding/FirstRunTour';
 import { LessonChecklist } from '@/features/onboarding/LessonChecklist';
 import { PresentationBar } from '@/features/presentation/PresentationBar';
@@ -15,6 +22,7 @@ import { useSimulationEngine } from '@/features/simulation/useSimulationEngine';
 import { I18nProvider, useT, type MessageKey } from '@/i18n/I18nProvider';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 
+import { DinDropOverlay, useDinFileDrop } from './DinFileDrop';
 import { Toasts } from './Toasts';
 import { Toolbar } from './Toolbar';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
@@ -32,8 +40,11 @@ function SimulatorShell() {
   useSimulationEngine();
   useProjectBootstrap();
   useKeyboardShortcuts();
+  useLessonRunner();
+  const { active: dinDropActive } = useDinFileDrop();
 
   const presenting = useSimulatorStore((state) => state.presentationMode);
+  const lessonActive = useLessonSessionStore((state) => state.activeLessonId !== null);
 
   return (
     <ReactFlowProvider>
@@ -43,7 +54,8 @@ function SimulatorShell() {
         <div className="flex min-h-0 flex-1">
           <main className="relative min-w-0 flex-1">
             <DiagramCanvas />
-            <LessonChecklist />
+            <LessonHud />
+            {!lessonActive ? <LessonChecklist /> : null}
           </main>
 
           <aside className="flex w-[308px] shrink-0 flex-col gap-3 overflow-y-auto border-l border-line bg-canvas p-3">
@@ -56,7 +68,12 @@ function SimulatorShell() {
         </div>
       </div>
 
+      <DinDropOverlay active={dinDropActive} />
       <FirstRunTour />
+      <WorldMap />
+      <MissionBrief />
+      <BalloonCoach />
+      <LessonComplete />
       <SimulationAnnouncer />
       <Toasts />
     </ReactFlowProvider>
@@ -70,6 +87,8 @@ const SHORTCUTS: readonly { key: string | MessageKey; keyIsMessage?: boolean; la
     { key: 'F', label: 'shortcuts.fit' },
     { key: 'P', label: 'shortcuts.present' },
     { key: 'shortcuts.key.delete', keyIsMessage: true, label: 'shortcuts.delete' },
+    { key: '⌘/Ctrl + Z', label: 'shortcuts.undo' },
+    { key: '⌘/Ctrl + Shift + Z', label: 'shortcuts.redo' },
     { key: '⌘/Ctrl + S', label: 'shortcuts.export' },
   ];
 

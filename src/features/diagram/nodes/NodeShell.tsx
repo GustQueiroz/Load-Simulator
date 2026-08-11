@@ -5,6 +5,7 @@ import { Copy, Power, Trash2 } from 'lucide-react';
 import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import type { NodeKind } from '@/domain/simulation/node-kind';
+import { useLessonHighlight } from '@/features/lessons/lesson-session-store';
 import { useT } from '@/i18n/I18nProvider';
 import { kindKey, statusKey } from '@/i18n/keys';
 import { useNodeMetrics, useSimulatorStore } from '@/infrastructure/store/simulator-store';
@@ -44,6 +45,10 @@ export const NodeShell = memo(function NodeShell({
   const removeNodes = useSimulatorStore((state) => state.removeNodes);
   const duplicateNode = useSimulatorStore((state) => state.duplicateNode);
   const updateNodeConfig = useSimulatorStore((state) => state.updateNodeConfig);
+  const highlight = useLessonHighlight();
+  const lessonHighlight =
+    (highlight?.type === 'node' && highlight.nodeId === id) ||
+    (highlight?.type === 'field' && highlight.nodeId === id);
 
   const [renaming, setRenaming] = useState(false);
 
@@ -57,7 +62,8 @@ export const NodeShell = memo(function NodeShell({
       })}
       className={cn(
         'w-[264px] overflow-hidden rounded-xl border bg-node shadow-lg shadow-black/40 transition-shadow',
-        selected ? 'border-sky-400/70 ring-1 ring-sky-400/40' : 'border-line',
+        selected || lessonHighlight ? 'border-sky-400/70 ring-1 ring-sky-400/40' : 'border-line',
+        lessonHighlight && 'ring-2 ring-sky-400/70',
         !enabled && 'opacity-55 saturate-0',
         status === 'critical' && enabled && 'node-critical',
       )}

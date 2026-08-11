@@ -194,6 +194,13 @@ export const en: Messages = {
   'field.baseLatency': 'Base latency',
   'field.injectedFailure': 'Injected failures',
   'field.algorithm': 'Algorithm',
+  'option.traffic.constant': 'Constant',
+  'option.traffic.ramp': 'Ramp',
+  'option.traffic.spike': 'Spike',
+  'option.algorithm.roundRobin': 'Round robin',
+  'option.algorithm.weightedRoundRobin': 'Weighted round robin',
+  'option.algorithm.leastLoad': 'Least load',
+  'option.algorithm.random': 'Random',
   'field.rateLimit': 'Rate limit',
   'field.auth': 'Authentication',
   'field.authLatency': 'Auth latency',
@@ -281,8 +288,10 @@ export const en: Messages = {
   'tour.back': 'Back',
   'tour.next': 'Next',
   'tour.finish': 'Open “{preset}”',
+  'tour.finishLesson': 'Start stage 0.1',
   'tour.step1.title': 'Pick a scenario',
-  'tour.step1.body': 'Scenarios ship with the lesson already wired. Open “Scenarios…” in the toolbar and read what the class should notice.',
+  'tour.step1.body':
+    'Open “Path” in the toolbar for the exercise map, or “Scenarios…” for ready-made demos.',
   'tour.step2.title': 'Press Start',
   'tour.step2.body': 'The clock starts and load flows through the components. Space also starts and pauses.',
   'tour.step3.title': 'Drag a slider',
@@ -316,6 +325,8 @@ export const en: Messages = {
   'shortcuts.fit': 'fit view',
   'shortcuts.present': 'presentation mode',
   'shortcuts.delete': 'remove selection',
+  'shortcuts.undo': 'undo',
+  'shortcuts.redo': 'redo',
   'shortcuts.export': 'export .din',
   'shortcuts.key.space': 'Space',
   'shortcuts.key.delete': 'Del',
@@ -330,6 +341,12 @@ export const en: Messages = {
   'toast.linkCopyFailed': 'Could not copy the link.',
   'toast.sharedOpened': 'Opened shared diagram “{name}”.',
   'toast.presetOpened': 'Opened scenario “{name}”.',
+  'toast.nothingToUndo': 'Nothing to undo.',
+  'toast.nothingToRedo': 'Nothing to redo.',
+  'toast.dropUnsupported': 'Drop a .din file (or exported JSON) to open the project.',
+
+  'drop.din.title': 'Drop to open',
+  'drop.din.body': 'Compatible .din files import immediately — no menu trip required.',
 
   'error.connection.unknownEndpoint': 'Invalid connection: component does not exist.',
   'error.connection.selfLoop': 'A component cannot be connected to itself.',
@@ -348,4 +365,199 @@ export const en: Messages = {
   'error.import.noMigration': 'No migration from version {from} to {to}.',
 
   'error.cycle': 'The diagram contains a cycle. Synchronous cycles are not supported in this version.',
+
+  'toolbar.worldmap': 'Path',
+  'toolbar.worldmapTitle': 'Open the exercise map (Worlds 0–3)',
+
+  'worldmap.title': 'Exercise map',
+  'worldmap.subtitle': 'Worlds 0–3 — from guided tips to on-call missions.',
+  'worldmap.close': 'Close map',
+  'worldmap.play': 'Play',
+  'worldmap.replay': 'Replay',
+  'worldmap.minutes': 'min',
+  'worldmap.stars': '{count} star(s)',
+
+  'world.0.name': 'World 0 — Controls',
+  'world.0.blurb': 'Play, pause, and one slider. Diagram already built.',
+  'world.1.name': 'World 1 — Capacity',
+  'world.1.blurb': 'Server, load balancer, cache, gateway, and queue.',
+  'world.2.name': 'World 2 — Lovelace',
+  'world.2.blurb': 'Real missions. No tips. Incoming load locked.',
+  'world.3.name': 'World 3 — Dijkstra',
+  'world.3.blurb': 'Budget, Black Friday, and architecture under pressure.',
+
+  'mission.kicker': 'Mission {id}',
+  'mission.hud.kicker': 'On-call {id}',
+  'mission.situation': 'Situation',
+  'mission.objective': 'Objective',
+  'mission.constraints': 'Constraints',
+  'mission.budget': 'Budget: {amount}/mo',
+  'mission.trafficLocked': 'Incoming load locked',
+  'mission.accept': 'Accept mission',
+  'mission.close': 'Close briefing',
+  'mission.reopen': 'Reopen briefing',
+
+  'lesson.fieldLocked': 'Locked in this mission — incoming load (or this resource) cannot change.',
+  'lesson.complete.stars': '{count} of 3 stars',
+  'lesson.locked': 'Clear the previous stage to unlock this one.',
+  'lesson.started': 'Stage “{name}” started.',
+  'lesson.exit': 'Exit stage',
+  'lesson.hud.kicker': 'Stage {id}',
+  'lesson.balloon.kicker': 'Tip {step} of {total}',
+  'lesson.balloon.next': 'Continue',
+  'lesson.balloon.wait': 'Complete the step to advance',
+  'lesson.balloon.done': 'Ready — continue',
+  'lesson.hold': 'Holding {current}s / {required}s',
+  'lesson.complete.kicker': 'Stage complete',
+  'lesson.complete.body': 'Mission complete. The next stage is unlocked on the map.',
+  'lesson.complete.close': 'Close',
+  'lesson.complete.map': 'View map',
+  'lesson.complete.next': 'Next ({id})',
+  'lesson.complete.worldDone': 'View map',
+
+  'lesson.0.1.title': 'Play, pause, spot the bottleneck',
+  'lesson.0.1.goal': 'Start, check the System panel bottleneck, then pause.',
+  'lesson.0.1.balloon.play.title': 'Press Start',
+  'lesson.0.1.balloon.play.body': 'Space works too. Load begins flowing through the diagram.',
+  'lesson.0.1.balloon.bottleneck.title': 'Look at the bottleneck',
+  'lesson.0.1.balloon.bottleneck.body': 'The System panel points at the hottest node. Click it to focus if you want.',
+  'lesson.0.1.balloon.pause.title': 'Pause the simulation',
+  'lesson.0.1.balloon.pause.body': 'Press Stop (or Space). Pausing is part of controlling a live demo.',
+
+  'lesson.0.2.title': 'A slider changes the outcome',
+  'lesson.0.2.goal': 'Raise Client RPS until the server stays critical for 3 seconds.',
+  'lesson.0.2.balloon.start.title': 'Start gently',
+  'lesson.0.2.balloon.start.body': 'Hit Start. The server is still fine — the Client only sends 40 req/s.',
+  'lesson.0.2.balloon.slider.title': 'Move the Client RPS',
+  'lesson.0.2.balloon.slider.body': 'Drag the Client slider up (around 80+). Ignore the database for now.',
+  'lesson.0.2.balloon.hold.title': 'Hold the critical state',
+  'lesson.0.2.balloon.hold.body': 'When the server turns red, keep it there for 3 seconds.',
+
+  'lesson.1.1.title': 'A single server saturates',
+  'lesson.1.1.goal': 'Saturate the server without making the database critical.',
+  'lesson.1.1.balloon.start.title': 'Start the load',
+  'lesson.1.1.balloon.start.body': 'The database is intentionally oversized. The ceiling that matters is the server.',
+  'lesson.1.1.balloon.raise.title': 'Overwhelm the server',
+  'lesson.1.1.balloon.raise.body': 'Raise Client RPS until the server goes critical (≥ 80%).',
+  'lesson.1.1.balloon.compare.title': 'Compare with the database',
+  'lesson.1.1.balloon.compare.body': 'The database should stay under 60%. Capacity is local — each node has its own ceiling.',
+
+  'lesson.1.2.title': 'Horizontal scale misleads',
+  'lesson.1.2.goal': 'See three green servers and the database as the bottleneck.',
+  'lesson.1.2.balloon.look.title': 'Comfortable servers',
+  'lesson.1.2.balloon.look.body': 'The load balancer spread the traffic. All three servers stay green.',
+  'lesson.1.2.balloon.db.title': 'The funnel is the database',
+  'lesson.1.2.balloon.db.body': 'Every response still hits one small database. That becomes the bottleneck.',
+  'lesson.1.2.balloon.lesson.title': 'The takeaway',
+  'lesson.1.2.balloon.lesson.body': 'Scaling the stateless tier does not fix the stateful one. System points at the DB.',
+
+  'lesson.1.3.title': 'Save the database with cache',
+  'lesson.1.3.goal': 'Raise cache hit rate until the DB leaves critical.',
+  'lesson.1.3.balloon.pain.title': 'DB in the red',
+  'lesson.1.3.balloon.pain.body': 'At 50% hit rate, half the requests still hit the database.',
+  'lesson.1.3.balloon.raise.title': 'Raise the hit rate',
+  'lesson.1.3.balloon.raise.body': 'Drag Cache hit rate to ≥ 85%. Only misses continue to the database.',
+  'lesson.1.3.balloon.relief.title': 'Database relieved',
+  'lesson.1.3.balloon.relief.body': 'With fewer misses, DB utilization drops. A well-placed cache changes the math.',
+
+  'lesson.1.4.title': 'Gateway protects the service',
+  'lesson.1.4.goal': 'Tune rate limiting so the server stays healthy (with edge rejects).',
+  'lesson.1.4.balloon.overload.title': 'Service melting',
+  'lesson.1.4.balloon.overload.body': '5,000 req/s pass the gateway with no brake. The server cannot keep up.',
+  'lesson.1.4.balloon.limit.title': 'Tighten the rate limit',
+  'lesson.1.4.balloon.limit.body': 'Lower the Gateway rate limit to about 1,000 req/s.',
+  'lesson.1.4.balloon.safe.title': 'Reject at the door',
+  'lesson.1.4.balloon.safe.body': 'The gateway drops the excess and the server recovers. Better a 429 than an outage.',
+
+  'lesson.1.5.title': 'A queue absorbs the spike',
+  'lesson.1.5.goal': 'Watch backlog rise during the spike, then the worker drain without staying critical.',
+  'lesson.1.5.balloon.spike.title': 'Here comes the spike',
+  'lesson.1.5.balloon.spike.body': 'The producer fires a spike. Watch the load — you do not need to change anything.',
+  'lesson.1.5.balloon.backlog.title': 'Queue backlog',
+  'lesson.1.5.balloon.backlog.body': 'The queue holds what the worker cannot take yet. Depth > 0 is expected in the spike.',
+  'lesson.1.5.balloon.drain.title': 'Then it drains',
+  'lesson.1.5.balloon.drain.body': 'After the spike, the worker drains the backlog at its own pace — not critical in steady state.',
+
+  'lesson.2.1.title': 'Reads that cost too much',
+  'lesson.2.1.goal': 'The database is on the edge while the store is live. Stabilize reads without changing traffic.',
+  'lesson.2.1.brief.situation':
+    'The data team opened a ticket: checkout is slow and the database is red in monitoring. There is a cache node on the canvas, but nobody is sure it sits on the right path. The store cannot “ask for fewer customers” — Black Friday traffic is already contracted.',
+  'lesson.2.1.brief.objective':
+    'Get the database out of the critical zone and keep the failure rate low while the simulation runs.',
+  'lesson.2.1.brief.constraints':
+    'You cannot change incoming load. You may rewire connections, tune components, and add what makes sense. Target budget: about US$ 220/mo.',
+
+  'lesson.2.2.title': 'Uneven fleet',
+  'lesson.2.2.goal': 'Two servers behind the balancer; one is melting. Share the pain.',
+  'lesson.2.2.brief.situation':
+    'Ops moved half the fleet to smaller machines to save money. Since then one server alerts constantly while the other looks idle. The load balancer is still on factory defaults.',
+  'lesson.2.2.brief.objective':
+    'No server may stay critical. System failure needs to fall to an acceptable level.',
+  'lesson.2.2.brief.constraints':
+    'Incoming traffic is locked. Change balancing, capacities, or topology — whatever keeps the fleet alive together.',
+
+  'lesson.2.3.title': 'Checkout spike',
+  'lesson.2.3.goal': 'A promo spike knocks the worker over. Survive the burst without losing orders.',
+  'lesson.2.3.brief.situation':
+    'Marketing dropped a viral coupon. Ingress spikes like a needle and the synchronous service chokes. Product wants “no lost orders” even if confirmation takes a few seconds.',
+  'lesson.2.3.brief.objective':
+    'After the spike, failure must stay controlled and the worker must not remain critical. The architecture has to absorb the burst.',
+  'lesson.2.3.brief.constraints':
+    'The spike profile is locked. You may redesign the path between producer and database. Think decoupling — the briefing will not name the part.',
+
+  'lesson.2.4.title': 'Wide-open door',
+  'lesson.2.4.goal': 'High traffic, permissive edge, tiny database. Save the core.',
+  'lesson.2.4.brief.situation':
+    'A partner started hammering the public API. The gateway barely has a brake, the app still answers, and the database — sized for a Tuesday — is asking for help.',
+  'lesson.2.4.brief.objective':
+    'Protect server and database. Accepting everything is not success: complete a healthy fraction of traffic without torching the stateful tier.',
+  'lesson.2.4.brief.constraints':
+    'Incoming load locked. Target budget ~US$ 260/mo. Use the edge, the middle, or both — the ticket does not list the fix.',
+
+  'lesson.2.5.title': 'Campaign button',
+  'lesson.2.5.goal': 'The campaign automator is on. The small database cannot take the mass clicks.',
+  'lesson.2.5.brief.situation':
+    'Growth turned on the “promo button” automator and left. Every pulse hits server and database. Finance will not approve a larger database this sprint.',
+  'lesson.2.5.brief.objective':
+    'Get the system out of the red. The database needs air without you killing the campaign (automator rate is locked).',
+  'lesson.2.5.brief.constraints':
+    'Do not change automator rate or traffic-source RPS. Protection controls on the button itself or downstream changes are allowed.',
+
+  'lesson.3.1.title': 'Black Friday',
+  'lesson.3.1.goal': 'Keep the site up through the peak, with controlled failure, under budget.',
+  'lesson.3.1.brief.situation':
+    'Black Friday, 00:12. The status page went red, the CEO pinged, and on-call inherited a minimal design: a thin server and a tight database under a brutal spike. Marketing will not reduce traffic. Finance capped the stack at US$ 240/mo.',
+  'lesson.3.1.brief.objective':
+    'Keep the site usable after the peak: low failure, acceptable completion, cost under the ceiling.',
+  'lesson.3.1.brief.constraints':
+    'Spike locked. Budget US$ 240/mo. No component hints — only the outcome counts. Extra stars for failure margin and lower cost.',
+
+  'lesson.3.2.title': 'The database does not scale',
+  'lesson.3.2.goal': 'The database is fixed. Protect it without touching it.',
+  'lesson.3.2.brief.situation':
+    'The DBA blocked any database change until the next capacity cycle. Meanwhile product doubled traffic and the app fleet looks fine — the funnel is still the disk.',
+  'lesson.3.2.brief.objective':
+    'Database utilization below critical, controlled failure, solid completion — without editing the database node.',
+  'lesson.3.2.brief.constraints':
+    'Traffic locked. Database config fully blocked. Target budget ~US$ 280/mo. Anything that relieves the stateful tier is fair — except “make the database bigger”.',
+
+  'lesson.3.3.title': 'Cloud bill',
+  'lesson.3.3.goal': 'The stack is healthy and expensive. Deliver the same SLA for less.',
+  'lesson.3.3.brief.situation':
+    'FinOps booked a meeting. The current architecture handles load with absurd headroom — fat fleets, hot cache, generous database. Monthly spend blew past the board agreement (cap: US$ 200).',
+  'lesson.3.3.brief.objective':
+    'Keep failure low, completion high, and zero critical — with monthly cost ≤ US$ 200.',
+  'lesson.3.3.brief.constraints':
+    'Traffic locked. You may remove or shrink what is spare. Extra stars the cheaper you go without breaking SLA.',
+
+  'lesson.3.4.title': 'Architect on call',
+  'lesson.3.4.goal': 'Only the traffic source exists. Build the rest and survive the ramp.',
+  'lesson.3.4.brief.situation':
+    'New product, deadline yesterday. The team left only a load generator on the canvas — a ramp that climbs on its own. You inherit on-call with a US$ 260/mo budget and no ready diagram.',
+  'lesson.3.4.brief.objective':
+    'Assemble an architecture with at least app and database, survive the ramp with low failure, and stay inside budget.',
+  'lesson.3.4.brief.constraints':
+    'Incoming load locked. Palette open. No answer key — only survival and cost criteria.',
+
+  'empty.worldmapCta': 'Open the exercise path',
 };

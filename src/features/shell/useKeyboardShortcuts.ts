@@ -3,10 +3,13 @@
 import { useEffect } from 'react';
 
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
+import { notify } from '@/infrastructure/store/toast-store';
+import { useT } from '@/i18n/I18nProvider';
 
 import { useProjectFiles } from './useProjectFiles';
 
 export function useKeyboardShortcuts(): void {
+  const t = useT();
   const { exportProject, importProject } = useProjectFiles();
 
   useEffect(() => {
@@ -15,16 +18,33 @@ export function useKeyboardShortcuts(): void {
 
       const state = useSimulatorStore.getState();
       const modifier = event.metaKey || event.ctrlKey;
+      const key = event.key.toLowerCase();
 
-      if (modifier && event.key.toLowerCase() === 's') {
+      if (modifier && key === 's') {
         event.preventDefault();
         exportProject();
         return;
       }
 
-      if (modifier && event.key.toLowerCase() === 'o') {
+      if (modifier && key === 'o') {
         event.preventDefault();
         void importProject();
+        return;
+      }
+
+      if (modifier && key === 'z' && !event.altKey) {
+        event.preventDefault();
+        if (event.shiftKey) {
+          if (!state.redo()) notify(t('toast.nothingToRedo'), 'info');
+        } else if (!state.undo()) {
+          notify(t('toast.nothingToUndo'), 'info');
+        }
+        return;
+      }
+
+      if (modifier && key === 'y') {
+        event.preventDefault();
+        if (!state.redo()) notify(t('toast.nothingToRedo'), 'info');
         return;
       }
 
@@ -59,7 +79,7 @@ export function useKeyboardShortcuts(): void {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [exportProject, importProject]);
+  }, [exportProject, importProject, t]);
 }
 
 function isEditingField(target: EventTarget | null): boolean {

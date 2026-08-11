@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/Button';
 import { Menu } from '@/components/ui/Menu';
 import { LessonPicker } from '@/features/onboarding/LessonPicker';
 import { useOnboardingStore } from '@/features/onboarding/onboarding-store';
+import { LessonMapButton } from '@/features/lessons/LessonHud';
 import { useT } from '@/i18n/I18nProvider';
 import { statusKey, statusLegendKey } from '@/i18n/keys';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
@@ -64,6 +65,7 @@ export function Toolbar() {
         icon={isRunning ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
         onClick={toggleRunning}
         title={isRunning ? t('toolbar.stopTitle') : t('toolbar.startTitle')}
+        data-lesson-anchor="toolbar-start"
       >
         {isRunning ? t('toolbar.stop') : t('toolbar.start')}
       </Button>
@@ -87,6 +89,8 @@ export function Toolbar() {
       <div className="h-6 w-px shrink-0 bg-line" />
 
       <LessonPicker />
+
+      <LessonMapButton />
 
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
         <input

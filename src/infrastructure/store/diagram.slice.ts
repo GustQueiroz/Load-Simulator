@@ -7,11 +7,13 @@ import {
   toSimulationNodes,
   type DiagramNode,
 } from '@/domain/diagram/diagram';
-import type { AnyNodeConfig, SimulatorNodeData } from '@/domain/nodes/config';
+import type { SimulatorNodeData } from '@/domain/nodes/config';
 import { createDefaultConfig } from '@/domain/nodes/defaults';
+import { mergeSimulatorNodeConfig } from '@/domain/nodes/merge-config';
 import { validateConnection } from '@/domain/simulation/connection-rules';
 import { createEdgeId, createNodeId } from '@/lib/ids';
 
+import { pushHistoryForConfigEdit } from './history.slice';
 import type { DiagramSlice, SimulatorState } from './types';
 
 const NODE_WIDTH = 280;
@@ -36,6 +38,7 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
   requestFitView: () => set((state) => ({ fitViewToken: state.fitViewToken + 1 })),
 
   addNode: (kind, position, labelPrefix) => {
+    get().pushHistory();
     const id = createNodeId(kind);
     const label = nextLabelFor(get().nodes, kind, labelPrefix);
     const node: DiagramNode = {
@@ -50,12 +53,11 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
   },
 
   updateNodeConfig: (id, patch) => {
+    pushHistoryForConfigEdit(() => get().pushHistory());
     set((state) => ({
       nodes: state.nodes.map((node) => {
         if (node.id !== id) return node;
-
-        const config = { ...node.data.config, ...patch } as AnyNodeConfig;
-        return { ...node, data: { ...node.data, config } as SimulatorNodeData };
+        return { ...node, data: mergeSimulatorNodeConfig(node.data, patch) };
       }),
       isDirty: true,
     }));
@@ -65,6 +67,7 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
     const source = get().nodes.find((node) => node.id === id);
     if (!source) return;
 
+    get().pushHistory();
     const kind = source.data.kind;
     const copy: DiagramNode = {
       id: createNodeId(kind),
@@ -87,10 +90,11 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
   },
 
   removeNodes: (ids) => {
+    if (ids.length === 0) return;
+    get().pushHistory();
     const removed = new Set(ids);
     set((state) => ({
       nodes: state.nodes.filter((node) => !removed.has(node.id)),
-
       edges: state.edges.filter(
         (edge) => !removed.has(edge.source) && !removed.has(edge.target),
       ),
@@ -107,6 +111,7 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
     });
     if (!validation.valid) return validation;
 
+    get().pushHistory();
     set((state) => ({
       edges: [
         ...state.edges,
@@ -137,14 +142,16 @@ export const createDiagramSlice: StateCreator<SimulatorState, [], [], DiagramSli
       isDirty: false,
     }),
 
-  clearDiagram: () =>
+  clearDiagram: () => {
+    get().pushHistory();
     set({
       nodes: [],
       edges: [],
       name: 'Nova arquitetura',
       createdAt: new Date().toISOString(),
       isDirty: false,
-    }),
+    });
+  },
 
   setName: (name) => set({ name, isDirty: true }),
   markSaved: () => set({ isDirty: false }),

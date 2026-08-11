@@ -7,7 +7,7 @@ import {
   type EdgeChange,
   type NodeChange,
 } from '@xyflow/react';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import type { DiagramEdge, DiagramNode } from '@/domain/diagram/diagram';
 import type { ConnectionRejection } from '@/domain/simulation/connection-rules';
@@ -28,21 +28,54 @@ export function useDiagramSync() {
   const setNodes = useSimulatorStore((state) => state.setNodes);
   const setEdges = useSimulatorStore((state) => state.setEdges);
   const connect = useSimulatorStore((state) => state.connect);
+  const pushHistory = useSimulatorStore((state) => state.pushHistory);
+  const nodeDragHistoryPushed = useRef(false);
+  const structuralPushArmed = useRef(true);
+
+  const pushStructuralHistory = useCallback(() => {
+    if (!structuralPushArmed.current) return;
+    structuralPushArmed.current = false;
+    pushHistory();
+    queueMicrotask(() => {
+      structuralPushArmed.current = true;
+    });
+  }, [pushHistory]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<DiagramNode>[]) => {
+      const removes = changes.some((change) => change.type === 'remove');
+      const dragStart = changes.some(
+        (change) => change.type === 'position' && change.dragging === true,
+      );
+      const dragEnd = changes.some(
+        (change) => change.type === 'position' && change.dragging === false,
+      );
+
+      if (removes) {
+        pushStructuralHistory();
+        nodeDragHistoryPushed.current = false;
+      } else if (dragStart && !nodeDragHistoryPushed.current) {
+        pushHistory();
+        nodeDragHistoryPushed.current = true;
+      }
+
+      if (dragEnd) nodeDragHistoryPushed.current = false;
+
       const { nodes } = useSimulatorStore.getState();
       setNodes(applyNodeChanges(changes, nodes), changes.some(isStructuralNodeChange));
     },
-    [setNodes],
+    [pushHistory, pushStructuralHistory, setNodes],
   );
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange<DiagramEdge>[]) => {
+      if (changes.some((change) => change.type === 'remove')) {
+        pushStructuralHistory();
+      }
       const { edges } = useSimulatorStore.getState();
       setEdges(applyEdgeChanges(changes, edges), changes.some(isStructuralEdgeChange));
     },
-    [setEdges],
+    [pushStructuralHistory, setEdges],
   );
 
   const onConnect = useCallback(

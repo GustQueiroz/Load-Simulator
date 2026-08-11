@@ -41,6 +41,7 @@ export interface SliderFieldProps {
   accent?: string;
   format?: (value: number) => string;
   onChange: (value: number) => void;
+  disabled?: boolean;
 }
 
 export function SliderField({
@@ -53,6 +54,7 @@ export function SliderField({
   accent = '#38bdf8',
   format,
   onChange,
+  disabled = false,
 }: SliderFieldProps) {
   const t = useT();
   const id = useId();
@@ -110,10 +112,12 @@ export function SliderField({
         ) : (
           <button
             type="button"
-            className="nodrag nopan rounded px-1 py-0.5 font-mono text-xs text-ink tabular-nums transition-colors hover:bg-white/5 hover:text-sky-200 focus-visible:bg-white/5 focus-visible:text-sky-200 focus-visible:outline-none"
-            title={t('field.editValue')}
+            className="nodrag nopan rounded px-1 py-0.5 font-mono text-xs text-ink tabular-nums transition-colors hover:bg-white/5 hover:text-sky-200 focus-visible:bg-white/5 focus-visible:text-sky-200 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-ink"
+            title={disabled ? undefined : t('field.editValue')}
             aria-label={t('field.valueClick', { label, value: format ? format(value) : value })}
+            disabled={disabled}
             onClick={() => {
+              if (disabled) return;
               cancelCommitRef.current = false;
               setDraft(String(value));
             }}
@@ -128,12 +132,13 @@ export function SliderField({
       <input
         id={id}
         type="range"
-        className="nodrag"
+        className="nodrag disabled:cursor-not-allowed disabled:opacity-50"
         style={style}
         min={min}
         max={max}
         step={step}
         value={value}
+        disabled={disabled}
         aria-label={label}
         onChange={(event) => onChange(Number(event.target.value))}
       />
@@ -163,6 +168,7 @@ export interface SelectFieldProps<T extends string> {
   value: T;
   options: readonly { value: T; label: string }[];
   onChange: (value: T) => void;
+  disabled?: boolean;
 }
 
 export function SelectField<T extends string>({
@@ -171,13 +177,15 @@ export function SelectField<T extends string>({
   value,
   options,
   onChange,
+  disabled = false,
 }: SelectFieldProps<T>) {
   return (
     <FieldFrame label={label} hint={hint}>
       <select
-        className="nodrag h-8 w-full rounded-lg border border-line bg-[#101c2e] px-2 text-xs text-ink transition-colors hover:border-sky-500/40 focus-visible:border-sky-400 focus-visible:outline-none"
+        className="nodrag h-8 w-full rounded-lg border border-line bg-[#101c2e] px-2 text-xs text-ink transition-colors hover:border-sky-500/40 focus-visible:border-sky-400 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         value={value}
         aria-label={label}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.value as T)}
       >
         {options.map((option) => (
@@ -195,11 +203,17 @@ export interface ToggleFieldProps {
   hint?: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
+  disabled?: boolean;
 }
 
-export function ToggleField({ label, hint, checked, onChange }: ToggleFieldProps) {
+export function ToggleField({ label, hint, checked, onChange, disabled = false }: ToggleFieldProps) {
   return (
-    <label className="nodrag flex cursor-pointer items-center justify-between gap-2 py-0.5">
+    <label
+      className={cn(
+        'nodrag flex items-center justify-between gap-2 py-0.5',
+        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+      )}
+    >
       <span className="flex items-center gap-1 text-[11px] font-medium tracking-wide text-muted uppercase">
         {label}
         {hint ? <InfoTip text={hint} /> : null}
@@ -209,6 +223,7 @@ export function ToggleField({ label, hint, checked, onChange }: ToggleFieldProps
           type="checkbox"
           className="peer sr-only"
           checked={checked}
+          disabled={disabled}
           onChange={(event) => onChange(event.target.checked)}
         />
         <span className="h-4.5 w-8 rounded-full bg-[#26364f] transition-colors peer-checked:bg-sky-500 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-sky-400" />

@@ -3,7 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { dinNodeDataSchema } from '@/application/serialization/din.schema';
 import { createDefaultConfig, DEFAULT_CONFIGS } from '@/domain/nodes/defaults';
 import { NODE_KINDS } from '@/domain/simulation/node-kind';
-import { FIELD_SPECS, primaryFields } from '@/features/diagram/nodes/field-specs';
+import {
+  ALGORITHM_LABEL_KEYS,
+  FIELD_SPECS,
+  primaryFields,
+  TRAFFIC_MODE_LABEL_KEYS,
+} from '@/features/diagram/nodes/field-specs';
+import { en } from '@/i18n/messages/en';
+import { ptBR, type MessageKey } from '@/i18n/messages/pt-BR';
 
 describe('configuration field specs', () => {
   it.each(NODE_KINDS)('every "%s" control points at a real property', (kind) => {
@@ -23,6 +30,28 @@ describe('configuration field specs', () => {
       if (spec.type !== 'slider') continue;
       expect(config[spec.key], `${kind}.${spec.key}`).toBeGreaterThanOrEqual(spec.min);
       expect(config[spec.key], `${kind}.${spec.key}`).toBeLessThanOrEqual(spec.max);
+    }
+  });
+
+  it('select options resolve to catalogue keys in both locales', () => {
+    const labelKeys = [
+      ...Object.values(TRAFFIC_MODE_LABEL_KEYS),
+      ...Object.values(ALGORITHM_LABEL_KEYS),
+    ] as MessageKey[];
+
+    for (const key of labelKeys) {
+      expect(ptBR[key].trim().length).toBeGreaterThan(0);
+      expect(en[key].trim().length).toBeGreaterThan(0);
+    }
+
+    for (const kind of NODE_KINDS) {
+      for (const spec of FIELD_SPECS[kind]) {
+        if (spec.type !== 'select') continue;
+        for (const option of spec.options) {
+          expect(ptBR[option.labelKey].trim().length).toBeGreaterThan(0);
+          expect(en[option.labelKey].trim().length).toBeGreaterThan(0);
+        }
+      }
     }
   });
 });

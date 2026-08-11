@@ -7,6 +7,7 @@ import { createEmptyEdgeMetrics, createEmptyMetrics } from '@/domain/simulation/
 import type { EdgeMetrics, NodeMetrics } from '@/domain/simulation/metrics';
 
 import { createDiagramSlice } from './diagram.slice';
+import { createHistorySlice } from './history.slice';
 import { createPresentationSlice, createSettingsSlice } from './settings.slice';
 import { createSimulationSlice } from './simulation.slice';
 import type { SimulatorState } from './types';
@@ -18,6 +19,7 @@ export const useSimulatorStore = create<SimulatorState>()(
     ...createSimulationSlice(...args),
     ...createSettingsSlice(...args),
     ...createPresentationSlice(...args),
+    ...createHistorySlice(...args),
   })),
 );
 

@@ -1,9 +1,10 @@
 'use client';
 
-import { MousePointerClick } from 'lucide-react';
+import { Map, MousePointerClick } from 'lucide-react';
 
 import { PRESETS } from '@/application/presets/presets';
 import { Button } from '@/components/ui/Button';
+import { useLessonSessionStore } from '@/features/lessons/lesson-session-store';
 import { useLoadPreset } from '@/features/onboarding/useLoadPreset';
 import { useT } from '@/i18n/I18nProvider';
 import { presetDescriptionKey, presetNameKey } from '@/i18n/keys';
@@ -11,6 +12,7 @@ import { presetDescriptionKey, presetNameKey } from '@/i18n/keys';
 export function EmptyCanvasHint() {
   const t = useT();
   const loadPreset = useLoadPreset();
+  const openMap = useLessonSessionStore((state) => state.openMap);
   const lesson = PRESETS[0];
 
   return (
@@ -18,9 +20,19 @@ export function EmptyCanvasHint() {
       <MousePointerClick className="mx-auto mb-3 size-6 text-sky-400" aria-hidden />
       <h2 className="text-base font-semibold text-ink">{t('empty.title')}</h2>
       <p className="mt-1.5 text-xs leading-relaxed text-muted">{t('empty.body')}</p>
-      <Button variant="primary" size="sm" className="mt-4" onClick={() => loadPreset(lesson.id)}>
-        {t('empty.lessonCta')}
-      </Button>
+      <div className="mt-4 flex flex-col items-stretch gap-2">
+        <Button
+          variant="primary"
+          size="sm"
+          icon={<Map className="size-3.5" />}
+          onClick={openMap}
+        >
+          {t('empty.worldmapCta')}
+        </Button>
+        <Button variant="subtle" size="sm" onClick={() => loadPreset(lesson.id)}>
+          {t('empty.lessonCta')}
+        </Button>
+      </div>
       <p className="mt-2 text-[10.5px] leading-snug text-faint">
         <span className="font-medium text-muted">{t(presetNameKey(lesson.id))}.</span>{' '}
         {t(presetDescriptionKey(lesson.id))}

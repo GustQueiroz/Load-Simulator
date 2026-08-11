@@ -196,6 +196,13 @@ export const ptBR = {
   'field.baseLatency': 'Latência base',
   'field.injectedFailure': 'Falhas injetadas',
   'field.algorithm': 'Algoritmo',
+  'option.traffic.constant': 'Constante',
+  'option.traffic.ramp': 'Rampa',
+  'option.traffic.spike': 'Spike',
+  'option.algorithm.roundRobin': 'Round robin',
+  'option.algorithm.weightedRoundRobin': 'Round robin ponderado',
+  'option.algorithm.leastLoad': 'Menor carga',
+  'option.algorithm.random': 'Aleatório',
   'field.rateLimit': 'Rate limit',
   'field.auth': 'Autenticação',
   'field.authLatency': 'Latência de auth',
@@ -283,8 +290,10 @@ export const ptBR = {
   'tour.back': 'Voltar',
   'tour.next': 'Próximo',
   'tour.finish': 'Abrir “{preset}”',
+  'tour.finishLesson': 'Começar fase 0.1',
   'tour.step1.title': 'Escolha um cenário',
-  'tour.step1.body': 'Os cenários já trazem a lição montada. Abra “Cenários…” na barra e leia a linha do que a turma deve ver.',
+  'tour.step1.body':
+    'Abra “Trilha” na barra para o mapa de exercícios, ou “Cenários…” para demos prontas.',
   'tour.step2.title': 'Aperte Iniciar',
   'tour.step2.body': 'O relógio começa e a carga flui pelos componentes. Espaço também inicia e pausa.',
   'tour.step3.title': 'Mexa num slider',
@@ -318,6 +327,8 @@ export const ptBR = {
   'shortcuts.fit': 'enquadrar',
   'shortcuts.present': 'modo apresentação',
   'shortcuts.delete': 'remover seleção',
+  'shortcuts.undo': 'desfazer',
+  'shortcuts.redo': 'refazer',
   'shortcuts.export': 'exportar .din',
   'shortcuts.key.space': 'Espaço',
   'shortcuts.key.delete': 'Del',
@@ -332,6 +343,12 @@ export const ptBR = {
   'toast.linkCopyFailed': 'Não foi possível copiar o link.',
   'toast.sharedOpened': 'Diagrama compartilhado “{name}” aberto.',
   'toast.presetOpened': 'Cenário “{name}” aberto.',
+  'toast.nothingToUndo': 'Nada para desfazer.',
+  'toast.nothingToRedo': 'Nada para refazer.',
+  'toast.dropUnsupported': 'Solte um arquivo .din (ou JSON exportado) para abrir o projeto.',
+
+  'drop.din.title': 'Solte para abrir',
+  'drop.din.body': 'Arquivos .din compatíveis são importados na hora — sem passar pelo menu.',
 
   'error.connection.unknownEndpoint': 'Conexão inválida: componente inexistente.',
   'error.connection.selfLoop': 'Não é possível conectar um componente a ele mesmo.',
@@ -350,6 +367,201 @@ export const ptBR = {
   'error.import.noMigration': 'Não há migração da versão {from} para {to}.',
 
   'error.cycle': 'O diagrama contém um ciclo. Ciclos síncronos não são suportados nesta versão.',
+
+  'toolbar.worldmap': 'Trilha',
+  'toolbar.worldmapTitle': 'Abrir mapa de exercícios (Mundos 0–3)',
+
+  'worldmap.title': 'Mapa de exercícios',
+  'worldmap.subtitle': 'Mundos 0–3 — do tutorial guiado às missões de plantão.',
+  'worldmap.close': 'Fechar mapa',
+  'worldmap.play': 'Jogar',
+  'worldmap.replay': 'Rejogar',
+  'worldmap.minutes': 'min',
+  'worldmap.stars': '{count} estrela(s)',
+
+  'world.0.name': 'Mundo 0 — Controles',
+  'world.0.blurb': 'Play, pause e um slider. Diagrama já montado.',
+  'world.1.name': 'Mundo 1 — Capacidade',
+  'world.1.blurb': 'Servidor, load balancer, cache, gateway e fila.',
+  'world.2.name': 'Mundo 2 — Lovelace',
+  'world.2.blurb': 'Missões reais. Sem dicas. Tráfego travado.',
+  'world.3.name': 'Mundo 3 — Dijkstra',
+  'world.3.blurb': 'Orçamento, Black Friday e arquitetura sob pressão.',
+
+  'mission.kicker': 'Missão {id}',
+  'mission.hud.kicker': 'Plantão {id}',
+  'mission.situation': 'Situação',
+  'mission.objective': 'Objetivo',
+  'mission.constraints': 'Restrições',
+  'mission.budget': 'Orçamento: {amount}/mês',
+  'mission.trafficLocked': 'Carga de entrada travada',
+  'mission.accept': 'Aceitar missão',
+  'mission.close': 'Fechar briefing',
+  'mission.reopen': 'Reabrir briefing',
+
+  'lesson.fieldLocked': 'Travado nesta missão — a carga de entrada (ou este recurso) não pode mudar.',
+  'lesson.complete.stars': '{count} de 3 estrelas',
+  'lesson.locked': 'Passe a fase anterior para desbloquear.',
+  'lesson.started': 'Fase “{name}” iniciada.',
+  'lesson.exit': 'Sair da fase',
+  'lesson.hud.kicker': 'Fase {id}',
+  'lesson.balloon.kicker': 'Dica {step} de {total}',
+  'lesson.balloon.next': 'Continuar',
+  'lesson.balloon.wait': 'Faça o passo para avançar',
+  'lesson.balloon.done': 'Pronto — continue',
+  'lesson.hold': 'Segurando {current}s / {required}s',
+  'lesson.complete.kicker': 'Fase concluída',
+  'lesson.complete.body': 'Missão cumprida. Você desbloqueou a próxima fase no mapa.',
+  'lesson.complete.close': 'Fechar',
+  'lesson.complete.map': 'Ver mapa',
+  'lesson.complete.next': 'Próxima ({id})',
+  'lesson.complete.worldDone': 'Ver mapa',
+
+  'lesson.0.1.title': 'Play, pause, olhar o gargalo',
+  'lesson.0.1.goal': 'Inicie, veja o gargalo no painel Sistema e pause.',
+  'lesson.0.1.balloon.play.title': 'Aperte Iniciar',
+  'lesson.0.1.balloon.play.body': 'Espaço também funciona. A carga começa a fluir pelo diagrama.',
+  'lesson.0.1.balloon.bottleneck.title': 'Olhe o gargalo',
+  'lesson.0.1.balloon.bottleneck.body': 'O painel Sistema aponta o nó sob maior pressão. Clique nele se quiser focar.',
+  'lesson.0.1.balloon.pause.title': 'Pause a simulação',
+  'lesson.0.1.balloon.pause.body': 'Aperte Parar (ou Espaço). Saber pausar é parte do controle da demo.',
+
+  'lesson.0.2.title': 'Slider muda o destino',
+  'lesson.0.2.goal': 'Suba o RPS do Cliente até o servidor ficar crítico por 3 segundos.',
+  'lesson.0.2.balloon.start.title': 'Comece em marcha lenta',
+  'lesson.0.2.balloon.start.body': 'Inicie. O servidor ainda está folgado — o Cliente manda só 40 req/s.',
+  'lesson.0.2.balloon.slider.title': 'Mexa no RPS do Cliente',
+  'lesson.0.2.balloon.slider.body': 'Arraste o slider do Cliente para cima (cerca de 80+). Ignore o banco por enquanto.',
+  'lesson.0.2.balloon.hold.title': 'Segure o crítico',
+  'lesson.0.2.balloon.hold.body': 'Quando o servidor ficar vermelho, mantenha assim por 3 segundos.',
+
+  'lesson.1.1.title': 'Servidor único satura',
+  'lesson.1.1.goal': 'Faça o servidor saturar sem deixar o banco crítico.',
+  'lesson.1.1.balloon.start.title': 'Inicie a carga',
+  'lesson.1.1.balloon.start.body': 'O banco está folgado de propósito. O teto que importa é o do servidor.',
+  'lesson.1.1.balloon.raise.title': 'Estoure o servidor',
+  'lesson.1.1.balloon.raise.body': 'Suba o RPS do Cliente até o servidor ficar crítico (≥ 80%).',
+  'lesson.1.1.balloon.compare.title': 'Compare com o banco',
+  'lesson.1.1.balloon.compare.body': 'O banco deve continuar abaixo de 60%. Capacidade é local — cada nó tem o seu teto.',
+
+  'lesson.1.2.title': 'Escala horizontal engana',
+  'lesson.1.2.goal': 'Veja três servers verdes e o banco como gargalo.',
+  'lesson.1.2.balloon.look.title': 'Servers confortáveis',
+  'lesson.1.2.balloon.look.body': 'O load balancer espalhou a carga. Os três servidores ficam no verde.',
+  'lesson.1.2.balloon.db.title': 'O funil é o banco',
+  'lesson.1.2.balloon.db.body': 'Toda resposta ainda passa por um único banco pequeno. Ele vira o gargalo.',
+  'lesson.1.2.balloon.lesson.title': 'A lição',
+  'lesson.1.2.balloon.lesson.body': 'Escalar o stateless não resolve o stateful. O painel Sistema aponta o DB.',
+
+  'lesson.1.3.title': 'Salve o banco com cache',
+  'lesson.1.3.goal': 'Suba o hit rate do cache até o DB sair do crítico.',
+  'lesson.1.3.balloon.pain.title': 'DB no vermelho',
+  'lesson.1.3.balloon.pain.body': 'Com 50% de hit rate, metade das requisições ainda bate no banco.',
+  'lesson.1.3.balloon.raise.title': 'Suba o hit rate',
+  'lesson.1.3.balloon.raise.body': 'Arraste o hit rate do Cache para ≥ 85%. Só o miss segue ao banco.',
+  'lesson.1.3.balloon.relief.title': 'Banco aliviado',
+  'lesson.1.3.balloon.relief.body': 'Com poucos misses, a utilização do DB cai. Cache bem colocado muda a conta.',
+
+  'lesson.1.4.title': 'Gateway protege o serviço',
+  'lesson.1.4.goal': 'Ajuste o rate limit para o servidor ficar saudável (com rejeições na borda).',
+  'lesson.1.4.balloon.overload.title': 'Serviço derretendo',
+  'lesson.1.4.balloon.overload.body': '5.000 req/s passam no gateway sem freio. O servidor não aguenta.',
+  'lesson.1.4.balloon.limit.title': 'Aperte o rate limit',
+  'lesson.1.4.balloon.limit.body': 'Baixe o rate limit do Gateway para cerca de 1.000 req/s.',
+  'lesson.1.4.balloon.safe.title': 'Rejeitar na porta',
+  'lesson.1.4.balloon.safe.body': 'O gateway descarta o excesso e o servidor volta ao normal. Melhor 429 do que queda.',
+
+  'lesson.1.5.title': 'Fila absorve o spike',
+  'lesson.1.5.goal': 'Veja o backlog subir no pico e o worker drenar sem ficar crítico.',
+  'lesson.1.5.balloon.spike.title': 'Lá vem o pico',
+  'lesson.1.5.balloon.spike.body': 'O produtor dispara um spike. Observe o gráfico de carga — não precisa mexer em nada.',
+  'lesson.1.5.balloon.backlog.title': 'Backlog na fila',
+  'lesson.1.5.balloon.backlog.body': 'A fila segura o que o worker não dá conta. Depth > 0 é esperado no pico.',
+  'lesson.1.5.balloon.drain.title': 'Depois drena',
+  'lesson.1.5.balloon.drain.body': 'Passado o spike, o worker drena o backlog no próprio ritmo — sem crítico no steady.',
+
+  'lesson.2.1.title': 'Leitura cara demais',
+  'lesson.2.1.goal': 'O banco está no limite com a loja no ar. Estabilize a leitura sem mudar o tráfego.',
+  'lesson.2.1.brief.situation':
+    'A equipe de dados abriu um chamado: o checkout está lento e o banco aparece em vermelho no monitoramento. Existe um nó de cache no desenho, mas ninguém tem certeza se ele está no caminho certo. A loja não pode “pedir menos clientes” — o tráfego da Black Friday já está contratado.',
+  'lesson.2.1.brief.objective':
+    'Faça o banco sair da zona crítica e mantenha a taxa de falha baixa enquanto a simulação roda.',
+  'lesson.2.1.brief.constraints':
+    'Você não pode alterar a carga de entrada. Pode redesenhar conexões, ajustar componentes e adicionar o que fizer sentido. Orçamento-alvo: cerca de US$ 220/mês.',
+
+  'lesson.2.2.title': 'Frota desigual',
+  'lesson.2.2.goal': 'Dois servidores atrás do balanceador; um deles está derretendo. Equalize a dor.',
+  'lesson.2.2.brief.situation':
+    'Ops migrou metade do parque para máquinas menores para economizar. Depois disso, um dos servidores dispara alerta o tempo todo, enquanto o outro parece folgado. O balanceador está “do jeito que veio de fábrica”.',
+  'lesson.2.2.brief.objective':
+    'Nenhum servidor pode ficar crítico. A falha do sistema precisa cair para um nível aceitável.',
+  'lesson.2.2.brief.constraints':
+    'A entrada de tráfego está travada. Mexa no balanceamento, nas capacidades ou na topologia — o que for necessário para a frota sobreviver junta.',
+
+  'lesson.2.3.title': 'Checkout no pico',
+  'lesson.2.3.goal': 'Um spike de promoção derruba o worker. Aguente o pico sem perder o pedido.',
+  'lesson.2.3.brief.situation':
+    'Marketing liberou um cupom viral. O gráfico de entrada sobe como um espinho e o serviço síncrono engasga. Produto quer “não perder pedido” mesmo que a confirmação demore alguns segundos.',
+  'lesson.2.3.brief.objective':
+    'Depois do pico, a falha precisa ficar controlada e o worker não pode permanecer crítico. A arquitetura tem de absorver a rajada.',
+  'lesson.2.3.brief.constraints':
+    'O perfil de spike está travado. Você pode redesenhar o caminho entre produtor e banco. Pense em desacoplamento — mas ninguém no briefing vai dizer o nome da peça.',
+
+  'lesson.2.4.title': 'Porta escancarada',
+  'lesson.2.4.goal': 'Tráfego alto, borda permissiva, banco pequeno. Salve o núcleo.',
+  'lesson.2.4.brief.situation':
+    'Um parceiro começou a martelar a API pública. O gateway está praticamente sem freio, o app ainda responde, e o banco — dimensionado para o tráfego de terça-feira — está pedindo socorro.',
+  'lesson.2.4.brief.objective':
+    'Proteja servidor e banco. Aceitar tudo não é sucesso: complete uma fração saudável do tráfego sem incendiar o stateful.',
+  'lesson.2.4.brief.constraints':
+    'Carga de entrada travada. Orçamento-alvo ~US$ 260/mês. Use a borda, o meio ou os dois — o chamado não lista a solução.',
+
+  'lesson.2.5.title': 'Botão da campanha',
+  'lesson.2.5.goal': 'O automator da campanha está ligado. O banco pequeno não aguenta o clique em massa.',
+  'lesson.2.5.brief.situation':
+    'Growth ligou o automator do “Botão da promoção” e foi embora. Cada pulso gera carga no servidor e no banco. Financeiro não autoriza aumentar o banco nesta sprint.',
+  'lesson.2.5.brief.objective':
+    'Tire o sistema do vermelho. O banco precisa respirar sem você desligar a campanha (o ritmo do automator está travado).',
+  'lesson.2.5.brief.constraints':
+    'Não altere a taxa do automator nem o RPS de fontes de tráfego. Controles de proteção no próprio botão ou mudanças a jusante são permitidos.',
+
+  'lesson.3.1.title': 'Black Friday',
+  'lesson.3.1.goal': 'Site no ar no pico, falha controlada, dentro do orçamento.',
+  'lesson.3.1.brief.situation':
+    '00h12 da Black Friday. O status page ficou vermelho, o CEO mandou mensagem e o time de plantão herdou um desenho mínimo: um servidor magro e um banco apertado sob um spike brutal. Marketing não reduz tráfego. Finanças liberou no máximo US$ 240/mês para a stack.',
+  'lesson.3.1.brief.objective':
+    'Mantenha o site utilizável após o pico: falha baixa, conclusão aceitável, custo dentro do teto.',
+  'lesson.3.1.brief.constraints':
+    'Spike travado. Orçamento US$ 240/mês. Sem dicas de componente — só o resultado conta. Estrelas extras para margem de falha e custo mais baixo.',
+
+  'lesson.3.2.title': 'O banco não escala',
+  'lesson.3.2.goal': 'O banco é fixo. Proteja-o sem tocá-lo.',
+  'lesson.3.2.brief.situation':
+    'O DBA bloqueou qualquer alteração no banco até o próximo ciclo de capacidade. Enquanto isso, o produto dobrou o tráfego e a frota de app está confortável — o funil continua no disco.',
+  'lesson.3.2.brief.objective':
+    'Utilização do banco abaixo do crítico, falha controlada e boa taxa de conclusão, sem editar o nó do banco.',
+  'lesson.3.2.brief.constraints':
+    'Tráfego travado. Configuração do banco 100% bloqueada. Orçamento-alvo ~US$ 280/mês. Tudo que aliviar o stateful é válido — desde que não seja “aumentar o banco”.',
+
+  'lesson.3.3.title': 'Conta na nuvem',
+  'lesson.3.3.goal': 'A stack está saudável e cara. Entregue o mesmo SLA por menos.',
+  'lesson.3.3.brief.situation':
+    'FinOps marcou reunião. A arquitetura atual aguenta a carga com folga absurda — três frotais gordas, cache alto, banco generoso. A fatura mensal passou do combinado com o board (teto: US$ 200).',
+  'lesson.3.3.brief.objective':
+    'Mantenha falha baixa, conclusão alta e zero crítico, com custo mensal ≤ US$ 200.',
+  'lesson.3.3.brief.constraints':
+    'Tráfego travado. Pode remover ou enxugar o que sobrar. Estrelas extras quanto mais barato sem quebrar o SLA.',
+
+  'lesson.3.4.title': 'Arquiteto em plantão',
+  'lesson.3.4.goal': 'Só existe a fonte de tráfego. Construa o resto e segure a rampa.',
+  'lesson.3.4.brief.situation':
+    'Novo produto, prazo ontem. O time deixou apenas o gerador de carga no canvas — uma rampa que sobe sozinha. Você herda o plantão com orçamento de US$ 260/mês e zero diagrama pronto.',
+  'lesson.3.4.brief.objective':
+    'Monte uma arquitetura com pelo menos app e banco, sobreviva à rampa com falha baixa e fique dentro do orçamento.',
+  'lesson.3.4.brief.constraints':
+    'Carga de entrada travada. Paleta liberada. Não há gabarito — só critérios de sobrevivência e custo.',
+
+  'empty.worldmapCta': 'Abrir trilha de exercícios',
 } as const;
 
 export type MessageKey = keyof typeof ptBR;

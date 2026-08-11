@@ -52,6 +52,7 @@ export function ComponentNode({
         <NodeReadout nodeId={id} rows={rows} />
         <ConfigFields
           nodeId={id}
+          kind={kind}
           config={config}
           specs={primaryFields(kind)}
           accent={KIND_THEME[kind].accent}

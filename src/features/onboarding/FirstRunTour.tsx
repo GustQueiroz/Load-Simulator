@@ -3,13 +3,11 @@
 import { useState } from 'react';
 import { BookOpen, ChevronRight, X } from 'lucide-react';
 
-import { PRESETS } from '@/application/presets/presets';
 import { Button } from '@/components/ui/Button';
+import { useStartLesson } from '@/features/lessons/useStartLesson';
 import { useT } from '@/i18n/I18nProvider';
-import { presetNameKey } from '@/i18n/keys';
 
 import { useOnboardingStore } from './onboarding-store';
-import { useLoadPreset } from './useLoadPreset';
 
 const STEPS = [
   { title: 'tour.step1.title', body: 'tour.step1.body' },
@@ -22,7 +20,7 @@ export function FirstRunTour() {
   const t = useT();
   const open = useOnboardingStore((state) => state.tourOpen);
   const closeTour = useOnboardingStore((state) => state.closeTour);
-  const loadPreset = useLoadPreset();
+  const startLesson = useStartLesson();
   const [step, setStep] = useState(0);
 
   if (!open) return null;
@@ -91,14 +89,12 @@ export function FirstRunTour() {
                   setStep((value) => value + 1);
                   return;
                 }
-                loadPreset(PRESETS[0].id);
                 setStep(0);
                 closeTour();
+                startLesson('0.1');
               }}
             >
-              {last
-                ? t('tour.finish', { preset: t(presetNameKey(PRESETS[0].id)) })
-                : t('tour.next')}
+              {last ? t('tour.finishLesson') : t('tour.next')}
             </Button>
           </div>
         </footer>

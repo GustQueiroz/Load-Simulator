@@ -10,6 +10,7 @@ import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { notify } from '@/infrastructure/store/toast-store';
 
 import { bindSimulationEngine } from './engine-host';
+import { notifyLessonFrame } from '@/features/lessons/lesson-frame-bus';
 
 export function useSimulationEngine(): void {
   const t = useT();
@@ -45,6 +46,7 @@ export function useSimulationEngine(): void {
       const state = useSimulatorStore.getState();
       const frame = engine.tick(toSimulationNodes(state.nodes), toSimulationEdges(state.edges));
       state.commitFrame(frame);
+      notifyLessonFrame();
 
       if (frame.cycleNodeIds?.length && !cycleReportedRef.current) {
         cycleReportedRef.current = true;

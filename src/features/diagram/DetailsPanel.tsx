@@ -10,7 +10,7 @@ import { useNodeMetrics, useSimulatorStore } from '@/infrastructure/store/simula
 
 import { explainNode } from './explain';
 import { ConfigFields } from './nodes/ConfigFields';
-import { FIELD_SPECS } from './nodes/field-specs';
+import { fieldsFor } from './nodes/field-specs';
 import { KIND_THEME } from './nodes/node-theme';
 
 export function DetailsPanel() {
@@ -178,8 +178,9 @@ function SelectedNodeDetails({ nodeId }: { nodeId: string }) {
 
       <ConfigFields
         nodeId={node.id}
+        kind={node.data.kind}
         config={node.data.config}
-        specs={FIELD_SPECS[node.data.kind]}
+        specs={fieldsFor(node.data.kind)}
         accent={theme.accent}
       />
     </div>

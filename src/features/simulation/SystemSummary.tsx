@@ -20,7 +20,7 @@ export function SystemSummary() {
   const setFocusedNode = useSimulatorStore((state) => state.setFocusedNode);
 
   return (
-    <section className="rounded-xl border border-line bg-panel">
+    <section className="rounded-xl border border-line bg-panel" data-lesson-anchor="system-panel">
       <header className="flex items-center gap-2 border-b border-line/70 px-3 py-2.5">
         <Activity className="size-3.5 text-sky-400" aria-hidden />
         <h2 className="flex-1 text-xs font-semibold text-ink">{t('system.title')}</h2>

@@ -37,18 +37,31 @@ const I18nContext = createContext<I18nContextValue | null>(null);
 
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
-  const [resolved, setResolved] = useState(false);
+export function I18nProvider({
+  children,
+  initialLocale,
+}: {
+  children: ReactNode;
+  /** Skip browser detection — useful in tests. */
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale ?? DEFAULT_LOCALE);
+  const [resolved, setResolved] = useState(Boolean(initialLocale));
 
   useIsomorphicLayoutEffect(() => {
+    if (initialLocale) {
+      setFormatLocale(initialLocale);
+      document.documentElement.lang = initialLocale;
+      return;
+    }
+
     const detected = detectLocale();
     setLocaleState(detected);
     setFormatLocale(detected);
     document.documentElement.lang = detected;
 
     setResolved(true);
-  }, []);
+  }, [initialLocale]);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
