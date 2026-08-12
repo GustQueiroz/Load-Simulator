@@ -22,7 +22,9 @@ import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { ComponentPalette, PALETTE_DRAG_TYPE } from './ComponentPalette';
 import { EDGE_TYPES } from './edges/TrafficEdge';
 import { EmptyCanvasHint } from './EmptyCanvasHint';
+import { useCanvasKeyboard } from './hooks/useCanvasKeyboard';
 import { useDiagramSync } from './hooks/useDiagramSync';
+import { KeyboardLinkBanner } from './KeyboardLinkBanner';
 import { NODE_TYPES } from './nodes';
 import { KIND_THEME } from './nodes/node-theme';
 
@@ -43,6 +45,7 @@ export function DiagramCanvas() {
 
   const t = useT();
   const { onNodesChange, onEdgesChange, onConnect } = useDiagramSync();
+  const keyboard = useCanvasKeyboard(onConnect, !presenting);
   const { screenToFlowPosition, fitView } = useReactFlow();
   const nodesInitialized = useNodesInitialized();
   const hasFirstFrame = useSimulatorStore((state) => state.tick > 0);
@@ -97,7 +100,12 @@ export function DiagramCanvas() {
   }, []);
 
   return (
-    <div className="relative h-full w-full" onDrop={onDrop} onDragOver={onDragOver}>
+    <div
+      className="relative h-full w-full"
+      onDrop={onDrop}
+      onDragOver={onDragOver}
+      onKeyDown={keyboard.onKeyDown}
+    >
       <ReactFlow<DiagramNode, DiagramEdge>
         nodes={nodes}
         edges={edges}
@@ -153,6 +161,12 @@ export function DiagramCanvas() {
         {nodes.length === 0 ? (
           <Panel position="top-center" className="!mt-24">
             <EmptyCanvasHint />
+          </Panel>
+        ) : null}
+
+        {keyboard.link ? (
+          <Panel position="top-center" className="!mt-2">
+            <KeyboardLinkBanner link={keyboard.link} onCancel={keyboard.cancelLink} />
           </Panel>
         ) : null}
       </ReactFlow>

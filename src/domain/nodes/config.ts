@@ -11,7 +11,28 @@ export interface BaseNodeConfig {
 export const CLIENT_TRAFFIC_MODES = ['constant', 'ramp', 'spike'] as const;
 export type ClientTrafficMode = (typeof CLIENT_TRAFFIC_MODES)[number];
 
-export interface ClientConfig extends BaseNodeConfig {
+
+/**
+ * What a component does when it has more than one downstream dependency.
+ *
+ * `broadcast` — every dependency is called once per request (a server that
+ * reads a cache *and* writes a database pays for both).
+ * `split` — the flow is shared between them (sharding, or a second copy of
+ * the same dependency).
+ *
+ * Balancers and queues are always `split`: distributing is what they are.
+ */
+export type FanoutMode = 'broadcast' | 'split';
+
+export interface FanoutConfig {
+  fanout: FanoutMode;
+}
+
+export interface ClientConfig extends BaseNodeConfig, FanoutConfig {
+  /** Re-send what failed downstream. This is how an outage feeds itself. */
+  retryEnabled: boolean;
+  /** Attempts after the first one. */
+  maxRetries: number;
 
   rps: number;
   trafficMode: ClientTrafficMode;
@@ -26,7 +47,7 @@ export interface ClientConfig extends BaseNodeConfig {
   spikeWidthSeconds: number;
 }
 
-export interface ButtonConfig extends BaseNodeConfig {
+export interface ButtonConfig extends BaseNodeConfig, FanoutConfig {
   requestsPerClick: number;
 
   automatorRps: number;
@@ -54,14 +75,14 @@ export interface LoadBalancerConfig extends BaseNodeConfig {
   weights: Record<string, number>;
 }
 
-export interface ApiGatewayConfig extends BaseNodeConfig {
+export interface ApiGatewayConfig extends BaseNodeConfig, FanoutConfig {
   capacityRps: number;
   rateLimitRps: number;
   authEnabled: boolean;
   authLatencyMs: number;
 }
 
-export interface ServerConfig extends BaseNodeConfig {
+export interface ServerConfig extends BaseNodeConfig, FanoutConfig {
 
   capacityRps: number;
   instances: number;
@@ -70,7 +91,7 @@ export interface ServerConfig extends BaseNodeConfig {
   timeoutMs: number;
 }
 
-export interface CacheConfig extends BaseNodeConfig {
+export interface CacheConfig extends BaseNodeConfig, FanoutConfig {
   capacityRps: number;
 
   hitRate: number;
@@ -86,7 +107,7 @@ export interface MessageQueueConfig extends BaseNodeConfig {
   maxBacklog: number;
 }
 
-export interface DatabaseConfig extends BaseNodeConfig {
+export interface DatabaseConfig extends BaseNodeConfig, FanoutConfig {
   capacityRps: number;
   maxConnections: number;
   maxQueueSize: number;

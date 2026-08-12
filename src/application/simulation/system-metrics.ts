@@ -3,6 +3,7 @@ import type { SimulationGraph } from '@/domain/simulation/graph';
 import type { NodeMetrics, SystemMetrics } from '@/domain/simulation/metrics';
 import { isTrafficSource } from '@/domain/simulation/node-kind';
 import { worstStatus } from '@/domain/simulation/status';
+import { percentileOfOutcomes, type WeightedLatency } from '@/domain/simulation/traffic';
 import { clamp01, safeDivide } from '@/lib/math';
 
 const BOTTLENECK_WEIGHTS = { utilization: 0.65, failure: 0.2, queue: 0.15 } as const;
@@ -19,6 +20,7 @@ export function computeSystemMetrics(
   let droppedRps = 0;
   let bufferedRps = 0;
   let clientWeight = 0;
+  const clientTails: WeightedLatency[] = [];
   let latencyProduct = 0;
 
   for (const node of graph.nodes) {
@@ -35,6 +37,7 @@ export function computeSystemMetrics(
       generatedRps += nodeMetrics.processedRps;
       clientWeight += nodeMetrics.outgoingRps;
       latencyProduct += nodeMetrics.outgoingRps * nodeMetrics.responseLatencyMs;
+      clientTails.push({ share: nodeMetrics.outgoingRps, latencyMs: nodeMetrics.responseP95Ms });
     }
   }
 
@@ -46,6 +49,7 @@ export function computeSystemMetrics(
     droppedRps,
     bufferedRps,
     approximateEndToEndLatencyMs: clientWeight > 0 ? latencyProduct / clientWeight : 0,
+    approximateP95LatencyMs: percentileOfOutcomes(clientTails),
     bottleneckNodeId: findBottleneck(graph, metrics),
     worstStatus: worstStatus([...metrics.values()].map((entry) => entry.status)),
   };

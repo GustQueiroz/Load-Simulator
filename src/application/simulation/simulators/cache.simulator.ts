@@ -1,9 +1,10 @@
 import { statusFromUtilization } from '@/domain/simulation/status';
+import { percentileOfOutcomes } from '@/domain/simulation/traffic';
 import { clamp01, safeDivide } from '@/lib/math';
 
 import { combineFailureRates, effectiveFailureRate, totalFailedRps } from '../models/failure';
 import { capLatency, saturationMultiplier } from '../models/latency';
-import { BROADCAST, type SimulatorFor } from '../types';
+import { routingFor, type SimulatorFor } from '../types';
 
 export const cacheSimulator: SimulatorFor<'cache'> = {
   simulate(config, _runtime, input) {
@@ -27,7 +28,20 @@ export const cacheSimulator: SimulatorFor<'cache'> = {
       (1 - hitRate) * Math.max(0, config.missOverheadMs);
     const localLatencyMs =
       (Math.max(0, config.baseLatencyMs) + lookupLatencyMs) * saturationMultiplier(utilization);
+
+    // A cache is two populations, not one average: hits answered here and
+    // misses that pay the lookup and then go on. Once misses are more than 5%
+    // of the traffic, they *are* the tail — which is the whole reason a p95
+    // exists in this model.
+    const saturation = saturationMultiplier(utilization);
+    const base = Math.max(0, config.baseLatencyMs);
+    const localP95Ms = percentileOfOutcomes([
+      { share: hitRate, latencyMs: (base + Math.max(0, config.hitLatencyMs)) * saturation },
+      { share: 1 - hitRate, latencyMs: (base + Math.max(0, config.missOverheadMs)) * saturation },
+    ]);
+
     const totalLatencyMs = capLatency(input.weightedLatencyMs + localLatencyMs);
+    const totalP95Ms = capLatency(input.p95LatencyMs + localP95Ms);
 
     return {
       metrics: {
@@ -41,14 +55,16 @@ export const cacheSimulator: SimulatorFor<'cache'> = {
         utilization,
         status: statusFromUtilization(utilization),
         localLatencyMs,
+        localP95Ms: capLatency(localP95Ms),
         totalLatencyMs,
       },
       outputs: [
         {
           rps: outgoingRps,
           latencyMs: totalLatencyMs,
+          p95LatencyMs: totalP95Ms,
           failureRate: combineFailureRates(input.inheritedFailureRate, failureRate),
-          routing: BROADCAST,
+          routing: routingFor(config),
         },
       ],
     };

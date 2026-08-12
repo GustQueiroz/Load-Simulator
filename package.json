@@ -29,7 +29,10 @@
     "perf:ui": "node scripts/perf-ui.mjs",
     "perf": "npm run test:perf && npm run perf:weight && npm run perf:ui",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run typecheck && npm run lint && npm run architecture && npm test && npm run build"
+    "verify": "npm run typecheck && npm run lint && npm run architecture && npm test && npm run build",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "preview:e2e": "npx --yes serve out -l 3011 -s"
   },
   "dependencies": {
     "@xyflow/react": "^12.11.2",
@@ -42,6 +45,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",

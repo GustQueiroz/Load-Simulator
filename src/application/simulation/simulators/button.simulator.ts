@@ -1,7 +1,7 @@
 import { clamp01 } from '@/lib/math';
 import { statusFromUtilization } from '@/domain/simulation/status';
 
-import { BROADCAST, type SimulatorFor } from '../types';
+import { routingFor, type SimulatorFor } from '../types';
 
 export const buttonSimulator: SimulatorFor<'button'> = {
   simulate(config, runtime, _input, context) {
@@ -71,6 +71,7 @@ export const buttonSimulator: SimulatorFor<'button'> = {
               ? 'warning'
               : 'idle',
         localLatencyMs,
+        localP95Ms: localLatencyMs,
         totalLatencyMs: localLatencyMs,
         queueDepth: pending,
         cooldownRemainingMs: cooldown,
@@ -80,8 +81,9 @@ export const buttonSimulator: SimulatorFor<'button'> = {
         {
           rps: sentRps,
           latencyMs: localLatencyMs,
+          p95LatencyMs: localLatencyMs,
           failureRate,
-          routing: BROADCAST,
+          routing: routingFor(config),
         },
       ],
       runtimePatch: {

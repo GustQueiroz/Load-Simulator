@@ -14,6 +14,11 @@ const rows: MetricRowsBuilder = (metrics, t) => [
   { label: t('metric.response'), value: formatLatency(metrics.responseLatencyMs) },
   { label: t('metric.sent'), value: formatRps(metrics.outgoingRps) },
   {
+    label: t('metric.retries'),
+    value: formatRps(metrics.retryRps ?? 0),
+    tone: (metrics.retryRps ?? 0) > 0 ? 'warn' : 'default',
+  },
+  {
     label: t('metric.failed'),
     value: formatRps(metrics.failedRps),
     tone: metrics.failedRps > 0 ? 'danger' : 'default',

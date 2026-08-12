@@ -23,6 +23,8 @@ export interface MenuItem {
 
 export interface MenuProps {
   label: string;
+  /** Classes for the trigger's label — e.g. hide the text on narrow screens. */
+  labelClassName?: string;
   title?: string;
   icon?: ReactNode;
   items: readonly MenuItem[];
@@ -35,6 +37,7 @@ export interface MenuProps {
 
 export function Menu({
   label,
+  labelClassName,
   title,
   icon,
   items,
@@ -72,12 +75,15 @@ export function Menu({
         size={size}
         icon={icon}
         title={title ?? label}
+        // Spelled out, so hiding the text on a phone does not also take the
+        // button's name away from a screen reader.
+        aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((value) => !value)}
       >
-        {label}
+        <span className={labelClassName}>{label}</span>
       </Button>
 
       {open ? (

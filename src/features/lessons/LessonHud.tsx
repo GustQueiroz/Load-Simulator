@@ -8,6 +8,7 @@ import { useT, type MessageKey } from '@/i18n/I18nProvider';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { formatUsd } from '@/lib/format';
 
+import { LessonHints } from './LessonHints';
 import { useLessonSessionStore } from './lesson-session-store';
 
 export function LessonHud() {
@@ -48,6 +49,9 @@ export function LessonHud() {
             {t('mission.budget', { amount: formatUsd(lesson.budgetMonthlyUsd) })}
           </p>
         ) : null}
+        {/* A guided lesson already walks the learner through it — the coach
+            balloon is the hint. Missions are where someone is on their own. */}
+        {isMission ? <LessonHints lessonId={activeLessonId} /> : null}
       </div>
       <div className="flex shrink-0 flex-col gap-1">
         {isMission ? (

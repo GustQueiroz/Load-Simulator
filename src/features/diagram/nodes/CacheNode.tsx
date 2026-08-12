@@ -17,6 +17,7 @@ const rows: MetricRowsBuilder = (metrics, t) => [
   { label: t('metric.hits'), value: formatRps(metrics.hitsRps ?? 0), tone: 'ok' },
   { label: t('metric.misses'), value: formatRps(metrics.missesRps ?? 0), tone: 'warn' },
   { label: t('metric.latency'), value: formatLatency(metrics.localLatencyMs) },
+  { label: t('metric.p95'), value: formatLatency(metrics.localP95Ms) },
   {
     label: t('metric.failed'),
     value: formatRps(metrics.failedRps),

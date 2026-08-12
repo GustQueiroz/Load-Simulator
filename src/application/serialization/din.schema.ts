@@ -13,6 +13,9 @@ const rateRps = finite.min(0).max(10_000_000);
 const count = finite.min(0).max(1_000_000_000);
 const durationSeconds = finite.min(0).max(86_400);
 
+/** Optional with a default: diagrams saved before fan-out was explicit still load. */
+const fanout = z.enum(['broadcast', 'split']).default('broadcast');
+
 const baseConfig = z.object({
   label: z.string().min(1).max(80),
   enabled: z.boolean(),
@@ -23,7 +26,10 @@ const baseConfig = z.object({
 const clientNode = z.object({
   kind: z.literal('client'),
   config: baseConfig.extend({
+    fanout,
     rps: rateRps,
+    retryEnabled: z.boolean().default(false),
+    maxRetries: finite.int().min(0).max(5).default(2),
     trafficMode: z.enum(CLIENT_TRAFFIC_MODES).default('constant'),
     rampStartRps: rateRps.default(0),
     rampDurationSeconds: durationSeconds.default(10),
@@ -36,6 +42,7 @@ const clientNode = z.object({
 const buttonNode = z.object({
   kind: z.literal('button'),
   config: baseConfig.extend({
+    fanout,
     requestsPerClick: finite.min(1).max(1_000_000),
     automatorRps: rateRps,
     rateLimitRps: rateRps,
@@ -56,6 +63,7 @@ const loadBalancerNode = z.object({
 const apiGatewayNode = z.object({
   kind: z.literal('apiGateway'),
   config: baseConfig.extend({
+    fanout,
     capacityRps,
     rateLimitRps: rateRps,
     authEnabled: z.boolean(),
@@ -66,6 +74,7 @@ const apiGatewayNode = z.object({
 const serverNode = z.object({
   kind: z.literal('server'),
   config: baseConfig.extend({
+    fanout,
     capacityRps,
     instances: finite.int().min(1).max(1_000),
     maxQueueSize: count,
@@ -76,6 +85,7 @@ const serverNode = z.object({
 const cacheNode = z.object({
   kind: z.literal('cache'),
   config: baseConfig.extend({
+    fanout,
     capacityRps,
     hitRate: ratio,
     hitLatencyMs: latencyMs,
@@ -95,6 +105,7 @@ const messageQueueNode = z.object({
 const databaseNode = z.object({
   kind: z.literal('database'),
   config: baseConfig.extend({
+    fanout,
     capacityRps,
     maxConnections: finite.int().min(1).max(1_000_000),
     maxQueueSize: count,

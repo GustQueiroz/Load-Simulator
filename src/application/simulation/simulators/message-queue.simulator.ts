@@ -37,6 +37,7 @@ export const messageQueueSimulator: SimulatorFor<'messageQueue'> = {
     const waitMs = queueWaitMs(backlog, deliveryCapacityRps);
     const localLatencyMs = capLatency(Math.max(0, config.baseLatencyMs) + waitMs);
     const totalLatencyMs = capLatency(input.weightedLatencyMs + localLatencyMs);
+    const totalP95Ms = capLatency(input.p95LatencyMs + localLatencyMs);
 
     const netDrainRps = deliveryCapacityRps - incomingRps;
     const drainSeconds = netDrainRps > 0 && backlog > 0 ? backlog / netDrainRps : undefined;
@@ -52,6 +53,7 @@ export const messageQueueSimulator: SimulatorFor<'messageQueue'> = {
         utilization,
         status: statusFromUtilization(utilization),
         localLatencyMs,
+        localP95Ms: localLatencyMs,
         totalLatencyMs,
 
         ackLatencyMs: Math.max(0, config.baseLatencyMs),
@@ -61,6 +63,7 @@ export const messageQueueSimulator: SimulatorFor<'messageQueue'> = {
         {
           rps: outgoingRps,
           latencyMs: totalLatencyMs,
+          p95LatencyMs: totalP95Ms,
           failureRate: combineFailureRates(input.inheritedFailureRate, failureRate),
 
           routing: { mode: 'split' },

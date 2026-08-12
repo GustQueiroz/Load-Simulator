@@ -15,8 +15,13 @@ import {
   type NodeMetrics,
   type SystemMetrics,
 } from '@/domain/simulation/metrics';
-import { aggregateFlows, type TrafficFlow } from '@/domain/simulation/traffic';
-import { createSeededRandom, hashString } from '@/lib/math';
+import {
+  aggregateFlows,
+  percentileOfOutcomes,
+  type TrafficFlow,
+  type WeightedLatency,
+} from '@/domain/simulation/traffic';
+import { clamp01, createSeededRandom, hashString, safeDivide } from '@/lib/math';
 
 import { detectSimulationEvents, type SimulationEvent } from './event-log';
 import { capLatency } from './models/latency';
@@ -200,6 +205,7 @@ export class SimulationEngine {
           enabled: target.config.enabled,
           capacityRps: capacityRpsOf(target),
           previousUtilization: this.previousMetrics.get(target.id)?.utilization ?? 0,
+          previousPathFailureRate: this.previousMetrics.get(target.id)?.pathFailureRate ?? 0,
         },
       ];
     });
@@ -289,6 +295,8 @@ function applyResponseLatency(
   edgeMetrics: ReadonlyMap<string, EdgeMetrics>,
 ): void {
   const downstream = new Map<string, number>();
+  const downstreamP95 = new Map<string, number>();
+  const pathFailure = new Map<string, number>();
   const order = graph.topologicalOrder;
 
   for (let index = order.length - 1; index >= 0; index -= 1) {
@@ -296,7 +304,15 @@ function applyResponseLatency(
     const metrics = nodeMetrics.get(nodeId);
     if (!metrics) continue;
 
+    const node = graph.nodesById.get(nodeId);
     let accumulated = 0;
+    /** Survival odds of the downstream paths, for the failure a caller sees. */
+    let downstreamSurvivalProduct = 1;
+    let downstreamSurvivalMixture = 0;
+    /** One outcome per downstream path taken by a request. */
+    const outcomes: WeightedLatency[] = [];
+    let dependentShare = 0;
+
     for (const edge of outgoingEdgesOf(graph, nodeId)) {
       const edgeRps = edgeMetrics.get(edge.id)?.rps ?? 0;
       if (edgeRps <= 0 || metrics.processedRps <= 0) continue;
@@ -309,11 +325,57 @@ function applyResponseLatency(
         target.ackLatencyMs !== undefined
           ? target.ackLatencyMs
           : target.localLatencyMs + (downstream.get(edge.target) ?? 0);
+      const targetTail =
+        target.ackLatencyMs !== undefined
+          ? target.ackLatencyMs
+          : target.localP95Ms + (downstreamP95.get(edge.target) ?? 0);
+
       accumulated += share * targetCost;
+      outcomes.push({ share, latencyMs: targetTail });
+      dependentShare += share;
+
+      const targetSurvival = 1 - clamp01(pathFailure.get(edge.target) ?? 0);
+      downstreamSurvivalProduct *= targetSurvival;
+      downstreamSurvivalMixture += share * targetSurvival;
     }
 
+    // When a component broadcasts to more than one dependency, every request
+    // pays all of them, so the tails add up. Otherwise the paths are mutually
+    // exclusive — a cache hit and a cache miss are different requests — and
+    // the tail is the percentile across them. That is what lets a 10% miss
+    // rate put the database in the p95 while a 1% one does not.
+    const broadcasting =
+      node?.config && 'fanout' in node.config && node.config.fanout === 'broadcast';
+
+    let accumulatedP95 = 0;
+    if (outcomes.length > 0) {
+      accumulatedP95 =
+        broadcasting && outcomes.length > 1
+          ? outcomes.reduce((sum, outcome) => sum + outcome.latencyMs, 0)
+          : percentileOfOutcomes([
+              ...outcomes,
+              { share: Math.max(0, 1 - dependentShare), latencyMs: 0 },
+            ]);
+    }
+
+    // What a caller of this node experiences: this node's own failures, plus
+    // whatever its dependencies lose. Broadcasting means every dependency has
+    // to survive; exclusive paths average out.
+    const localFailure = clamp01(safeDivide(metrics.failedRps, metrics.incomingRps));
+    const downstreamSurvival =
+      outcomes.length === 0
+        ? 1
+        : broadcasting && outcomes.length > 1
+          ? downstreamSurvivalProduct
+          : downstreamSurvivalMixture + Math.max(0, 1 - dependentShare);
+
+    metrics.pathFailureRate = clamp01(1 - (1 - localFailure) * clamp01(downstreamSurvival));
+    pathFailure.set(nodeId, metrics.pathFailureRate);
+
     downstream.set(nodeId, accumulated);
+    downstreamP95.set(nodeId, accumulatedP95);
     metrics.responseLatencyMs = capLatency(metrics.localLatencyMs + accumulated);
+    metrics.responseP95Ms = capLatency(metrics.localP95Ms + accumulatedP95);
   }
 }
 

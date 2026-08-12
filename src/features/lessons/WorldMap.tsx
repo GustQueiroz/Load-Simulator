@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Lock, Map, X } from 'lucide-react';
+import { Check, Download, Lock, Map, Upload, X } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -19,6 +19,7 @@ import { useT, type MessageKey } from '@/i18n/I18nProvider';
 import { cn } from '@/lib/cn';
 
 import { useLessonSessionStore } from './lesson-session-store';
+import { useProgressFiles } from './useProgressFiles';
 import { useStartLesson } from './useStartLesson';
 
 export function WorldMap() {
@@ -46,6 +47,7 @@ const WorldMapDialog = memo(function WorldMapDialog({ open }: { open: boolean })
   const closeMap = useLessonSessionStore((state) => state.closeMap);
   const progress = useLessonSessionStore((state) => state.progress);
   const startLesson = useStartLesson();
+  const { exportProgress, importProgress } = useProgressFiles();
   const dialogRef = useModalDialog<HTMLDivElement>({ open, onClose: closeMap });
 
   return (
@@ -93,6 +95,30 @@ const WorldMapDialog = memo(function WorldMapDialog({ open }: { open: boolean })
             />
           ))}
         </div>
+
+        <footer className="flex flex-wrap items-center gap-2 border-t border-line/70 px-4 py-3">
+          <p className="mr-auto text-[10.5px] leading-snug text-faint">
+            {t('worldmap.progressHint')}
+          </p>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={<Download className="size-3.5" />}
+            onClick={exportProgress}
+            tabIndex={open ? 0 : -1}
+          >
+            {t('worldmap.exportProgress')}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={<Upload className="size-3.5" />}
+            onClick={() => void importProgress()}
+            tabIndex={open ? 0 : -1}
+          >
+            {t('worldmap.importProgress')}
+          </Button>
+        </footer>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { create } from 'zustand';
 
 import {
   EMPTY_HOLD,
+  HINT_LEVELS,
   type BalloonAnchor,
   type HoldTracker,
   type LessonFlag,
@@ -14,6 +15,7 @@ import {
 import {
   loadLessonProgress,
   markLessonComplete,
+  saveLessonProgress,
 } from '@/infrastructure/persistence/lesson-progress';
 
 interface LessonSessionState {
@@ -27,7 +29,10 @@ interface LessonSessionState {
   completedOpen: boolean;
   justCompletedId: LessonId | null;
   justCompletedStars: 1 | 2 | 3;
+  justCompletedTiers: StarTiers;
   progress: LessonProgressMap;
+  /** How many hints the learner has asked for in the active lesson. */
+  hintsRevealed: number;
 
   hydrate: () => void;
   openMap: () => void;
@@ -40,9 +45,18 @@ interface LessonSessionState {
   advanceBalloon: () => void;
   setFlag: (flag: LessonFlag, value?: boolean) => void;
   setHold: (hold: HoldTracker) => void;
-  completeActiveLesson: (stars?: 1 | 2 | 3) => void;
+  completeActiveLesson: (stars?: 1 | 2 | 3, tiers?: StarTiers) => void;
   dismissComplete: () => void;
+  revealHint: () => void;
+  replaceProgress: (progress: LessonProgressMap) => void;
 }
+
+export interface StarTiers {
+  two: boolean;
+  three: boolean;
+}
+
+const NO_TIERS: StarTiers = { two: false, three: false };
 
 const EMPTY_FLAGS: Record<LessonFlag, boolean> = {
   started: false,
@@ -61,7 +75,9 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
   completedOpen: false,
   justCompletedId: null,
   justCompletedStars: 1,
+  justCompletedTiers: NO_TIERS,
   progress: {},
+  hintsRevealed: 0,
 
   hydrate: () => {
     set({ ready: true, progress: loadLessonProgress() });
@@ -94,6 +110,8 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
       completedOpen: false,
       justCompletedId: null,
       justCompletedStars: 1,
+      justCompletedTiers: NO_TIERS,
+      hintsRevealed: 0,
       briefOpen: lesson.mode === 'mission',
     });
   },
@@ -107,6 +125,8 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
       completedOpen: false,
       justCompletedId: null,
       justCompletedStars: 1,
+      justCompletedTiers: NO_TIERS,
+      hintsRevealed: 0,
       briefOpen: false,
     }),
 
@@ -125,7 +145,7 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
 
   setHold: (hold) => set({ hold }),
 
-  completeActiveLesson: (stars = 1) => {
+  completeActiveLesson: (stars = 1, tiers = NO_TIERS) => {
     const { activeLessonId, progress } = get();
     if (!activeLessonId) return;
     const next = markLessonComplete(progress, activeLessonId, stars);
@@ -134,11 +154,20 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
       completedOpen: true,
       justCompletedId: activeLessonId,
       justCompletedStars: stars,
+      justCompletedTiers: tiers,
       briefOpen: false,
     });
   },
 
   dismissComplete: () => set({ completedOpen: false }),
+
+  revealHint: () =>
+    set((state) => ({ hintsRevealed: Math.min(state.hintsRevealed + 1, HINT_LEVELS) })),
+
+  replaceProgress: (progress) => {
+    saveLessonProgress(progress);
+    set({ progress });
+  },
 }));
 
 export function useLessonHighlight(): BalloonAnchor | null {

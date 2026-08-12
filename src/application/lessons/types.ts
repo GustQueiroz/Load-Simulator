@@ -115,6 +115,11 @@ export interface LessonObservation {
   system: SystemMetrics;
   nodes: ReadonlyMap<string, { kind: NodeKind; config: AnyNodeConfig }>;
   nodeMetrics: ReadonlyMap<string, NodeMetrics>;
+  /**
+   * Monthly **infrastructure** cost — components only, egress excluded.
+   * A mission locks its traffic sources, so the bill for that traffic is not
+   * something the learner can trade against; the size of the components is.
+   */
   monthlyCostUsd: number;
 }
 

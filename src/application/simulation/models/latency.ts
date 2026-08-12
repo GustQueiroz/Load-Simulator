@@ -15,6 +15,17 @@ export function queueWaitMs(backlogCount: number, capacityRps: number): number {
   return safeDivide(Math.max(0, backlogCount), capacityRps) * 1000;
 }
 
+/**
+ * Service time is modelled as exponential, so the 95th percentile sits at
+ * `ln(1/0.05) ≈ 3` times the mean. Queue wait is *not* multiplied: a request
+ * arriving behind a known backlog waits roughly that long, tail or not.
+ */
+export const SERVICE_TAIL_FACTOR = 3;
+
+export function serviceTailLatencyMs(baseLatencyMs: number, utilization: number): number {
+  return serviceLatencyMs(baseLatencyMs, utilization) * SERVICE_TAIL_FACTOR;
+}
+
 export function capLatency(valueMs: number): number {
   if (!Number.isFinite(valueMs) || valueMs < 0) return 0;
   return Math.min(valueMs, MAX_LATENCY_MS);

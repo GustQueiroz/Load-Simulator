@@ -30,6 +30,13 @@ export interface CostLine {
 export interface CostEstimate {
   lines: CostLine[];
   totalMonthlyUsd: number;
+  /**
+   * Everything except egress — the components, not the traffic through them.
+   * Missions budget against this: their traffic sources are locked, so
+   * charging for egress would make the budget a constant the learner cannot
+   * move, and a target they cannot hit.
+   */
+  infrastructureMonthlyUsd: number;
 }
 
 export const SECONDS_PER_MONTH = 60 * 60 * 24 * 30;

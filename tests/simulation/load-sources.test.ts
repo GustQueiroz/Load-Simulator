@@ -3,47 +3,30 @@ import { describe, expect, it } from 'vitest';
 import { SimulationEngine } from '@/application/simulation/engine';
 import { effectiveClientRps } from '@/application/simulation/models/load-profile';
 import { detectSimulationEvents } from '@/application/simulation/event-log';
+import type { ClientConfig } from '@/domain/nodes/config';
+import { createDefaultConfig } from '@/domain/nodes/defaults';
 import { createEmptyMetrics } from '@/domain/simulation/metrics';
 
 import { chain, makeNode } from '../support/graph-builder';
 import { metricsOf, run } from '../support/run';
 
+/** Derived from the defaults so a new field never breaks this file again. */
+function clientConfig(overrides: Partial<ClientConfig> = {}): ClientConfig {
+  return { ...createDefaultConfig('client', 'c'), baseLatencyMs: 0, ...overrides };
+}
+
 describe('client load profile', () => {
   it('holds a constant rate', () => {
     expect(
       effectiveClientRps(
-        {
-          label: 'c',
-          enabled: true,
-          baseLatencyMs: 0,
-          baseFailureRate: 0,
-          rps: 40,
-          trafficMode: 'constant',
-          rampStartRps: 0,
-          rampDurationSeconds: 10,
-          spikePeakRps: 400,
-          spikeAtSeconds: 5,
-          spikeWidthSeconds: 2,
-        },
+        clientConfig({ rps: 40, trafficMode: 'constant', spikePeakRps: 400 }),
         7,
       ),
     ).toBe(40);
   });
 
   it('ramps linearly then holds', () => {
-    const config = {
-      label: 'c',
-      enabled: true,
-      baseLatencyMs: 0,
-      baseFailureRate: 0,
-      rps: 100,
-      trafficMode: 'ramp' as const,
-      rampStartRps: 0,
-      rampDurationSeconds: 10,
-      spikePeakRps: 500,
-      spikeAtSeconds: 5,
-      spikeWidthSeconds: 2,
-    };
+    const config = clientConfig({ rps: 100, trafficMode: 'ramp', rampDurationSeconds: 10 });
     expect(effectiveClientRps(config, 0)).toBeCloseTo(0, 5);
     expect(effectiveClientRps(config, 5)).toBeCloseTo(50, 5);
     expect(effectiveClientRps(config, 10)).toBeCloseTo(100, 5);

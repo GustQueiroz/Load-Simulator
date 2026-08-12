@@ -46,12 +46,13 @@ export function LessonPicker({ className }: { className?: string }) {
         size="sm"
         icon={<BookOpen className="size-3.5" />}
         title={t('toolbar.presetsTitle')}
+        aria-label={t('toolbar.presets')}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((value) => !value)}
       >
-        <span className="max-w-28 truncate">{t('toolbar.presets')}</span>
+        <span className="hidden max-w-28 truncate sm:inline">{t('toolbar.presets')}</span>
         <ChevronDown className="size-3 opacity-60" aria-hidden />
       </Button>
 

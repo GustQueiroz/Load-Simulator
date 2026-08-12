@@ -106,6 +106,33 @@ localLatency = serviceLatency + queueWait
 
 Displayed latency is capped at 120 s (`>120 s`).
 
+### The tail
+
+Every flow carries a mean **and** a p95, because the mean is exactly the number
+that hides the problem: a cache at a 90% hit rate averages a few milliseconds
+while one request in ten is paying the database in full.
+
+Three rules produce it:
+
+- **Service time is exponential**, so its p95 is `ln(1/0.05) ≈ 3` times the
+  mean. Queue wait is *not* multiplied — a request arriving behind a known
+  backlog waits about that long whether it is typical or not.
+- **Exclusive outcomes take a percentile.** A cache hit and a cache miss are
+  different requests, so the component's tail is the 95th percentile over
+  them: outcomes sorted slowest first, accumulating until 5% of the traffic is
+  covered. A 10% miss rate therefore *is* the tail; a 1% one is not.
+- **Broadcast outcomes add up.** When a component calls two dependencies per
+  request, it waits for both, so their tails sum instead of competing.
+
+The same rule aggregates several inbound flows: the p95 of the merge is the p95
+of the slowest flows that together carry at least 5% of the traffic. Percentiles
+are never averaged — averaging them is how a model ends up hiding the very thing
+the percentile exists to show.
+
+Summing percentiles along a path (`local p95 + downstream p95`) overstates the
+true tail slightly, since the slow parts rarely coincide. It is the honest
+direction to err in for teaching, and it is documented here rather than hidden.
+
 ### Failure under overload
 
 ```
@@ -156,6 +183,28 @@ Asynchronous components short-circuit this: a queue reports an `ackLatencyMs`,
 so the producer only ever waits for the publish acknowledgement. A growing
 backlog is the consumer's problem, not the producer's.
 
+### Retries, and why the graph still has no cycles
+
+A source with retries enabled re-sends what came back an error. The failure it
+reacts to is `pathFailureRate` — the odds that a request entering a component
+fails *anywhere* along its path, computed backwards from the leaves in the same
+pass as the response latency, and read from the **previous** tick.
+
+Effective load becomes a truncated geometric series:
+
+```
+multiplier = 1 + f + f² + … (maxRetries terms),  f = observed failure rate
+```
+
+At a 50% failure rate with two retries the source is already sending 1.75× its
+configured load. That extra load raises utilization, which raises the failure
+rate, which raises the multiplier — the feedback that turns a degradation into
+an outage. It converges rather than exploding, because `maxRetries` truncates
+the series.
+
+Reading the previous tick is what keeps the graph a DAG: the loop closes in
+time instead of in topology.
+
 ## 5. Per-component behaviour
 
 | Component | Model |
@@ -187,14 +236,14 @@ traffic?". If you meant "read through the cache", wire
 Not bugs. Choices, each one keeping the model explainable:
 
 - **No upstream backpressure.** An overloaded component queues, times out or
-  sheds — it never asks the caller to slow down. This is what makes the "queue
-  absorbs the burst" and future "retry storm" scenarios readable.
+  sheds — it never asks the caller to slow down. That is what makes the "queue
+  absorbs the burst" and "retry storm" scenarios readable.
 - **No synchronous cycles.** A DAG can be evaluated in one deterministic pass
   per tick. Feedback (retries, circuit breakers) will use previous-tick state
   instead.
-- **No per-request distribution.** There is one average latency, so there is no
-  honest p95. The UI says "approximate E2E latency" and never claims a
-  percentile it cannot compute.
+- **No full per-request distribution.** Latency is summarised by a mean and a
+  p95 (see below), not by a histogram — so there is no p99 and no way to ask
+  "how many requests were over 500 ms".
 - **No real pricing.** Cost is an order-of-magnitude teaching model with
   illustrative numbers, presented as an estimate everywhere it appears.
 

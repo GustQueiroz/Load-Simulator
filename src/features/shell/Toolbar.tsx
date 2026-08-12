@@ -121,6 +121,7 @@ export function Toolbar() {
 
       <Menu
         label={t('toolbar.more')}
+        labelClassName="hidden sm:inline"
         title={t('toolbar.moreTitle')}
         icon={<MoreHorizontal className="size-3.5" />}
         variant="subtle"

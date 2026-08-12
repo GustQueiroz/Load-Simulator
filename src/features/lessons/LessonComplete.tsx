@@ -2,12 +2,13 @@
 
 import { PartyPopper, X } from 'lucide-react';
 
-import { nextLessonId } from '@/application/lessons';
+import { lessonById, nextLessonId } from '@/application/lessons';
 import { Button } from '@/components/ui/Button';
 import { useModalDialog } from '@/components/ui/useModalDialog';
 import { useT, type MessageKey } from '@/i18n/I18nProvider';
 
 import { useLessonSessionStore } from './lesson-session-store';
+import { StarRequirements } from './StarRequirements';
 import { useStartLesson } from './useStartLesson';
 
 export function LessonComplete() {
@@ -15,6 +16,7 @@ export function LessonComplete() {
   const open = useLessonSessionStore((state) => state.completedOpen);
   const justCompletedId = useLessonSessionStore((state) => state.justCompletedId);
   const justCompletedStars = useLessonSessionStore((state) => state.justCompletedStars);
+  const justCompletedTiers = useLessonSessionStore((state) => state.justCompletedTiers);
   const dismissComplete = useLessonSessionStore((state) => state.dismissComplete);
   const exitLesson = useLessonSessionStore((state) => state.exitLesson);
   const openMap = useLessonSessionStore((state) => state.openMap);
@@ -24,6 +26,7 @@ export function LessonComplete() {
   if (!open || !justCompletedId) return null;
 
   const next = nextLessonId(justCompletedId);
+  const completed = lessonById(justCompletedId);
 
   return (
     <div
@@ -64,6 +67,10 @@ export function LessonComplete() {
         <p className="px-4 py-3 text-xs leading-relaxed text-muted">
           {t('lesson.complete.body')}
         </p>
+
+        {completed ? (
+          <StarRequirements lesson={completed} tiers={justCompletedTiers} />
+        ) : null}
 
         <footer className="flex flex-wrap items-center justify-end gap-2 border-t border-line/70 px-4 py-3">
           <Button

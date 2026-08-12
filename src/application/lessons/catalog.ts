@@ -84,6 +84,8 @@ export function worldById(id: string): WorldDefinition | undefined {
 export interface LessonEvaluation {
   won: boolean;
   stars: 1 | 2 | 3;
+  /** Which tiers held on this tick — so the UI can say what was missed. */
+  tiers: { two: boolean; three: boolean };
   hold: HoldTracker;
 }
 
@@ -107,5 +109,10 @@ export function evaluateLesson(
   );
   const [won, three, two] = results;
 
-  return { won, stars: three ? 3 : two ? 2 : 1, hold: nextHold };
+  return {
+    won,
+    stars: three ? 3 : two ? 2 : 1,
+    tiers: { two: two ?? false, three: three ?? false },
+    hold: nextHold,
+  };
 }

@@ -14,6 +14,7 @@ const rows: MetricRowsBuilder = (metrics, t) => [
   { label: t('metric.incoming'), value: formatRps(metrics.incomingRps) },
   { label: t('metric.processed'), value: formatRps(metrics.processedRps) },
   { label: t('metric.latency'), value: formatLatency(metrics.localLatencyMs) },
+  { label: t('metric.p95'), value: formatLatency(metrics.localP95Ms) },
   {
     label: t('metric.connections'),
     value: formatPercent(metrics.connectionUtilization ?? 0),

@@ -153,18 +153,22 @@ renames the nodes you created.
 `Del` remove selection · `⌘/Ctrl+S` export `.din` · `⌘/Ctrl+O` import ·
 `Esc` leave focus
 
+On the canvas: `Tab` steps through the components, `Enter` selects the focused
+one, arrows move it (`Shift` for bigger steps), and `C` connects — once on the
+source, once on the target. The diagram is fully operable without a pointer.
+
 Presentation mode strips every editing affordance — handles, palette, node
 actions — and leaves the diagram, the metrics and a presenter toolbar.
 
 ## Roadmap
 
 Not implemented yet, and organised so each fits without rewriting the engine:
-retry storms, autoscaling with delay and cooldown, circuit breakers, health
-checks, read replicas, sharding, stream partitions, CDN, PNG export and A/B
-snapshots.
+autoscaling with delay and cooldown, circuit breakers, health checks, read
+replicas, sharding, stream partitions, CDN, PNG export and A/B snapshots.
 
-Recently landed: load timelines (ramp/spike), clickable Button source,
-event log, and shareable URLs (`#d=…` / `?preset=`).
+Recently landed: retry storms with previous-tick feedback, p95 tail latency,
+explicit per-node fan-out, keyboard operation of the canvas, per-lesson hints,
+and exportable course progress. Full history in [CHANGELOG.md](CHANGELOG.md).
 
 Contributions welcome — start with [CONTRIBUTING.md](CONTRIBUTING.md).
 

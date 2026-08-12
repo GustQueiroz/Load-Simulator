@@ -2,9 +2,9 @@ import { statusFromUtilization } from '@/domain/simulation/status';
 import { safeDivide } from '@/lib/math';
 
 import { combineFailureRates, effectiveFailureRate, totalFailedRps } from '../models/failure';
-import { capLatency, serviceLatencyMs } from '../models/latency';
+import { capLatency, serviceLatencyMs, serviceTailLatencyMs } from '../models/latency';
 import { stepWorkQueue } from '../models/work-queue';
-import { BROADCAST, type SimulatorFor } from '../types';
+import { routingFor, type SimulatorFor } from '../types';
 
 export const databaseSimulator: SimulatorFor<'database'> = {
   simulate(config, runtime, input, context) {
@@ -36,7 +36,10 @@ export const databaseSimulator: SimulatorFor<'database'> = {
     const capacityRejectedRps = queue.timedOutRps + queue.droppedRps;
 
     const localLatencyMs = serviceMs + queue.queueWaitMs;
+    const localP95Ms =
+      serviceTailLatencyMs(config.baseLatencyMs, queue.utilization) + queue.queueWaitMs;
     const totalLatencyMs = capLatency(input.weightedLatencyMs + localLatencyMs);
+    const totalP95Ms = capLatency(input.p95LatencyMs + localP95Ms);
 
     return {
       metrics: {
@@ -49,6 +52,7 @@ export const databaseSimulator: SimulatorFor<'database'> = {
         utilization: queue.utilization,
         status: statusFromUtilization(queue.utilization),
         localLatencyMs: capLatency(localLatencyMs),
+        localP95Ms: capLatency(localP95Ms),
         totalLatencyMs,
         queueDepth: queue.backlogCount,
         concurrentConnections,
@@ -58,8 +62,9 @@ export const databaseSimulator: SimulatorFor<'database'> = {
         {
           rps: outgoingRps,
           latencyMs: totalLatencyMs,
+          p95LatencyMs: totalP95Ms,
           failureRate: combineFailureRates(input.inheritedFailureRate, failureRate),
-          routing: BROADCAST,
+          routing: routingFor(config),
         },
       ],
       runtimePatch: { backlogCount: queue.backlogCount },

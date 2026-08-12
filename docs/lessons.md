@@ -97,10 +97,21 @@ A `WinCondition` is a tree. Leaves ask about the world; `and`, `or` and
 | `config-number` | any numeric field the learner can set |
 | `system-metric` | any field of `SystemMetrics` |
 | `failure-ratio`, `completion-ratio` | failures / successes over generated traffic |
-| `monthly-cost` | the estimate in the cost panel |
+| `monthly-cost` | the monthly **infrastructure** bill (see below) |
 | `has-kind` | an enabled component of a kind exists |
 | `no-status` | *no* component is in a given state |
 | `sustained` | an inner condition held for N seconds |
+
+### What `monthly-cost` measures
+
+Components only — the egress line is excluded, so it is **not** the total shown
+in the cost panel.
+
+A mission locks its traffic sources: the learner cannot change how many requests
+arrive, so the bill for serving them is a constant, not a lever. At 500 rps the
+egress line alone is around \$1,100/month, which would swamp every budget and
+make it unreachable no matter how well the architecture is sized. Budget against
+what the learner can actually trade: the size and number of the components.
 
 ```ts
 win: {

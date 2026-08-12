@@ -64,6 +64,15 @@ export function SystemSummary() {
             label={t('system.e2e')}
             value={formatLatency(system.approximateEndToEndLatencyMs)}
           />
+          <Row
+            label={t('system.p95')}
+            value={formatLatency(system.approximateP95LatencyMs)}
+            tone={
+              system.approximateP95LatencyMs > system.approximateEndToEndLatencyMs * 2
+                ? '#f59e0b'
+                : undefined
+            }
+          />
 
           {bottleneckLabel ? (
             <button

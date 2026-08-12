@@ -64,5 +64,8 @@ export function estimateMonthlyCost(
   return {
     lines,
     totalMonthlyUsd: lines.reduce((total, line) => total + line.monthlyUsd, 0),
+    infrastructureMonthlyUsd: lines
+      .filter((line) => line.key !== 'traffic')
+      .reduce((total, line) => total + line.monthlyUsd, 0),
   };
 }

@@ -41,6 +41,12 @@ export function useLessonRunner(): void {
       if (status === 'paused' && previous === 'running') {
         session.setFlag('paused');
       }
+
+      // A status change is itself something a lesson can win on — "start it,
+      // find the bottleneck, pause" is the very first lesson. Frames stop the
+      // moment the engine stops, so if the win is not evaluated here it is
+      // never evaluated at all.
+      evaluateLessonFrame(hold, lastLessonId);
     };
 
     const unsubscribeStatus = useSimulatorStore.subscribe((state) => state.status, onStatus);
@@ -112,7 +118,7 @@ function evaluateLessonFrame(
   hold.current = nextHold;
 
   if (evaluation.won) {
-    session.completeActiveLesson(evaluation.stars);
+    session.completeActiveLesson(evaluation.stars, evaluation.tiers);
     if (useSimulatorStore.getState().status === 'running') {
       useSimulatorStore.getState().pause();
     }
@@ -143,7 +149,7 @@ function monthlyCostOf(sim: ReturnType<typeof useSimulatorStore.getState>): numb
     toSimulationNodes(sim.nodes),
     sim.nodeMetrics,
     costProfileOf(sim.cloud),
-  ).totalMonthlyUsd;
+  ).infrastructureMonthlyUsd;
 
   cachedCost = { nodes: sim.nodes, metrics: sim.nodeMetrics, cloud: sim.cloud, value };
   return value;

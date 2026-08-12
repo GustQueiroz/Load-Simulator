@@ -78,6 +78,23 @@ function failureField<K extends NodeKind>(): PercentSpec<K> {
   };
 }
 
+/**
+ * Only offered on kinds that can genuinely fan out. Balancers and queues are
+ * always `split` — distributing is the component.
+ */
+function fanoutField<K extends NodeKind>(): SelectSpec<K> {
+  return {
+    type: 'select',
+    key: 'fanout' as KeysMatching<NodeConfigByKind[K], string>,
+    labelKey: 'field.fanout',
+    hintKey: 'hint.fanout',
+    options: [
+      { value: 'broadcast', labelKey: 'option.fanout.broadcast' },
+      { value: 'split', labelKey: 'option.fanout.split' },
+    ],
+  };
+}
+
 function specs<K extends NodeKind>(_kind: K, fields: readonly FieldSpecOf<K>[]): readonly FieldSpecOf<K>[] {
   return fields;
 }
@@ -167,6 +184,22 @@ export const FIELD_SPECS: { [K in NodeKind]: readonly FieldSpecOf<K>[] } = {
       step: 1,
       format: ms,
     },
+    fanoutField(),
+    {
+      type: 'toggle',
+      key: 'retryEnabled',
+      labelKey: 'field.retry',
+      hintKey: 'hint.retry',
+    },
+    {
+      type: 'slider',
+      key: 'maxRetries',
+      labelKey: 'field.maxRetries',
+      hintKey: 'hint.maxRetries',
+      min: 0,
+      max: 5,
+      step: 1,
+    },
   ]),
 
   button: specs('button', [
@@ -225,6 +258,7 @@ export const FIELD_SPECS: { [K in NodeKind]: readonly FieldSpecOf<K>[] } = {
       format: formatCompact,
     },
     failureField(),
+    fanoutField(),
   ]),
 
   loadBalancer: specs('loadBalancer', [
@@ -314,6 +348,7 @@ export const FIELD_SPECS: { [K in NodeKind]: readonly FieldSpecOf<K>[] } = {
       format: ms,
     },
     failureField(),
+    fanoutField(),
   ]),
 
   server: specs('server', [
@@ -350,6 +385,7 @@ export const FIELD_SPECS: { [K in NodeKind]: readonly FieldSpecOf<K>[] } = {
       primary: true,
     },
     { ...failureField(), primary: true },
+    fanoutField(),
     {
       type: 'slider',
       key: 'maxQueueSize',
@@ -413,6 +449,7 @@ export const FIELD_SPECS: { [K in NodeKind]: readonly FieldSpecOf<K>[] } = {
       format: ms,
     },
     failureField(),
+    fanoutField(),
   ]),
 
   messageQueue: specs('messageQueue', [
@@ -515,6 +552,7 @@ export const FIELD_SPECS: { [K in NodeKind]: readonly FieldSpecOf<K>[] } = {
       format: ms,
     },
     failureField(),
+    fanoutField(),
   ]),
 };
 

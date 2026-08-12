@@ -22,7 +22,12 @@ export function routeOutput(
   if (output.routing.mode === 'broadcast') {
     return edges.map((edge) => ({
       edge,
-      flow: { rps: output.rps, latencyMs: output.latencyMs, failureRate: output.failureRate },
+      flow: {
+        rps: output.rps,
+        latencyMs: output.latencyMs,
+        p95LatencyMs: output.p95LatencyMs,
+        failureRate: output.failureRate,
+      },
     }));
   }
 
@@ -36,6 +41,7 @@ export function routeOutput(
     flow: {
       rps: (output.rps * shares[index]) / totalWeight,
       latencyMs: output.latencyMs,
+      p95LatencyMs: output.p95LatencyMs,
       failureRate: output.failureRate,
     },
   }));

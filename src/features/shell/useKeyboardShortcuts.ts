@@ -50,6 +50,11 @@ export function useKeyboardShortcuts(): void {
 
       if (modifier) return;
 
+      // A focused node card owns these: Enter selects it, Escape deselects,
+      // and C arms a connection. Toggling the simulation instead would make
+      // the diagram unusable from the keyboard.
+      if (NODE_OWNED_KEYS.has(event.key) && isInsideNodeCard(event.target)) return;
+
       switch (event.key) {
         case ' ':
         case 'Enter':
@@ -80,6 +85,12 @@ export function useKeyboardShortcuts(): void {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [exportProject, importProject, t]);
+}
+
+const NODE_OWNED_KEYS = new Set([' ', 'Enter', 'Escape', 'c', 'C']);
+
+function isInsideNodeCard(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest('.react-flow__node') !== null;
 }
 
 function isEditingField(target: EventTarget | null): boolean {

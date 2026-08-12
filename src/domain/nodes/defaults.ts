@@ -4,9 +4,12 @@ import type { NodeConfigByKind } from './config';
 export const DEFAULT_CONFIGS: { [K in NodeKind]: Omit<NodeConfigByKind[K], 'label'> } = {
   client: {
     enabled: true,
+    fanout: 'broadcast',
     baseLatencyMs: 0,
     baseFailureRate: 0,
     rps: 50,
+    retryEnabled: false,
+    maxRetries: 2,
     trafficMode: 'constant',
     rampStartRps: 0,
     rampDurationSeconds: 10,
@@ -16,6 +19,7 @@ export const DEFAULT_CONFIGS: { [K in NodeKind]: Omit<NodeConfigByKind[K], 'labe
   },
   button: {
     enabled: true,
+    fanout: 'broadcast',
     baseLatencyMs: 0,
     baseFailureRate: 0,
     requestsPerClick: 1,
@@ -34,6 +38,7 @@ export const DEFAULT_CONFIGS: { [K in NodeKind]: Omit<NodeConfigByKind[K], 'labe
   },
   apiGateway: {
     enabled: true,
+    fanout: 'broadcast',
     baseLatencyMs: 8,
     baseFailureRate: 0,
 
@@ -44,6 +49,7 @@ export const DEFAULT_CONFIGS: { [K in NodeKind]: Omit<NodeConfigByKind[K], 'labe
   },
   server: {
     enabled: true,
+    fanout: 'broadcast',
     baseLatencyMs: 25,
     baseFailureRate: 0,
     capacityRps: 100,
@@ -53,6 +59,7 @@ export const DEFAULT_CONFIGS: { [K in NodeKind]: Omit<NodeConfigByKind[K], 'labe
   },
   cache: {
     enabled: true,
+    fanout: 'broadcast',
     baseLatencyMs: 0,
     baseFailureRate: 0,
     capacityRps: 10_000,
@@ -70,6 +77,7 @@ export const DEFAULT_CONFIGS: { [K in NodeKind]: Omit<NodeConfigByKind[K], 'labe
   },
   database: {
     enabled: true,
+    fanout: 'broadcast',
     baseLatencyMs: 40,
     baseFailureRate: 0,
     capacityRps: 50,

@@ -3,7 +3,7 @@ import { statusFromUtilization } from '@/domain/simulation/status';
 import { safeDivide } from '@/lib/math';
 
 import { combineFailureRates, effectiveFailureRate, totalFailedRps } from '../models/failure';
-import { capLatency, serviceLatencyMs } from '../models/latency';
+import { capLatency, serviceLatencyMs, serviceTailLatencyMs } from '../models/latency';
 import type { SimulationContext, SimulatorFor, TargetView } from '../types';
 
 export const loadBalancerSimulator: SimulatorFor<'loadBalancer'> = {
@@ -28,7 +28,9 @@ export const loadBalancerSimulator: SimulatorFor<'loadBalancer'> = {
     const droppedRps = overflowRps + (hasDestination ? 0 : distributableRps);
 
     const localLatencyMs = serviceLatencyMs(config.baseLatencyMs, utilization);
+    const localP95Ms = serviceTailLatencyMs(config.baseLatencyMs, utilization);
     const totalLatencyMs = capLatency(input.weightedLatencyMs + localLatencyMs);
+    const totalP95Ms = capLatency(input.p95LatencyMs + localP95Ms);
 
     return {
       metrics: {
@@ -40,6 +42,7 @@ export const loadBalancerSimulator: SimulatorFor<'loadBalancer'> = {
         utilization,
         status: statusFromUtilization(utilization),
         localLatencyMs,
+        localP95Ms: capLatency(localP95Ms),
         totalLatencyMs,
       },
       outputs: hasDestination
@@ -47,6 +50,7 @@ export const loadBalancerSimulator: SimulatorFor<'loadBalancer'> = {
             {
               rps: outgoingRps,
               latencyMs: totalLatencyMs,
+              p95LatencyMs: totalP95Ms,
               failureRate: combineFailureRates(input.inheritedFailureRate, failureRate),
               routing: { mode: 'split', weights },
             },

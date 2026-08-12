@@ -151,17 +151,23 @@ nunca renomeia os nós que você criou.
 `Del` remover seleção · `⌘/Ctrl+S` exportar `.din` · `⌘/Ctrl+O` importar ·
 `Esc` sair do foco
 
+No canvas: `Tab` percorre os componentes, `Enter` seleciona o que está em foco,
+as setas movem (`Shift` anda mais), e `C` conecta — uma vez na origem, outra no
+destino. Dá para montar o diagrama inteiro sem mouse.
+
 O modo apresentação esconde tudo que é de edição — handles, paleta, ações do nó
 — e deixa o diagrama, as métricas e uma barra de apresentador.
 
 ## Roadmap
 
 Ainda não implementado, e organizado para caber sem reescrever o motor:
-retry storm, autoscaling com delay e cooldown, circuit breaker, health checks,
-read replicas, sharding, partições de stream, CDN, export PNG e snapshots A/B.
+autoscaling com delay e cooldown, circuit breaker, health checks, read replicas,
+sharding, partições de stream, CDN, export PNG e snapshots A/B.
 
-Recém-chegados: timeline de carga (rampa/spike), Botão clicável, event log e
-URL compartilhável (`#d=…` / `?preset=`).
+Recém-chegados: retry storm com realimentação do tick anterior, cauda de
+latência p95, fan-out explícito por nó, operação do canvas pelo teclado, dicas
+por lição e progresso exportável. Histórico completo em
+[CHANGELOG.md](CHANGELOG.md).
 
 Contribuições são bem-vindas — comece por [CONTRIBUTING.md](CONTRIBUTING.md).
 

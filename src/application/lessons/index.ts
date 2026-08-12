@@ -25,6 +25,9 @@ export {
   isConditionMet,
 } from './predicates';
 export { isLessonFieldLocked } from './locks';
+export type { ConditionClause, NodeLabelLookup } from './describe';
+export { describeCondition } from './describe';
+export { HINT_LEVELS, hintKey } from './hints';
 export type { LessonEvaluation } from './catalog';
 export {
   evaluateLesson,
