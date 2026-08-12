@@ -32,6 +32,8 @@
     "verify": "npm run typecheck && npm run lint && npm run architecture && npm test && npm run build"
   },
   "dependencies": {
+    "@emnapi/core": "1.11.3",
+    "@emnapi/runtime": "1.11.3",
     "@xyflow/react": "^12.11.2",
     "lucide-react": "^1.31.0",
     "nanoid": "^6.0.1",
