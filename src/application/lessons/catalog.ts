@@ -23,6 +23,13 @@ export const LESSONS: readonly LessonDefinition[] = [
 
 const BY_ID = new Map(LESSONS.map((lesson) => [lesson.id, lesson]));
 
+const BY_WORLD: Record<string, readonly LessonDefinition[]> = Object.fromEntries(
+  WORLDS.map((world) => [
+    world.id,
+    LESSONS.filter((lesson) => lesson.worldId === world.id),
+  ]),
+);
+
 export function isLessonId(value: string): value is LessonId {
   return (LESSON_IDS as readonly string[]).includes(value);
 }
@@ -32,7 +39,7 @@ export function lessonById(id: string): LessonDefinition | undefined {
 }
 
 export function lessonsInWorld(worldId: string): readonly LessonDefinition[] {
-  return LESSONS.filter((lesson) => lesson.worldId === worldId);
+  return BY_WORLD[worldId] ?? [];
 }
 
 export function isLessonUnlocked(id: LessonId, progress: LessonProgressMap): boolean {

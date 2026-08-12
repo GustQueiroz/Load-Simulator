@@ -48,7 +48,7 @@ function SimulatorShell() {
 
   return (
     <ReactFlowProvider>
-      <div className="flex h-full flex-col bg-canvas">
+      <div className="simulator-shell flex h-full flex-col bg-canvas">
         {presenting ? <PresentationBar /> : <Toolbar />}
 
         <div className="flex min-h-0 flex-1">

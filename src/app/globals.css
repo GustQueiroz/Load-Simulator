@@ -202,3 +202,12 @@ input[type='range']:focus-visible {
   background: #2d3f5e;
   border-radius: 999px;
 }
+
+body.world-map-open .simulator-shell {
+  content-visibility: hidden;
+}
+
+body.world-map-open .simulator-shell .traffic-edge--running,
+body.world-map-open .simulator-shell .node-critical {
+  animation: none !important;
+}

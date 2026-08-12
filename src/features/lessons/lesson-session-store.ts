@@ -66,9 +66,15 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
     set({ ready: true, progress: loadLessonProgress() });
   },
 
-  openMap: () => set({ mapOpen: true, completedOpen: false }),
+  openMap: () => {
+    document.body.classList.add('world-map-open');
+    set({ mapOpen: true, completedOpen: false });
+  },
 
-  closeMap: () => set({ mapOpen: false }),
+  closeMap: () => {
+    document.body.classList.remove('world-map-open');
+    set({ mapOpen: false });
+  },
 
   openBrief: () => set({ briefOpen: true }),
 
@@ -77,6 +83,7 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
   beginLesson: (id) => {
     const lesson = lessonById(id);
     if (!lesson) return;
+    document.body.classList.remove('world-map-open');
     set({
       activeLessonId: id,
       balloonIndex: 0,
