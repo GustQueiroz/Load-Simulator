@@ -23,6 +23,7 @@ import { I18nProvider, useT, type MessageKey } from '@/i18n/I18nProvider';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 
 import { DinDropOverlay, useDinFileDrop } from './DinFileDrop';
+import { InspectorDock } from './InspectorDock';
 import { Toasts } from './Toasts';
 import { Toolbar } from './Toolbar';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
@@ -51,20 +52,24 @@ function SimulatorShell() {
       <div className="simulator-shell flex h-full flex-col bg-canvas">
         {presenting ? <PresentationBar /> : <Toolbar />}
 
-        <div className="flex min-h-0 flex-1">
+        <div className="relative flex min-h-0 flex-1">
           <main className="relative min-w-0 flex-1">
             <DiagramCanvas />
             <LessonHud />
             {!lessonActive ? <LessonChecklist /> : null}
           </main>
 
-          <aside className="flex w-[308px] shrink-0 flex-col gap-3 overflow-y-auto border-l border-line bg-canvas p-3">
+          <InspectorDock>
             <SystemSummary />
             <EventLog />
             <CostPanel />
             {!presenting ? <DetailsPanel /> : null}
-            {!presenting ? <ShortcutsHint /> : null}
-          </aside>
+            {!presenting ? (
+              <div className="hidden lg:block">
+                <ShortcutsHint />
+              </div>
+            ) : null}
+          </InspectorDock>
         </div>
       </div>
 

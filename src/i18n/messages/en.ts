@@ -42,6 +42,10 @@ export const en: Messages = {
   'toolbar.moreTitle': 'File, language and legend',
   'toolbar.legend': 'Load legend',
 
+  'inspector.title': 'Metrics and cost',
+  'inspector.open': 'Metrics',
+  'inspector.close': 'Close panel',
+
   'status.idle': 'Idle',
   'status.normal': 'Normal',
   'status.warning': 'Warning',

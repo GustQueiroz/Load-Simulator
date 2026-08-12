@@ -42,6 +42,10 @@ export const ptBR = {
   'toolbar.moreTitle': 'Arquivo, idioma e legenda',
   'toolbar.legend': 'Legenda de carga',
 
+  'inspector.title': 'Métricas e custos',
+  'inspector.open': 'Métricas',
+  'inspector.close': 'Fechar painel',
+
   'status.idle': 'Ocioso',
   'status.normal': 'Normal',
   'status.warning': 'Alerta',

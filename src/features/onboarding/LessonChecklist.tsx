@@ -35,7 +35,7 @@ export function LessonChecklist() {
 
   return (
     <aside
-      className="pointer-events-auto absolute right-3 bottom-3 z-30 w-[260px] rounded-xl border border-line bg-panel/95 shadow-xl shadow-black/40 backdrop-blur"
+      className="pointer-events-auto absolute right-3 bottom-3 z-30 hidden w-[260px] rounded-xl border border-line bg-panel/95 shadow-xl shadow-black/40 backdrop-blur md:block max-lg:bottom-16"
       aria-label={t('checklist.title')}
     >
       <header className="flex items-center gap-2 border-b border-line/70 px-3 py-2">

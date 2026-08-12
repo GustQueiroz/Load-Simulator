@@ -32,8 +32,8 @@ export function ComponentPalette() {
   };
 
   return (
-    <aside className="w-[184px] rounded-xl border border-line bg-panel/95 p-2 shadow-xl backdrop-blur">
-      <h2 className="px-1 pb-2 text-[11px] font-semibold tracking-wider text-faint uppercase">
+    <aside className="w-[152px] rounded-xl border border-line bg-panel/95 p-1.5 shadow-xl backdrop-blur md:w-[184px] md:p-2">
+      <h2 className="hidden px-1 pb-2 text-[11px] font-semibold tracking-wider text-faint uppercase md:block">
         {t('palette.title')}
       </h2>
       <ul className="space-y-1">
@@ -48,17 +48,17 @@ export function ComponentPalette() {
                 title={t(kindBlurbKey(kind))}
                 onDragStart={(event) => onDragStart(event, kind)}
                 onClick={() => addAtViewportCenter(kind)}
-                className="flex w-full cursor-grab items-center gap-2 rounded-lg border border-transparent bg-raised px-2 py-1.5 text-left text-xs font-medium text-ink transition-colors hover:border-line hover:bg-[#22314b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 active:cursor-grabbing"
+                className="flex w-full cursor-grab items-center gap-1.5 rounded-lg border border-transparent bg-raised px-1.5 py-1.5 text-left text-[11px] font-medium text-ink transition-colors hover:border-line hover:bg-[#22314b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 active:cursor-grabbing md:gap-2 md:px-2 md:text-xs"
                 style={{ borderLeft: `3px solid ${theme.accent}` }}
               >
                 <Icon className="size-3.5 shrink-0" style={{ color: theme.accent }} aria-hidden />
-                {t(kindKey(kind))}
+                <span className="truncate">{t(kindKey(kind))}</span>
               </button>
             </li>
           );
         })}
       </ul>
-      <p className="px-1 pt-2 text-[10px] leading-snug text-faint">{t('palette.hint')}</p>
+      <p className="hidden px-1 pt-2 text-[10px] leading-snug text-faint md:block">{t('palette.hint')}</p>
     </aside>
   );
 }

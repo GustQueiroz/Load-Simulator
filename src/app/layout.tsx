@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
 
@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   title: 'System Design Load Simulator',
   description:
     'Draw an architecture, push load through it and watch bottlenecks, queues, failures and cost react in real time.',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

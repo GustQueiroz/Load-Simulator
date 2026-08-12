@@ -103,7 +103,7 @@ export function DiagramCanvas() {
       >
         <Background variant={BackgroundVariant.Dots} gap={24} size={1.4} color="#22304a" />
         <Controls
-          className="!border-line !bg-panel/90 !shadow-xl"
+          className="!border-line !bg-panel/90 !shadow-xl max-lg:!mb-14"
           showInteractive={!presenting}
           position="bottom-right"
         />
@@ -115,12 +115,13 @@ export function DiagramCanvas() {
             maskColor={MINIMAP_MASK}
             nodeColor={(node) => KIND_THEME[(node.type ?? 'server') as keyof typeof KIND_THEME].accent}
             nodeStrokeWidth={0}
+            className="max-md:!hidden"
             style={{ width: 168, height: 112 }}
           />
         ) : null}
 
         {!presenting ? (
-          <Panel position="top-left" className="!m-3">
+          <Panel position="top-left" className="!m-2 max-md:!m-1.5 md:!m-3">
             <ComponentPalette />
           </Panel>
         ) : null}

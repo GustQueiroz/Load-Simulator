@@ -92,7 +92,7 @@ export function Toolbar() {
 
       <LessonMapButton />
 
-      <div className="flex min-w-0 flex-1 items-center gap-1.5">
+      <div className="hidden min-w-0 flex-1 items-center gap-1.5 sm:flex">
         <input
           aria-label={t('toolbar.diagramName')}
           value={name}
@@ -100,15 +100,18 @@ export function Toolbar() {
           className="h-8 min-w-0 max-w-56 flex-1 truncate rounded-lg border border-transparent bg-transparent px-2 text-sm text-ink transition-colors hover:border-line focus-visible:border-sky-400 focus-visible:outline-none"
         />
         {isDirty ? (
-          <span className="hidden shrink-0 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-300 sm:inline">
+          <span className="hidden shrink-0 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-300 md:inline">
             {t('toolbar.unsaved')}
           </span>
         ) : null}
       </div>
 
+      <div className="min-w-0 flex-1 sm:hidden" aria-hidden />
+
       <Button
         variant="subtle"
         size="sm"
+        className="hidden sm:inline-flex"
         icon={<Presentation className="size-3.5" />}
         onClick={togglePresentationMode}
         title={t('toolbar.presentTitle')}
