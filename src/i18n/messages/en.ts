@@ -72,6 +72,8 @@ export const en: Messages = {
   'kind.database.blurb': 'Stateful dependency with a connection pool.',
 
   'palette.title': 'Components',
+  'palette.open': 'Show components',
+  'palette.close': 'Hide components',
   'palette.hint': 'Click to drop one in the centre, or drag it exactly where you want it.',
 
   'node.rename': 'Double-click to rename',
@@ -341,6 +343,7 @@ export const en: Messages = {
   'toast.exported': 'Diagram exported.',
   'toast.nothingToExport': 'Nothing to export yet.',
   'toast.imported': '“{name}” imported.',
+  'toast.linkTooLong': 'This diagram is too large for a link. Export a .din file instead.',
   'toast.linkCopied': 'Link copied to the clipboard.',
   'toast.linkCopyFailed': 'Could not copy the link.',
   'toast.sharedOpened': 'Opened shared diagram “{name}”.',

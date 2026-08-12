@@ -5,8 +5,9 @@ import { useEffect, useRef } from 'react';
 import { costProfileOf } from '@/application/cost/profiles';
 import { estimateMonthlyCost } from '@/application/cost/cost-engine';
 import {
-  evaluateWin,
-  gradeLessonStars,
+  EMPTY_HOLD,
+  evaluateAll,
+  evaluateLesson,
   lessonById,
   type HoldTracker,
   type LessonObservation,
@@ -19,12 +20,9 @@ import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { bindLessonFrameListener } from './lesson-frame-bus';
 import { useLessonSessionStore } from './lesson-session-store';
 
-const EMPTY_HOLD: HoldTracker = { key: null, sinceElapsed: null };
-
 export function useLessonRunner(): void {
   const prevStatus = useRef(useSimulatorStore.getState().status);
-  const balloonHold = useRef<HoldTracker>(EMPTY_HOLD);
-  const winHold = useRef<HoldTracker>(EMPTY_HOLD);
+  const hold = useRef<HoldTracker>(EMPTY_HOLD);
   const lastLessonId = useRef<string | null>(null);
 
   useEffect(() => {
@@ -49,23 +47,21 @@ export function useLessonRunner(): void {
 
     const unsubscribeNodes = useSimulatorStore.subscribe(
       (state) => state.nodes,
-      () => evaluateLessonFrame(balloonHold, winHold, lastLessonId),
+      () => evaluateLessonFrame(hold, lastLessonId),
     );
 
-    const onFrame = () => evaluateLessonFrame(balloonHold, winHold, lastLessonId);
-    bindLessonFrameListener(onFrame);
+    const releaseFrames = bindLessonFrameListener(() => evaluateLessonFrame(hold, lastLessonId));
 
     return () => {
       unsubscribeStatus();
       unsubscribeNodes();
-      bindLessonFrameListener(null);
+      releaseFrames();
     };
   }, []);
 }
 
 function evaluateLessonFrame(
-  balloonHold: { current: HoldTracker },
-  winHold: { current: HoldTracker },
+  hold: { current: HoldTracker },
   lastLessonId: { current: string | null },
 ): void {
   const session = useLessonSessionStore.getState();
@@ -73,8 +69,7 @@ function evaluateLessonFrame(
 
   if (lastLessonId.current !== session.activeLessonId) {
     lastLessonId.current = session.activeLessonId;
-    balloonHold.current = EMPTY_HOLD;
-    winHold.current = EMPTY_HOLD;
+    hold.current = EMPTY_HOLD;
   }
 
   const lesson = lessonById(session.activeLessonId);
@@ -97,30 +92,61 @@ function evaluateLessonFrame(
 
   const observation = buildObservation(sim, flags);
 
-  if (lesson.mode === 'guided') {
-    const balloon = lesson.balloons[session.balloonIndex];
-    if (balloon?.advanceWhen) {
-      const advanced = evaluateWin(balloon.advanceWhen, observation, balloonHold.current);
-      balloonHold.current = advanced.hold;
-      session.setHold(advanced.hold);
-      if (advanced.ok) {
-        balloonHold.current = EMPTY_HOLD;
-        session.advanceBalloon();
-      }
-    } else {
-      session.setHold(EMPTY_HOLD);
-    }
+  // Win, star tiers and the current balloon share one tracker, so every
+  // `sustained` in the lesson keeps accumulating on the same tick.
+  const balloon =
+    lesson.mode === 'guided' ? lesson.balloons[session.balloonIndex] : undefined;
+
+  const evaluation = evaluateLesson(lesson, observation, hold.current);
+  let nextHold = evaluation.hold;
+
+  if (balloon?.advanceWhen) {
+    const advanced = evaluateAll([balloon.advanceWhen], observation, hold.current);
+    nextHold = mergeHolds(nextHold, advanced.hold);
+    session.setHold(nextHold);
+    if (advanced.results[0]) session.advanceBalloon();
+  } else if (lesson.mode === 'guided') {
+    session.setHold(nextHold);
   }
 
-  const win = evaluateWin(lesson.win, observation, winHold.current);
-  winHold.current = win.hold;
-  if (win.ok) {
-    const stars = gradeLessonStars(lesson, observation);
-    session.completeActiveLesson(stars);
+  hold.current = nextHold;
+
+  if (evaluation.won) {
+    session.completeActiveLesson(evaluation.stars);
     if (useSimulatorStore.getState().status === 'running') {
       useSimulatorStore.getState().pause();
     }
   }
+}
+
+function mergeHolds(a: HoldTracker, b: HoldTracker): HoldTracker {
+  return { since: { ...a.since, ...b.since } };
+}
+
+/**
+ * The monthly cost only moves when the diagram or the measured traffic moves,
+ * so it is cached across the ten frames a second the runner evaluates.
+ */
+let cachedCost: { nodes: unknown; metrics: unknown; cloud: string; value: number } | null = null;
+
+function monthlyCostOf(sim: ReturnType<typeof useSimulatorStore.getState>): number {
+  if (
+    cachedCost &&
+    cachedCost.nodes === sim.nodes &&
+    cachedCost.metrics === sim.nodeMetrics &&
+    cachedCost.cloud === sim.cloud
+  ) {
+    return cachedCost.value;
+  }
+
+  const value = estimateMonthlyCost(
+    toSimulationNodes(sim.nodes),
+    sim.nodeMetrics,
+    costProfileOf(sim.cloud),
+  ).totalMonthlyUsd;
+
+  cachedCost = { nodes: sim.nodes, metrics: sim.nodeMetrics, cloud: sim.cloud, value };
+  return value;
 }
 
 function buildObservation(
@@ -132,13 +158,6 @@ function buildObservation(
     nodes.set(node.id, { kind: node.data.kind, config: node.data.config });
   }
 
-  const profile = costProfileOf(sim.cloud);
-  const cost = estimateMonthlyCost(
-    toSimulationNodes(sim.nodes),
-    sim.nodeMetrics,
-    profile,
-  );
-
   return {
     status: sim.status,
     tick: sim.tick,
@@ -147,6 +166,6 @@ function buildObservation(
     system: sim.system,
     nodes,
     nodeMetrics: sim.nodeMetrics,
-    monthlyCostUsd: cost.totalMonthlyUsd,
+    monthlyCostUsd: monthlyCostOf(sim),
   };
 }

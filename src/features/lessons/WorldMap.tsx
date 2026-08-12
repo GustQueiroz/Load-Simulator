@@ -14,6 +14,7 @@ import {
   type WorldId,
 } from '@/application/lessons';
 import { Button } from '@/components/ui/Button';
+import { useModalDialog } from '@/components/ui/useModalDialog';
 import { useT, type MessageKey } from '@/i18n/I18nProvider';
 import { cn } from '@/lib/cn';
 
@@ -45,11 +46,14 @@ const WorldMapDialog = memo(function WorldMapDialog({ open }: { open: boolean })
   const closeMap = useLessonSessionStore((state) => state.closeMap);
   const progress = useLessonSessionStore((state) => state.progress);
   const startLesson = useStartLesson();
+  const dialogRef = useModalDialog<HTMLDivElement>({ open, onClose: closeMap });
 
   return (
     <div
+      ref={dialogRef}
+      tabIndex={-1}
       className={cn(
-        'fixed inset-0 z-[85] items-center justify-center bg-black/60 p-4',
+        'fixed inset-0 z-[85] items-center justify-center bg-black/60 p-4 focus:outline-none',
         open ? 'flex' : 'hidden',
       )}
       role="dialog"

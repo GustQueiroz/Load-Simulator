@@ -65,6 +65,13 @@ Start at `NodeKind` in `src/domain/simulation/node-kind.ts` and let the
 compiler walk you through the rest. Full walkthrough:
 [`docs/adding-a-component.md`](docs/adding-a-component.md).
 
+## Adding a lesson
+
+The curriculum is data: a diagram plus a machine-checkable statement of what
+the learner must make happen. No component, no imperative code. Full guide:
+[`docs/lessons.md`](docs/lessons.md) — read the rules for `sustained`
+conditions before writing one.
+
 ## Changing the simulation model
 
 The rules live in `src/application/simulation/models/` (latency, failure, work

@@ -16,7 +16,7 @@ import {
   Upload,
 } from 'lucide-react';
 
-import { buildShareUrl } from '@/application/serialization/share-url';
+import { buildShareUrl, ShareUrlTooLongError } from '@/application/serialization/share-url';
 import { Button } from '@/components/ui/Button';
 import { Menu } from '@/components/ui/Menu';
 import { LessonPicker } from '@/features/onboarding/LessonPicker';
@@ -190,8 +190,13 @@ export function Toolbar() {
                   });
                   await navigator.clipboard.writeText(url);
                   notify(t('toast.linkCopied'), 'success');
-                } catch {
-                  notify(t('toast.linkCopyFailed'), 'error');
+                } catch (error) {
+                  notify(
+                    error instanceof ShareUrlTooLongError
+                      ? t('toast.linkTooLong')
+                      : t('toast.linkCopyFailed'),
+                    'error',
+                  );
                 }
               })();
             },

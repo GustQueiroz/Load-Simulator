@@ -3,6 +3,7 @@
 import { create } from 'zustand';
 
 import {
+  EMPTY_HOLD,
   type BalloonAnchor,
   type HoldTracker,
   type LessonFlag,
@@ -56,7 +57,7 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
   activeLessonId: null,
   balloonIndex: 0,
   flags: { ...EMPTY_FLAGS },
-  hold: { key: null, sinceElapsed: null },
+  hold: EMPTY_HOLD,
   completedOpen: false,
   justCompletedId: null,
   justCompletedStars: 1,
@@ -88,7 +89,7 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
       activeLessonId: id,
       balloonIndex: 0,
       flags: { ...EMPTY_FLAGS },
-      hold: { key: null, sinceElapsed: null },
+      hold: EMPTY_HOLD,
       mapOpen: false,
       completedOpen: false,
       justCompletedId: null,
@@ -102,7 +103,7 @@ export const useLessonSessionStore = create<LessonSessionState>((set, get) => ({
       activeLessonId: null,
       balloonIndex: 0,
       flags: { ...EMPTY_FLAGS },
-      hold: { key: null, sinceElapsed: null },
+      hold: EMPTY_HOLD,
       completedOpen: false,
       justCompletedId: null,
       justCompletedStars: 1,

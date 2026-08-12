@@ -72,6 +72,8 @@ export const ptBR = {
   'kind.database.blurb': 'Dependência stateful com pool de conexões.',
 
   'palette.title': 'Componentes',
+  'palette.open': 'Mostrar componentes',
+  'palette.close': 'Esconder componentes',
   'palette.hint': 'Clique para adicionar no centro ou arraste até o ponto exato.',
 
   'node.rename': 'Duplo clique para renomear',
@@ -343,6 +345,7 @@ export const ptBR = {
   'toast.exported': 'Diagrama exportado.',
   'toast.nothingToExport': 'Não há nada para exportar ainda.',
   'toast.imported': '“{name}” importado.',
+  'toast.linkTooLong': 'O diagrama é grande demais para um link. Exporte um arquivo .din.',
   'toast.linkCopied': 'Link copiado para a área de transferência.',
   'toast.linkCopyFailed': 'Não foi possível copiar o link.',
   'toast.sharedOpened': 'Diagrama compartilhado “{name}” aberto.',

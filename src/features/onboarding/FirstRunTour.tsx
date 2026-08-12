@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { BookOpen, ChevronRight, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
+import { useModalDialog } from '@/components/ui/useModalDialog';
 import { useStartLesson } from '@/features/lessons/useStartLesson';
 import { useT } from '@/i18n/I18nProvider';
 
@@ -22,6 +23,13 @@ export function FirstRunTour() {
   const closeTour = useOnboardingStore((state) => state.closeTour);
   const startLesson = useStartLesson();
   const [step, setStep] = useState(0);
+  const dialogRef = useModalDialog<HTMLDivElement>({
+    open,
+    onClose: () => {
+      setStep(0);
+      closeTour();
+    },
+  });
 
   if (!open) return null;
 
@@ -30,7 +38,9 @@ export function FirstRunTour() {
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]"
+      ref={dialogRef}
+      tabIndex={-1}
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] focus:outline-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="tour-title"

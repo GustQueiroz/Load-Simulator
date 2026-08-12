@@ -4,6 +4,7 @@ import { Briefcase, Lock, X } from 'lucide-react';
 
 import { lessonById } from '@/application/lessons';
 import { Button } from '@/components/ui/Button';
+import { useModalDialog } from '@/components/ui/useModalDialog';
 import { useT, type MessageKey } from '@/i18n/I18nProvider';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
 import { formatUsd } from '@/lib/format';
@@ -16,6 +17,7 @@ export function MissionBrief() {
   const activeLessonId = useLessonSessionStore((state) => state.activeLessonId);
   const closeBrief = useLessonSessionStore((state) => state.closeBrief);
   const presenting = useSimulatorStore((state) => state.presentationMode);
+  const dialogRef = useModalDialog<HTMLDivElement>({ open, onClose: closeBrief });
 
   if (!open || !activeLessonId || presenting) return null;
   const lesson = lessonById(activeLessonId);
@@ -23,7 +25,9 @@ export function MissionBrief() {
 
   return (
     <div
-      className="fixed inset-0 z-[88] flex items-center justify-center bg-black/60 p-4 backdrop-blur-[2px]"
+      ref={dialogRef}
+      tabIndex={-1}
+      className="fixed inset-0 z-[88] flex items-center justify-center bg-black/60 p-4 backdrop-blur-[2px] focus:outline-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="mission-brief-title"

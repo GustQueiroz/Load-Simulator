@@ -200,21 +200,51 @@ function resolveAnchorBox(anchor: {
   return { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
 }
 
+const BALLOON_GAP = 12;
+const BALLOON_MARGIN = 16;
+const BALLOON_HEIGHT = 180;
+
 function placeBalloon(box: AnchorBox | null): CSSProperties {
   if (!box) {
     return { bottom: 24, right: 24 };
   }
-  const balloonW = 300;
-  const balloonH = 180;
-  const gap = 12;
-  let top = box.top + box.height + gap;
-  let left = box.left + box.width / 2 - balloonW / 2;
 
-  if (top + balloonH > window.innerHeight - 16) {
-    top = box.top - balloonH - gap;
+  const width = Math.min(300, window.innerWidth - BALLOON_MARGIN * 2);
+  const maxLeft = window.innerWidth - width - BALLOON_MARGIN;
+
+  let top = box.top + box.height + BALLOON_GAP;
+  let left = box.left + box.width / 2 - width / 2;
+
+  if (top + BALLOON_HEIGHT > window.innerHeight - BALLOON_MARGIN) {
+    top = box.top - BALLOON_HEIGHT - BALLOON_GAP;
   }
-  if (top < 16) top = 16;
-  left = Math.max(16, Math.min(left, window.innerWidth - balloonW - 16));
+  top = Math.max(BALLOON_MARGIN, top);
+  left = Math.max(BALLOON_MARGIN, Math.min(left, maxLeft));
 
-  return { top, left };
+  // The palette must stay readable: a tip that says "drag a Server" while
+  // sitting on top of the Server button is the one placement we cannot ship.
+  const keepOut = document
+    .querySelector('[data-lesson-keepout="palette"]')
+    ?.getBoundingClientRect();
+
+  const overlaps =
+    keepOut &&
+    left < keepOut.right &&
+    keepOut.left < left + width &&
+    top < keepOut.bottom &&
+    keepOut.top < top + BALLOON_HEIGHT;
+
+  if (keepOut && overlaps) {
+    const beside = keepOut.right + BALLOON_GAP;
+    if (beside <= maxLeft) {
+      left = beside;
+    } else if (keepOut.bottom + BALLOON_GAP + BALLOON_HEIGHT <= window.innerHeight - BALLOON_MARGIN) {
+      top = keepOut.bottom + BALLOON_GAP;
+    } else {
+      // Nowhere beside or below it — get out of the way entirely.
+      return { bottom: 24, right: 24 };
+    }
+  }
+
+  return { top, left, width };
 }

@@ -1,7 +1,15 @@
-import type { LessonDefinition, LessonId, LessonProgressMap, WorldDefinition } from './types';
-import { LESSON_IDS } from './types';
-import { isConditionMet } from './predicates';
-import type { LessonObservation } from './types';
+import type {
+  HoldTracker,
+  LessonDefinition,
+  LessonId,
+  LessonObservation,
+  LessonProgressMap,
+  WorldDefinition,
+} from './types';
+import { stackRows } from '@/domain/diagram/layout';
+
+import { EMPTY_HOLD, LESSON_IDS } from './types';
+import { evaluateAll } from './predicates';
 import { WORLD_0_LESSONS } from './worlds/world-0';
 import { WORLD_1_LESSONS } from './worlds/world-1';
 import { WORLD_2_LESSONS } from './worlds/world-2';
@@ -14,12 +22,26 @@ export const WORLDS: readonly WorldDefinition[] = [
   { id: '3', order: 3, lessonIds: ['3.1', '3.2', '3.3', '3.4'] },
 ];
 
+/**
+ * Rows are compacted centrally so no lesson has to reason about how tall a
+ * card becomes once the metrics appear. Authors keep writing `ROWS[n]`.
+ */
+function withCompactRows(lesson: LessonDefinition): LessonDefinition {
+  return {
+    ...lesson,
+    build: (vocabulary) => {
+      const snapshot = lesson.build(vocabulary);
+      return { ...snapshot, nodes: stackRows(snapshot.nodes) };
+    },
+  };
+}
+
 export const LESSONS: readonly LessonDefinition[] = [
   ...WORLD_0_LESSONS,
   ...WORLD_1_LESSONS,
   ...WORLD_2_LESSONS,
   ...WORLD_3_LESSONS,
-];
+].map(withCompactRows);
 
 const BY_ID = new Map(LESSONS.map((lesson) => [lesson.id, lesson]));
 
@@ -59,11 +81,31 @@ export function worldById(id: string): WorldDefinition | undefined {
   return WORLDS.find((world) => world.id === id);
 }
 
-export function gradeLessonStars(
+export interface LessonEvaluation {
+  won: boolean;
+  stars: 1 | 2 | 3;
+  hold: HoldTracker;
+}
+
+/**
+ * Grades win and star tiers in a single pass over one observation.
+ *
+ * They share a tracker on purpose: a `sustained` inside a star tier has to
+ * accumulate on every tick, exactly like the win condition. Evaluating the
+ * tiers only at the moment of victory would silently treat them as
+ * instantaneous.
+ */
+export function evaluateLesson(
   lesson: LessonDefinition,
   observation: LessonObservation,
-): 1 | 2 | 3 {
-  if (lesson.stars?.three && isConditionMet(lesson.stars.three, observation)) return 3;
-  if (lesson.stars?.two && isConditionMet(lesson.stars.two, observation)) return 2;
-  return 1;
+  hold: HoldTracker = EMPTY_HOLD,
+): LessonEvaluation {
+  const { results, hold: nextHold } = evaluateAll(
+    [lesson.win, lesson.stars?.three, lesson.stars?.two],
+    observation,
+    hold,
+  );
+  const [won, three, two] = results;
+
+  return { won, stars: three ? 3 : two ? 2 : 1, hold: nextHold };
 }

@@ -1,6 +1,7 @@
 import type { NodeConfigByKind } from '@/domain/nodes/config';
 import { createDefaultConfig } from '@/domain/nodes/defaults';
 import type { DiagramEdge, DiagramNode, DiagramSnapshot } from '@/domain/diagram/diagram';
+import { col, ROWS, stackRows } from '@/domain/diagram/layout';
 import type { NodeKind } from '@/domain/simulation/node-kind';
 
 export const PRESET_IDS = [
@@ -42,10 +43,6 @@ function edge(source: string, target: string): DiagramEdge {
   return { id: `e-${source}-${target}`, source, target, data: { enabled: true } };
 }
 
-const COL = 340;
-const ROWS = [0, 320, 760, 1_200, 1_640] as const;
-
-const col = (index: number) => index * COL;
 
 const singleServer: ArchitecturePreset = {
   id: 'single-server',
@@ -165,6 +162,17 @@ const buttonClickDemo: ArchitecturePreset = {
   }),
 };
 
+/** Same row compaction the lessons get — see `domain/diagram/layout`. */
+function withCompactRows(preset: ArchitecturePreset): ArchitecturePreset {
+  return {
+    ...preset,
+    build: (vocabulary) => {
+      const snapshot = preset.build(vocabulary);
+      return { ...snapshot, nodes: stackRows(snapshot.nodes) };
+    },
+  };
+}
+
 export const PRESETS: readonly ArchitecturePreset[] = [
   loadBalancerBasics,
   singleServer,
@@ -172,7 +180,7 @@ export const PRESETS: readonly ArchitecturePreset[] = [
   queueAbsorbsBurst,
   rateLimiting,
   buttonClickDemo,
-];
+].map(withCompactRows);
 
 export const DEFAULT_PRESET_ID: PresetId = loadBalancerBasics.id;
 

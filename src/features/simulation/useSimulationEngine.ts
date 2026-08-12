@@ -22,8 +22,9 @@ export function useSimulationEngine(): void {
   }
 
   useEffect(() => {
-    bindSimulationEngine(engineRef.current);
-    return () => bindSimulationEngine(null);
+    const engine = engineRef.current;
+    if (!engine) return;
+    return bindSimulationEngine(engine);
   }, []);
 
   const status = useSimulatorStore((state) => state.status);

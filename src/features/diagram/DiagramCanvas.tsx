@@ -11,7 +11,7 @@ import {
   useReactFlow,
   type DefaultEdgeOptions,
 } from '@xyflow/react';
-import { useCallback, useEffect, type DragEvent } from 'react';
+import { useCallback, useEffect, useRef, type DragEvent } from 'react';
 
 import type { DiagramEdge, DiagramNode } from '@/domain/diagram/diagram';
 import { isNodeKind } from '@/domain/simulation/node-kind';
@@ -45,12 +45,33 @@ export function DiagramCanvas() {
   const { onNodesChange, onEdgesChange, onConnect } = useDiagramSync();
   const { screenToFlowPosition, fitView } = useReactFlow();
   const nodesInitialized = useNodesInitialized();
+  const hasFirstFrame = useSimulatorStore((state) => state.tick > 0);
+  // Set only by pan/zoom the learner performed — `fitView` also fires
+  // `onMoveEnd`, but with no source event.
+  const viewportMovedByUser = useRef(false);
 
   useEffect(() => {
 
     if (fitViewToken === 0 || !nodesInitialized) return;
+    viewportMovedByUser.current = false;
     void fitView({ padding: 0.18, duration: 350 });
   }, [fitViewToken, nodesInitialized, fitView]);
+
+  /**
+   * Cards grow when the metric block appears on the first frame. Reframe once,
+   * so the diagram that was fitted while stopped does not spill out of view the
+   * moment the learner presses play.
+   *
+   * Only while the viewport is still the one we framed: if the learner has
+   * panned or zoomed since, that is a deliberate choice and we leave it alone.
+   */
+  useEffect(() => {
+    if (!hasFirstFrame || !nodesInitialized || viewportMovedByUser.current) return;
+    const timer = setTimeout(() => {
+      if (!viewportMovedByUser.current) void fitView({ padding: 0.18, duration: 350 });
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [hasFirstFrame, nodesInitialized, fitView]);
 
   useEffect(() => {
     if (!focusedNodeId) return;
@@ -86,7 +107,10 @@ export function DiagramCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onMoveEnd={(_, next) => setViewport(next)}
+        onMoveEnd={(event, next) => {
+          if (event) viewportMovedByUser.current = true;
+          setViewport(next);
+        }}
         onNodeDoubleClick={(_, node) => presenting && setFocusedNode(node.id)}
         onPaneClick={() => focusedNodeId && setFocusedNode(null)}
         defaultViewport={viewport}

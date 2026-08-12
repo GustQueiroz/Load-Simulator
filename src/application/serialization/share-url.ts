@@ -7,6 +7,7 @@ import type { DiagramEdge, DiagramNode, DiagramViewport } from '@/domain/diagram
 const SHARE_PARAM = 'd';
 const PRESET_PARAM = 'preset';
 const TOUR_PARAM = 'tour';
+const LESSON_PARAM = 'lesson';
 
 export interface SharePayloadInput {
   name: string;
@@ -22,6 +23,20 @@ export interface SharePayloadInput {
   now: string;
 }
 
+/**
+ * Practical ceiling for a link that has to survive being pasted around.
+ * Browsers take far more, but chat clients and issue trackers start cutting
+ * links around here — a truncated diagram is worse than an honest refusal.
+ */
+export const MAX_SHARE_URL_LENGTH = 8_000;
+
+export class ShareUrlTooLongError extends Error {
+  constructor(readonly length: number) {
+    super(`Share URL is ${length} characters, over the ${MAX_SHARE_URL_LENGTH} limit`);
+    this.name = 'ShareUrlTooLongError';
+  }
+}
+
 export async function buildShareUrl(
   input: SharePayloadInput,
   base = window.location.href,
@@ -29,9 +44,17 @@ export async function buildShareUrl(
   const file = exportDin(input);
   const encoded = await encodeSharePayload(serializeDin(file));
   const url = new URL(base);
+  // A stale `?preset=` or `?lesson=` would win over the diagram we are about
+  // to embed, so the link is built from a clean slate.
   url.searchParams.delete(SHARE_PARAM);
+  url.searchParams.delete(PRESET_PARAM);
+  url.searchParams.delete(TOUR_PARAM);
+  url.searchParams.delete(LESSON_PARAM);
   url.hash = `${SHARE_PARAM}=${encoded}`;
-  return url.toString();
+
+  const result = url.toString();
+  if (result.length > MAX_SHARE_URL_LENGTH) throw new ShareUrlTooLongError(result.length);
+  return result;
 }
 
 export function buildPresetUrl(
@@ -85,36 +108,52 @@ export function clearShareFromLocation(): void {
 }
 
 export async function encodeSharePayload(json: string): Promise<string> {
-  const bytes = new TextEncoder().encode(json);
-  const compressed = await deflate(bytes);
-  return bytesToBase64Url(compressed);
+  const { bytes, prefix } = await deflate(new TextEncoder().encode(json));
+  return prefix + bytesToBase64Url(bytes);
 }
 
 export async function decodeSharePayload(encoded: string): Promise<string> {
-  const compressed = base64UrlToBytes(encoded);
-  const bytes = await inflate(compressed);
+  const prefix = encoded.slice(0, 1);
+  const body = encoded.slice(1);
+
+  // Links minted before the tag existed are always deflate-raw.
+  const payload =
+    prefix === RAW_PREFIX || prefix === DEFLATE_PREFIX ? body : encoded;
+  const compressed = base64UrlToBytes(payload);
+
+  const bytes = prefix === RAW_PREFIX ? compressed : await inflate(compressed);
   return new TextDecoder().decode(bytes);
 }
 
-async function deflate(bytes: Uint8Array): Promise<Uint8Array> {
-  if (typeof CompressionStream === 'undefined') return bytes;
+/**
+ * Payloads are tagged so a reader always knows what it is holding.
+ *
+ * Without the marker, a link produced where `CompressionStream` is missing is
+ * indistinguishable from a corrupt one, and the reader has to guess — which
+ * used to surface as "invalid file" with no explanation.
+ */
+const RAW_PREFIX = 'r';
+const DEFLATE_PREFIX = 'z';
+
+async function deflate(bytes: Uint8Array): Promise<{ bytes: Uint8Array; prefix: string }> {
+  if (typeof CompressionStream === 'undefined') return { bytes, prefix: RAW_PREFIX };
   const stream = new Blob([bytes.buffer as ArrayBuffer])
     .stream()
     .pipeThrough(new CompressionStream('deflate-raw'));
-  return new Uint8Array(await new Response(stream).arrayBuffer());
+  return {
+    bytes: new Uint8Array(await new Response(stream).arrayBuffer()),
+    prefix: DEFLATE_PREFIX,
+  };
 }
 
 async function inflate(bytes: Uint8Array): Promise<Uint8Array> {
-  if (typeof DecompressionStream === 'undefined') return bytes;
-  try {
-    const stream = new Blob([bytes.buffer as ArrayBuffer])
-      .stream()
-      .pipeThrough(new DecompressionStream('deflate-raw'));
-    return new Uint8Array(await new Response(stream).arrayBuffer());
-  } catch {
-
-    return bytes;
+  if (typeof DecompressionStream === 'undefined') {
+    throw new Error('This browser cannot read compressed share links');
   }
+  const stream = new Blob([bytes.buffer as ArrayBuffer])
+    .stream()
+    .pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
 function bytesToBase64Url(bytes: Uint8Array): string {

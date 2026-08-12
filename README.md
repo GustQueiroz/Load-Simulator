@@ -61,6 +61,30 @@ Six ready-made scenarios ship with it, including the classic
 comfortably in the green while the database goes critical. There is also a
 `Button → server → database` lesson for click-driven demos.
 
+## The exercise path
+
+Beyond the sandbox there is a **guided course: 16 exercises across four
+worlds**, unlocked in order. Open it with **Path** in the toolbar, or link
+straight to one with `?lesson=1.3`.
+
+| World | | |
+| --- | --- | --- |
+| **0 — Controls** | 2 lessons | Play, pause, one slider. The diagram is already built. |
+| **1 — Capacity** | 5 lessons | Server, load balancer, cache, gateway and queue, one idea at a time. |
+| **2 — Incidents** | 5 lessons | Missions: a briefing, locked traffic, and an architecture to fix. |
+| **3 — Trade-offs** | 4 lessons | Cost, headroom and latency pulling against each other. |
+
+Worlds 0–1 are *guided*: a coach balloon points at the control you need and
+advances when you have done the thing. Worlds 2–3 are *missions*: you get a
+situation, an objective and constraints — and the traffic sliders are locked,
+so the only way through is to change the architecture.
+
+Each exercise states a machine-checkable goal ("hold the database out of
+critical for 3 seconds"), and awards up to three stars for the quality of the
+solution — usually cost or headroom, never speed.
+
+Writing one is data, not code: [`docs/lessons.md`](docs/lessons.md).
+
 ## How the numbers work
 
 Everything is a **rate**. There is no object per request, so 100.000 req/s

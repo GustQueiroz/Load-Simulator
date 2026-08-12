@@ -4,6 +4,7 @@ import { PartyPopper, X } from 'lucide-react';
 
 import { nextLessonId } from '@/application/lessons';
 import { Button } from '@/components/ui/Button';
+import { useModalDialog } from '@/components/ui/useModalDialog';
 import { useT, type MessageKey } from '@/i18n/I18nProvider';
 
 import { useLessonSessionStore } from './lesson-session-store';
@@ -18,6 +19,7 @@ export function LessonComplete() {
   const exitLesson = useLessonSessionStore((state) => state.exitLesson);
   const openMap = useLessonSessionStore((state) => state.openMap);
   const startLesson = useStartLesson();
+  const dialogRef = useModalDialog<HTMLDivElement>({ open, onClose: dismissComplete });
 
   if (!open || !justCompletedId) return null;
 
@@ -25,7 +27,9 @@ export function LessonComplete() {
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]"
+      ref={dialogRef}
+      tabIndex={-1}
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] focus:outline-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="lesson-complete-title"

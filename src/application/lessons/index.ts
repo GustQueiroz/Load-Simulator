@@ -16,16 +16,18 @@ export type {
   WorldDefinition,
   WorldId,
 } from './types';
-export { LESSON_IDS, TRAFFIC_SOURCE_FIELD_KEYS, WORLD_IDS } from './types';
+export { EMPTY_HOLD, LESSON_IDS, TRAFFIC_SOURCE_FIELD_KEYS, WORLD_IDS } from './types';
 export {
   compare,
   describeHoldProgress,
+  evaluateAll,
   evaluateWin,
   isConditionMet,
 } from './predicates';
 export { isLessonFieldLocked } from './locks';
+export type { LessonEvaluation } from './catalog';
 export {
-  gradeLessonStars,
+  evaluateLesson,
   isLessonId,
   isLessonUnlocked,
   lessonById,

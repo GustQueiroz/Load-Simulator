@@ -118,10 +118,17 @@ export interface LessonObservation {
   monthlyCostUsd: number;
 }
 
+/**
+ * Elapsed-time bookkeeping for `sustained` conditions.
+ *
+ * Keyed by condition, so a lesson can hold several timers at once — one per
+ * `sustained` in the win tree, in the star tiers, or in a balloon step.
+ */
 export interface HoldTracker {
-  key: string | null;
-  sinceElapsed: number | null;
+  readonly since: Readonly<Record<string, number>>;
 }
+
+export const EMPTY_HOLD: HoldTracker = { since: {} };
 
 export interface LessonProgressEntry {
   stars: 1 | 2 | 3;

@@ -3,10 +3,9 @@ import { createDefaultConfig } from '@/domain/nodes/defaults';
 import type { DiagramEdge, DiagramNode } from '@/domain/diagram/diagram';
 import type { NodeKind } from '@/domain/simulation/node-kind';
 
-export const COL = 340;
-export const ROWS = [0, 320, 760, 1_200, 1_640] as const;
-
-export const col = (index: number) => index * COL;
+// Row slots and card geometry are shared with the presets so both are
+// compacted by the same rules — see `domain/diagram/layout`.
+export { COL, col, ROWS, stackRows } from '@/domain/diagram/layout';
 
 export function lessonNode<K extends NodeKind>(
   id: string,

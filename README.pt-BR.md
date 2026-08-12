@@ -61,6 +61,30 @@ Vêm seis cenários prontos, incluindo o clássico
 servidores confortáveis no verde enquanto o banco fica crítico, e o
 `Botão → servidor → banco` para demos com clique.
 
+## A trilha de exercícios
+
+Além do modo livre existe um **curso guiado: 16 exercícios em quatro mundos**,
+desbloqueados em ordem. Abra em **Trilha** na barra, ou vá direto para um com
+`?lesson=1.3`.
+
+| Mundo | | |
+| --- | --- | --- |
+| **0 — Controles** | 2 lições | Play, pause e um slider. O diagrama já vem montado. |
+| **1 — Capacidade** | 5 lições | Servidor, balanceador, cache, gateway e fila, uma ideia por vez. |
+| **2 — Incidentes** | 5 lições | Missões: um briefing, tráfego travado e uma arquitetura para consertar. |
+| **3 — Trade-offs** | 4 lições | Custo, folga e latência puxando um contra o outro. |
+
+Os mundos 0–1 são *guiados*: um balão aponta o controle certo e avança sozinho
+quando você faz o que ele pediu. Os mundos 2–3 são *missões*: você recebe a
+situação, o objetivo e as restrições — e os sliders de tráfego estão travados,
+então o único caminho é mudar a arquitetura.
+
+Cada exercício declara um objetivo verificável ("segure o banco fora do crítico
+por 3 segundos") e dá até três estrelas pela qualidade da solução — geralmente
+custo ou folga, nunca velocidade.
+
+Escrever uma lição é dado, não código: [`docs/lessons.md`](docs/lessons.md).
+
 ## Como os números funcionam
 
 Tudo é **taxa**. Não existe um objeto por requisição, então 100.000 req/s
