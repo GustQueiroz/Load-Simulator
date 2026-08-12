@@ -17,10 +17,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Node 24 ships npm 11, which is what writes the lockfile locally.
+      # On npm 10 the same lock fails `npm ci`: it drops two of the six
+      # packages bundled inside @tailwindcss/oxide-wasm32-wasi.
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
+
+      # Without this, an older npm fails with a cryptic EUSAGE about two
+      # packages nobody in this project depends on directly.
+      - name: Fail early if npm is older than the lockfile's writer
+        run: |
+          version=$(npm --version)
+          echo "npm $version"
+          if [ "${version%%.*}" -lt 11 ]; then
+            echo "::error::This lockfile is written by npm 11. npm $version drops two of the packages bundled inside @tailwindcss/oxide-wasm32-wasi and fails npm ci."
+            exit 1
+          fi
 
       - run: npm ci
 
