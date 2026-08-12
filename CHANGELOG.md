@@ -31,7 +31,8 @@ First public release.
 - Retry storms: clients retry failed requests using the previous tick's observed
   failure rate, so the feedback loop closes in time without a cycle in the graph.
 - Cost estimation per cloud profile (generic, AWS, GCP, Azure), separating
-  infrastructure from egress.
+  infrastructure from egress. During a mission the panel shows the
+  infrastructure subtotal against the budget, since that is the figure graded.
 
 **Learning**
 
@@ -56,9 +57,9 @@ First public release.
 
 ### Verification
 
-- 265 unit tests, including a harness that plays every one of the 16 lessons to
+- 322 unit tests, including a harness that plays every one of the 16 lessons to
   completion — a lesson whose objective cannot be reached fails the build.
-- 17 end-to-end tests (Playwright) over the static export, covering the main
+- 18 end-to-end tests (Playwright) over the static export, covering the main
   flow, a full lesson, keyboard operation, the phone layout, and one regression
   test per defect fixed by hand.
 - Typecheck, lint, dependency-cruiser layer fences, bundle weight and UI latency

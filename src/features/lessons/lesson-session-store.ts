@@ -180,6 +180,19 @@ export function useLessonHighlight(): BalloonAnchor | null {
   });
 }
 
+/**
+ * The monthly budget the active mission grades against, if any.
+ *
+ * Exposed so the cost panel can show the learner the exact figure being
+ * checked — a budget you cannot see yourself approaching is a guess.
+ */
+export function useActiveBudget(): number | undefined {
+  return useLessonSessionStore((state) => {
+    if (!state.activeLessonId) return undefined;
+    return lessonById(state.activeLessonId)?.budgetMonthlyUsd;
+  });
+}
+
 export function useActiveLesson() {
   return useLessonSessionStore((state) =>
     state.activeLessonId ? lessonById(state.activeLessonId) : undefined,

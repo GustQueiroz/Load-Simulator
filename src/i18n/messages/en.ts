@@ -149,6 +149,8 @@ export const en: Messages = {
   'cost.trafficDetail': '{gb} GB · {kb} KB per response',
   'cost.expand': 'Expand costs',
   'cost.collapse': 'Collapse costs',
+  'cost.budgetLabel': 'Infrastructure',
+  'cost.budgetHint': 'The mission grades the components only. Traffic is locked, so it does not count.',
   'cost.disclaimer':
     'Teaching estimate. Not an official price and not a billing guarantee.',
 
@@ -425,7 +427,7 @@ export const en: Messages = {
   'mission.situation': 'Situation',
   'mission.objective': 'Objective',
   'mission.constraints': 'Constraints',
-  'mission.budget': 'Budget: {amount}/mo',
+  'mission.budget': 'Budget: {amount}/mo of infrastructure',
   'mission.trafficLocked': 'Incoming load locked',
   'mission.accept': 'Accept mission',
   'mission.close': 'Close briefing',
@@ -468,8 +470,6 @@ export const en: Messages = {
 
   'lesson.0.1.title': 'Play, pause, spot the bottleneck',
   'lesson.0.1.goal': 'Start, check the System panel bottleneck, then pause.',
-  'lesson.0.1.hint1': 'Start with the Start button in the top bar — nothing happens before that.',
-  'lesson.0.1.hint2': 'With load flowing, the System panel names the bottleneck. Read the node, then press Stop.',
   'lesson.0.1.balloon.play.title': 'Press Start',
   'lesson.0.1.balloon.play.body': 'Space works too. Load begins flowing through the diagram.',
   'lesson.0.1.balloon.bottleneck.title': 'Look at the bottleneck',
@@ -479,8 +479,6 @@ export const en: Messages = {
 
   'lesson.0.2.title': 'A slider changes the outcome',
   'lesson.0.2.goal': 'Raise Client RPS until the server stays critical for 3 seconds.',
-  'lesson.0.2.hint1': 'Select the Client and find the RPS slider in the right-hand panel.',
-  'lesson.0.2.hint2': 'Push RPS until the server passes 80% and leave it running: critical has to hold for 3 straight seconds.',
   'lesson.0.2.balloon.start.title': 'Start gently',
   'lesson.0.2.balloon.start.body': 'Hit Start. The server is still fine — the Client only sends 40 req/s.',
   'lesson.0.2.balloon.slider.title': 'Move the Client RPS',
@@ -490,8 +488,6 @@ export const en: Messages = {
 
   'lesson.1.1.title': 'A single server saturates',
   'lesson.1.1.goal': 'Saturate the server without making the database critical.',
-  'lesson.1.1.hint1': 'Saturating means going past 80% utilization — and only the server should get there.',
-  'lesson.1.1.hint2': "Raise the Client's RPS, and if the database climbs with it, give the database more capacity.",
   'lesson.1.1.balloon.start.title': 'Start the load',
   'lesson.1.1.balloon.start.body': 'The database is intentionally oversized. The ceiling that matters is the server.',
   'lesson.1.1.balloon.raise.title': 'Overwhelm the server',
@@ -501,8 +497,6 @@ export const en: Messages = {
 
   'lesson.1.2.title': 'Horizontal scale misleads',
   'lesson.1.2.goal': 'See three green servers and the database as the bottleneck.',
-  'lesson.1.2.hint1': 'Nothing to change here: this one is about reading. Start it and watch.',
-  'lesson.1.2.hint2': 'Notice the three servers splitting the load and staying green, while the database takes the sum of all three.',
   'lesson.1.2.balloon.look.title': 'Comfortable servers',
   'lesson.1.2.balloon.look.body': 'The load balancer spread the traffic. All three servers stay green.',
   'lesson.1.2.balloon.db.title': 'The funnel is the database',
@@ -512,8 +506,6 @@ export const en: Messages = {
 
   'lesson.1.3.title': 'Save the database with cache',
   'lesson.1.3.goal': 'Raise cache hit rate until the DB leaves critical.',
-  'lesson.1.3.hint1': 'Every miss becomes a database query. The cache is what controls that.',
-  'lesson.1.3.hint2': 'Select the cache and raise the hit rate to 0.95: the database then sees a twentieth of the traffic.',
   'lesson.1.3.balloon.pain.title': 'DB in the red',
   'lesson.1.3.balloon.pain.body': 'At 50% hit rate, half the requests still hit the database.',
   'lesson.1.3.balloon.raise.title': 'Raise the hit rate',
@@ -523,8 +515,6 @@ export const en: Messages = {
 
   'lesson.1.4.title': 'Gateway protects the service',
   'lesson.1.4.goal': 'Tune rate limiting so the server stays healthy (with edge rejects).',
-  'lesson.1.4.hint1': 'The gateway sheds the excess at the edge. Whatever passes is what the server has to survive.',
-  'lesson.1.4.hint2': "Lower the rate limit until what passes fits the server's capacity — around 150 rps.",
   'lesson.1.4.balloon.overload.title': 'Service melting',
   'lesson.1.4.balloon.overload.body': '5,000 req/s pass the gateway with no brake. The server cannot keep up.',
   'lesson.1.4.balloon.limit.title': 'Tighten the rate limit',
@@ -534,8 +524,6 @@ export const en: Messages = {
 
   'lesson.1.5.title': 'A queue absorbs the spike',
   'lesson.1.5.goal': 'Watch backlog rise during the spike, then the worker drain without staying critical.',
-  'lesson.1.5.hint1': "The queue absorbs the spike: fast in, out at the worker's pace.",
-  'lesson.1.5.hint2': "Set the queue's delivery capacity near the server's capacity and let the backlog drain.",
   'lesson.1.5.balloon.spike.title': 'Here comes the spike',
   'lesson.1.5.balloon.spike.body': 'The producer fires a spike. Watch the load — you do not need to change anything.',
   'lesson.1.5.balloon.backlog.title': 'Queue backlog',

@@ -149,6 +149,8 @@ export const ptBR = {
   'cost.trafficDetail': '{gb} GB · {kb} KB por resposta',
   'cost.expand': 'Expandir custos',
   'cost.collapse': 'Recolher custos',
+  'cost.budgetLabel': 'Infraestrutura',
+  'cost.budgetHint': 'A missão avalia só os componentes. O tráfego está travado, então não entra na conta.',
   'cost.disclaimer':
     'Estimativa didática. Não representa preço oficial nem garantia de billing.',
 
@@ -427,7 +429,7 @@ export const ptBR = {
   'mission.situation': 'Situação',
   'mission.objective': 'Objetivo',
   'mission.constraints': 'Restrições',
-  'mission.budget': 'Orçamento: {amount}/mês',
+  'mission.budget': 'Orçamento: {amount}/mês em infraestrutura',
   'mission.trafficLocked': 'Carga de entrada travada',
   'mission.accept': 'Aceitar missão',
   'mission.close': 'Fechar briefing',
@@ -470,8 +472,6 @@ export const ptBR = {
 
   'lesson.0.1.title': 'Play, pause, olhar o gargalo',
   'lesson.0.1.goal': 'Inicie, veja o gargalo no painel Sistema e pause.',
-  'lesson.0.1.hint1': 'Comece pelo botão Iniciar na barra superior — nada acontece antes disso.',
-  'lesson.0.1.hint2': 'Com a carga rodando, o painel Sistema mostra “Gargalo”. Leia o nome do nó e aperte Parar.',
   'lesson.0.1.balloon.play.title': 'Aperte Iniciar',
   'lesson.0.1.balloon.play.body': 'Espaço também funciona. A carga começa a fluir pelo diagrama.',
   'lesson.0.1.balloon.bottleneck.title': 'Olhe o gargalo',
@@ -481,8 +481,6 @@ export const ptBR = {
 
   'lesson.0.2.title': 'Slider muda o destino',
   'lesson.0.2.goal': 'Suba o RPS do Cliente até o servidor ficar crítico por 3 segundos.',
-  'lesson.0.2.hint1': 'Selecione o Cliente e procure o slider de RPS no painel da direita.',
-  'lesson.0.2.hint2': 'Suba o RPS até o servidor passar de 80% e deixe rodando: o crítico precisa durar 3 segundos seguidos.',
   'lesson.0.2.balloon.start.title': 'Comece em marcha lenta',
   'lesson.0.2.balloon.start.body': 'Inicie. O servidor ainda está folgado — o Cliente manda só 40 req/s.',
   'lesson.0.2.balloon.slider.title': 'Mexa no RPS do Cliente',
@@ -492,8 +490,6 @@ export const ptBR = {
 
   'lesson.1.1.title': 'Servidor único satura',
   'lesson.1.1.goal': 'Faça o servidor saturar sem deixar o banco crítico.',
-  'lesson.1.1.hint1': 'Saturar é passar de 80% de utilização — e só o servidor deve chegar lá.',
-  'lesson.1.1.hint2': 'Suba o RPS do Cliente e, se o banco acompanhar demais, aumente a capacidade dele para folgar.',
   'lesson.1.1.balloon.start.title': 'Inicie a carga',
   'lesson.1.1.balloon.start.body': 'O banco está folgado de propósito. O teto que importa é o do servidor.',
   'lesson.1.1.balloon.raise.title': 'Estoure o servidor',
@@ -503,8 +499,6 @@ export const ptBR = {
 
   'lesson.1.2.title': 'Escala horizontal engana',
   'lesson.1.2.goal': 'Veja três servers verdes e o banco como gargalo.',
-  'lesson.1.2.hint1': 'Não é preciso mudar nada: a lição é de leitura. Inicie e observe.',
-  'lesson.1.2.hint2': 'Repare que os três servidores dividem a carga e ficam verdes, enquanto o banco recebe a soma dos três.',
   'lesson.1.2.balloon.look.title': 'Servers confortáveis',
   'lesson.1.2.balloon.look.body': 'O load balancer espalhou a carga. Os três servidores ficam no verde.',
   'lesson.1.2.balloon.db.title': 'O funil é o banco',
@@ -514,8 +508,6 @@ export const ptBR = {
 
   'lesson.1.3.title': 'Salve o banco com cache',
   'lesson.1.3.goal': 'Suba o hit rate do cache até o DB sair do crítico.',
-  'lesson.1.3.hint1': 'Todo miss vira consulta no banco. Quem controla isso é o cache.',
-  'lesson.1.3.hint2': 'Selecione o cache e suba o hit rate para 0,95: o banco passa a receber um vigésimo do tráfego.',
   'lesson.1.3.balloon.pain.title': 'DB no vermelho',
   'lesson.1.3.balloon.pain.body': 'Com 50% de hit rate, metade das requisições ainda bate no banco.',
   'lesson.1.3.balloon.raise.title': 'Suba o hit rate',
@@ -525,8 +517,6 @@ export const ptBR = {
 
   'lesson.1.4.title': 'Gateway protege o serviço',
   'lesson.1.4.goal': 'Ajuste o rate limit para o servidor ficar saudável (com rejeições na borda).',
-  'lesson.1.4.hint1': 'O gateway rejeita o excedente na borda. O que passa é o que o servidor precisa aguentar.',
-  'lesson.1.4.hint2': 'Baixe o rate limit até o valor que passa caber na capacidade do servidor — por volta de 150 req/s.',
   'lesson.1.4.balloon.overload.title': 'Serviço derretendo',
   'lesson.1.4.balloon.overload.body': '5.000 req/s passam no gateway sem freio. O servidor não aguenta.',
   'lesson.1.4.balloon.limit.title': 'Aperte o rate limit',
@@ -536,8 +526,6 @@ export const ptBR = {
 
   'lesson.1.5.title': 'Fila absorve o spike',
   'lesson.1.5.goal': 'Veja o backlog subir no pico e o worker drenar sem ficar crítico.',
-  'lesson.1.5.hint1': 'A fila absorve o pico: entra rápido, sai no ritmo do worker.',
-  'lesson.1.5.hint2': 'Ajuste a capacidade de entrega da fila para perto da capacidade do servidor e deixe o backlog drenar.',
   'lesson.1.5.balloon.spike.title': 'Lá vem o pico',
   'lesson.1.5.balloon.spike.body': 'O produtor dispara um spike. Observe o gráfico de carga — não precisa mexer em nada.',
   'lesson.1.5.balloon.backlog.title': 'Backlog na fila',

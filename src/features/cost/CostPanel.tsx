@@ -7,6 +7,7 @@ import { estimateMonthlyCost } from '@/application/cost/cost-engine';
 import { costProfileOf } from '@/application/cost/profiles';
 import { CLOUD_PROVIDERS, type CloudProvider } from '@/application/cost/types';
 import { toSimulationNodes } from '@/domain/diagram/diagram';
+import { useActiveBudget } from '@/features/lessons/lesson-session-store';
 import { useT } from '@/i18n/I18nProvider';
 import { kindKey } from '@/i18n/keys';
 import { useSimulatorStore } from '@/infrastructure/store/simulator-store';
@@ -20,6 +21,7 @@ export function CostPanel() {
   const completedRps = useSimulatorStore((state) => state.system.completedRps);
   const cloud = useSimulatorStore((state) => state.cloud);
   const setCloud = useSimulatorStore((state) => state.setCloud);
+  const budget = useActiveBudget();
   const [open, setOpen] = useState(true);
 
   const profile = costProfileOf(cloud);
@@ -99,9 +101,44 @@ export function CostPanel() {
             </span>
           </div>
 
+          {budget === undefined ? null : (
+            <BudgetRow spent={estimate.infrastructureMonthlyUsd} budget={budget} />
+          )}
+
           <p className="mt-2 text-[10px] leading-snug text-faint">{t('cost.disclaimer')}</p>
         </div>
       ) : null}
     </section>
+  );
+}
+
+/**
+ * What the mission actually grades.
+ *
+ * The total above includes egress, and a mission locks its traffic sources —
+ * so the bill the learner can move is the components alone. Showing the total
+ * and the budget side by side without this row asks them to reconcile two
+ * numbers that were never comparable.
+ */
+function BudgetRow({ spent, budget }: { spent: number; budget: number }) {
+  const t = useT();
+  const within = spent <= budget;
+
+  return (
+    <div className="mt-2 rounded-lg border border-line/70 bg-raised/60 px-2 py-1.5">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-[11px] font-medium text-muted">{t('cost.budgetLabel')}</span>
+        <span
+          className={cn(
+            'shrink-0 font-mono text-[11px] font-semibold whitespace-nowrap tabular-nums',
+            within ? 'text-emerald-300' : 'text-rose-300',
+          )}
+        >
+          {formatUsd(spent)}
+          <span className="text-faint"> / {formatUsd(budget)}</span>
+        </span>
+      </div>
+      <p className="mt-1 text-[10px] leading-snug text-faint">{t('cost.budgetHint')}</p>
+    </div>
   );
 }
